@@ -133,5 +133,15 @@ namespace Szakdolgozat.Views
                 }
             }
         }
+        private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ComboBox comboBox = (ComboBox)sender;
+            if (comboBox.SelectedItem != null)
+            {
+                string selectedName = ((ComboBoxItem)comboBox.SelectedItem).Name;
+                if (!selectedName.Equals("CB_default_text"))
+                    comboBox.SelectedIndex = 0;
+            }
+        }
     }
 }

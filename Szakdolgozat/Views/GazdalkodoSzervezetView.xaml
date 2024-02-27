@@ -19,7 +19,12 @@
             <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
         <Grid Grid.Row="0">
-            <StackPanel x:Name="pnlSearchBar" Margin="0,10,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="300"></ColumnDefinition>
+                <ColumnDefinition Width="140"></ColumnDefinition>
+                <ColumnDefinition Width="360"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <StackPanel Grid.Column="0" x:Name="pnlSearchBar" Margin="0,10,0,0">
                 <Grid Width="300" HorizontalAlignment="Left">
                     <TextBlock VerticalAlignment="Center" Foreground="#B0B9C6" IsHitTestVisible="False"
                            Panel.ZIndex="1" Text="Keresés" Margin="10,0,0,0"
@@ -31,7 +36,10 @@
                     </TextBox>
                 </Grid>
             </StackPanel>
-            <ComboBox Grid.Row="0" Margin="-140,0,0,0" Width="120" Background="White" Text="Keresési opciók">
+            <ComboBox Grid.Column="1" Width="120" Background="White" SelectedIndex="0" SelectionChanged="ComboBox_SelectionChanged">
+                <ComboBoxItem x:Name="CB_default_text" IsEnabled="False" Visibility="Collapsed">
+                    <TextBlock Text="Keresési opciók"/>
+                </ComboBoxItem>
                 <ComboBoxItem IsEnabled="True">
                     <CheckBox x:Name="mindCB" IsChecked="True">
                         <TextBlock Text="Mind"></TextBlock>
