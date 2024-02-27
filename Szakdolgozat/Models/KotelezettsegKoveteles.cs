@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Szakdolgozat.Models
 {
-    class KotelezettsegKoveteles
+    public class KotelezettsegKoveteles
     {
         public int ID { get; set; }
         public string Tipus { get; set; }

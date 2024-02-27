@@ -141,6 +141,10 @@
     <Compile Include="Models\Dolgozo.cs" />
     <Compile Include="Models\GazdalkodoSzervezet.cs" />
     <Compile Include="Models\IDolgozoRepository.cs" />
+    <Compile Include="Models\IGazdalkodoSzervezetRepository.cs" />
+    <Compile Include="Models\IKoltsegvetesRepository.cs" />
+    <Compile Include="Models\IKotelezettsegKovetelesRepository.cs" />
+    <Compile Include="Models\IMaganSzemelyRepository.cs" />
     <Compile Include="Models\KotelezettsegKoveteles.cs" />
     <Compile Include="Models\MaganSzemely.cs" />
     <Compile Include="Models\BevetelKiadas.cs" />
@@ -149,6 +153,10 @@
     <Compile Include="Models\Role.cs" />
     <Compile Include="Models\Felhasznalo.cs" />
     <Compile Include="Repositories\DolgozoRepository.cs" />
+    <Compile Include="Repositories\GazdalkodoSzervezetRepository.cs" />
+    <Compile Include="Repositories\KoltsegvetesRepository.cs" />
+    <Compile Include="Repositories\KotelezettsegKovetelesRepository.cs" />
+    <Compile Include="Repositories\MaganSzemelyRepository.cs" />
     <Compile Include="Repositories\RepositoryBase.cs" />
     <Compile Include="Repositories\UserRepository.cs" />
     <Compile Include="ViewModels\DolgozoViewModel.cs" />

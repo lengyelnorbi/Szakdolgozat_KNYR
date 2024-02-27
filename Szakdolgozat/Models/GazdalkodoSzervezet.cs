@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Szakdolgozat.Models
 {
-    class GazdalkodoSzervezet
+    public class GazdalkodoSzervezet
     {
         public int ID { get; set; }
         public string Nev { get; set; }
