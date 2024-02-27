@@ -1,0 +1,79 @@
+﻿<UserControl x:Class="Szakdolgozat.Views.DolgozokView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Szakdolgozat.Views"
+             xmlns:dContext="clr-namespace:Szakdolgozat.ViewModels"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis" />
+    </UserControl.Resources>
+    <UserControl.DataContext>
+        <dContext:DolgozoViewModel />
+    </UserControl.DataContext>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="300"></ColumnDefinition>
+                <ColumnDefinition Width="140"></ColumnDefinition>
+                <ColumnDefinition Width="360"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <StackPanel Grid.Column="0" x:Name="pnlSearchBar" Margin="0,10,0,0">
+                <Grid Width="300" HorizontalAlignment="Left">
+                    <TextBlock VerticalAlignment="Center" Foreground="#B0B9C6" IsHitTestVisible="False"
+                Panel.ZIndex="1" Text="Keresés" Margin="10,0,0,0"
+                Visibility="{Binding ElementName=searchBarInput, Path=Text.IsEmpty, Converter={StaticResource BoolToVis}}" />
+                    <TextBox x:Name="searchBarInput"
+                            Text="{Binding SearchQuery, UpdateSourceTrigger=PropertyChanged}"
+                            Style="{StaticResource CustomTextBoxStyle}"
+                            >
+                    </TextBox>
+                </Grid>
+            </StackPanel>
+            <ComboBox Grid.Column="1" Width="120" Background="White" SelectedIndex="0" SelectionChanged="ComboBox_SelectionChanged">
+                <ComboBoxItem x:Name="CB_default_text" IsEnabled="False" Visibility="Collapsed">
+                    <TextBlock Text="Keresési opciók"/>
+                </ComboBoxItem>
+                <ComboBoxItem IsEnabled="True">
+                    <CheckBox x:Name="mindCB" IsChecked="True">
+                        <TextBlock Text="Mind"></TextBlock>
+                    </CheckBox>
+                </ComboBoxItem>
+                <ComboBoxItem>
+                    <CheckBox x:Name="idCB" IsChecked="True">
+                        <TextBlock Text="ID"></TextBlock>
+                    </CheckBox>
+                </ComboBoxItem>
+                <ComboBoxItem>
+                    <CheckBox x:Name="vezeteknevCB" IsChecked="True">
+                        <TextBlock Text="Vezetéknév"></TextBlock>
+                    </CheckBox>
+                </ComboBoxItem>
+                <ComboBoxItem>
+                    <CheckBox x:Name="keresztnevCB" IsChecked="True">
+                        <TextBlock Text="Keresztnév"></TextBlock>
+                    </CheckBox>
+                </ComboBoxItem>
+                <ComboBoxItem>
+                    <CheckBox x:Name="emailCB" IsChecked="True">
+                        <TextBlock Text="Email"></TextBlock>
+                    </CheckBox>
+                </ComboBoxItem>
+                <ComboBoxItem>
+                    <CheckBox x:Name="telefonszamCB" IsChecked="True">
+                        <TextBlock Text="Telefonszám"></TextBlock>
+                    </CheckBox>
+                </ComboBoxItem>
+            </ComboBox>
+        </Grid>
+        <DataGrid Grid.Row="1" x:Name="dataGrid" AutoGenerateColumns="True" ItemsSource="{Binding FilteredDolgozok,Mode=TwoWay, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}" IsReadOnly="True" SelectionUnit="FullRow">
+        </DataGrid>
+    </Grid>
+</UserControl>

@@ -1,0 +1,80 @@
+﻿<UserControl x:Class="Szakdolgozat.Views.KoltsegvetesView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Szakdolgozat.Views"
+             xmlns:dContext="clr-namespace:Szakdolgozat.ViewModels"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis" />
+    </UserControl.Resources>
+    <UserControl.DataContext>
+        <dContext:KoltsegvetesViewModel />
+    </UserControl.DataContext>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0">
+            <StackPanel x:Name="pnlSearchBar" Margin="0,10,0,0">
+                <Grid Width="300" HorizontalAlignment="Left">
+                    <TextBlock VerticalAlignment="Center" Foreground="#B0B9C6" IsHitTestVisible="False"
+                           Panel.ZIndex="1" Text="Keresés" Margin="10,0,0,0"
+                           Visibility="{Binding ElementName=searchBarInput, Path=Text.IsEmpty, Converter={StaticResource BoolToVis}}" />
+                    <TextBox x:Name="searchBarInput"
+                                     Text="{Binding SearchQuery, UpdateSourceTrigger=PropertyChanged}"
+                                     Style="{StaticResource CustomTextBoxStyle}"
+                                     >
+                    </TextBox>
+                </Grid>
+            </StackPanel>
+            <ComboBox Grid.Row="0" Margin="-140,0,0,0" Width="120" Background="White" Text="Keresési opciók">
+                <ComboBoxItem IsEnabled="True">
+                    <CheckBox x:Name="mindCB" IsChecked="True">
+                        <TextBlock Text="Mind"></TextBlock>
+                    </CheckBox>
+                </ComboBoxItem>
+                <ComboBoxItem>
+                    <CheckBox x:Name="idCB" IsChecked="True">
+                        <TextBlock Text="ID"></TextBlock>
+                    </CheckBox>
+                </ComboBoxItem>
+                <ComboBoxItem>
+                    <CheckBox x:Name="osszegCB" IsChecked="True">
+                        <TextBlock Text="Összeg"></TextBlock>
+                    </CheckBox>
+                </ComboBoxItem>
+                <ComboBoxItem>
+                    <CheckBox x:Name="penznemCB" IsChecked="True">
+                        <TextBlock Text="Pénznem"></TextBlock>
+                    </CheckBox>
+                </ComboBoxItem>
+                <ComboBoxItem>
+                    <CheckBox x:Name="beKiKodCB" IsChecked="True">
+                        <TextBlock Text="BeKiKód"></TextBlock>
+                    </CheckBox>
+                </ComboBoxItem>
+                <ComboBoxItem>
+                    <CheckBox x:Name="teljesitesiDatumCB" IsChecked="True">
+                        <TextBlock Text="Teljesitési Dátum"></TextBlock>
+                    </CheckBox>
+                </ComboBoxItem>
+                <ComboBoxItem>
+                    <CheckBox x:Name="kotelKovetIDCB" IsChecked="True">
+                        <TextBlock Text="Telefonszám"></TextBlock>
+                    </CheckBox>
+                </ComboBoxItem>
+                <ComboBoxItem>
+                    <CheckBox x:Name="partnerIDCB" IsChecked="True">
+                        <TextBlock Text="Partner ID"></TextBlock>
+                    </CheckBox>
+                </ComboBoxItem>
+            </ComboBox>
+        </Grid>
+        <DataGrid Grid.Row="1" x:Name="dataGrid" AutoGenerateColumns="True" ItemsSource="{Binding FilteredBevetelekKiadasok}" IsReadOnly="True" SelectionUnit="FullRow">
+        </DataGrid>
+    </Grid>
+</UserControl>

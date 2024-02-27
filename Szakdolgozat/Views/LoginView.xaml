@@ -1,0 +1,187 @@
+﻿<Window x:Class="Szakdolgozat.Views.LoginView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Szakdolgozat.Views"
+        xmlns:viewModel="clr-namespace:Szakdolgozat.ViewModels" 
+        xmlns:customcontrols="clr-namespace:Szakdolgozat.CustomControls"
+        xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp"
+        mc:Ignorable="d"
+        Title="LoginView" Height="600" Width="450"
+        WindowStyle="None"
+        ResizeMode="NoResize"
+        Background="Transparent"
+        AllowsTransparency="True"
+        HorizontalAlignment="Center"
+        VerticalAlignment="Center"
+        WindowStartupLocation="CenterScreen">
+
+    <Window.DataContext>
+        <viewModel:LoginViewModel />
+    </Window.DataContext>
+
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibility" />
+    </Window.Resources>
+    
+    <Window.Visibility>
+        <Binding Path="IsViewVisible" Mode="TwoWay" Converter="{StaticResource BooleanToVisibility}" />
+    </Window.Visibility>
+    
+    <Border Background="#272537">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0">
+                <!--<Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="25" />
+                    <ColumnDefinition Width="25" />
+                    <ColumnDefinition Width="25" />
+                </Grid.ColumnDefinitions>-->
+
+                <StackPanel x:Name="pnlControlBar"
+                                Grid.Row="0"
+                                Orientation="Horizontal"
+                                FlowDirection="RightToLeft"
+                                Background="Transparent"
+                                Margin="0,0,5,0">
+                    <Button x:Name="btnClose"
+                                Style="{StaticResource controlButton}"
+                                Tag="#FB539B"
+                                Click="btnClose_Click"
+                                Grid.Column="3">
+                        <fa:IconImage Icon="Xmark" Style="{StaticResource controlButtonIcon}"/>
+                    </Button>
+                    <Button x:Name="btnMaximize" Visibility="Hidden"
+                                Style="{StaticResource controlButton}"
+                                Tag="#FFC047"
+                                Grid.Column="2">
+                        <fa:IconImage Icon="Square" Style="{StaticResource controlButtonIcon}"/>
+                    </Button>
+                    <Button x:Name="btnMinimize"
+                                Style="{StaticResource controlButton}"
+                                Tag="#78A3FC"
+                                Click="btnMinimize_Click"
+                                Grid.Column="1">
+                        <fa:IconImage Icon="WindowMinimize" Width="12" Style="{StaticResource controlButtonIcon}"/>
+                    </Button>
+                </StackPanel>
+                <!--<Button Grid.Column="1"
+                    x:Name="btnMinimize"
+                    BorderThickness="0"
+                    Background="#28AEED"
+                    Content="-"
+                    Foreground="White"
+                    FontSize="16"
+                    FontFamily="Montserrat"
+                    Cursor="Hand"
+                    Click="btnMinimize_Click">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Background" Value="#28AEED"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="#278BEF"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>-->
+                <!--<Button Grid.Column="3"
+                    x:Name="btnClose"
+                    Background="#DA34AE"
+                    BorderThickness="0"
+                    Content="X"
+                    Foreground="White"
+                    FontSize="11"
+                    FontFamily="Montserrat"
+                    Cursor="Hand"
+                    Click="btnClose_Click">
+
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Background" Value="#28AEED"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="#278BEF"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+
+                </Button>-->
+            </Grid>
+            <StackPanel Grid.Row="1" Width="300" Orientation="Vertical"
+                    VerticalAlignment="Center">
+                <TextBlock Text="BELÉPÉS"
+                       Height="60"
+                       FontSize="40"
+                       HorizontalAlignment="Center"
+                       Margin="0,20,0,0"
+                       Foreground="White">
+
+                </TextBlock>
+                <TextBlock Text="Felhasználónév"
+                       FontSize="16"
+                       Margin="0,35,0,0"
+                       Foreground="White">
+                </TextBlock>
+                <TextBox FontSize="16"
+                         Text="{Binding Username,UpdateSourceTrigger=PropertyChanged}"
+                     Background="LightGray"
+                     HorizontalContentAlignment="Center"
+                     Margin="0,0,0,40"
+                     Height="28">
+
+                </TextBox>
+                <TextBlock Text="Jelszó"
+                       FontSize="16"
+                       Foreground="White">
+                </TextBlock>
+                <customcontrols:BindablePasswordBox Password="{Binding Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                    Margin="0,0,0,40"
+                    Height="28" />
+                <TextBlock Text="{Binding ErrorMessage}"
+                       FontSize="12"
+                       Foreground="Red"
+                           FontWeight="Medium"
+                           Margin="0,10,0,0"
+                           TextWrapping="Wrap"
+                           FontFamily="Montserrat">
+                </TextBlock>
+                <Button x:Name="btnLogin"
+                    Command="{Binding LoginCommand}"
+                    BorderThickness="0"
+                    Content="BEJELENTKEZÉS"
+                    Foreground="White"
+                    FontSize="14"
+                    FontFamily="Montserrat"
+                    Cursor="Hand"      >
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Background" Value="#462AD8"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="#28AEED"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border  Height="40"
+                                Background="{TemplateBinding Background}">
+                                <ContentPresenter VerticalAlignment="Center"
+                                                HorizontalAlignment="Center"/>
+                            </Border>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+            </StackPanel>
+        </Grid>
+    </Border>
+</Window>
