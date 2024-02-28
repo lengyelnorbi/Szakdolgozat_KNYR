@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.Eventing.Reader;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
@@ -24,6 +25,8 @@ namespace Szakdolgozat.Views
     /// </summary>
     public partial class DolgozokView : UserControl
     {
+        private Boolean _isOpen = false;
+
         public DolgozokView()
         {
             InitializeComponent();
@@ -139,9 +142,41 @@ namespace Szakdolgozat.Views
             }
         }
 
-        private void dataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void Add_Button_Clicked(object sender, RoutedEventArgs e)
         {
-           
+            if (!_isOpen)
+            {
+                dataGridColumnDef.Width = new GridLength(700);
+                _isOpen = true;
+            }
+            else
+            {
+                dataGridColumnDef.Width = new GridLength(900);
+                _isOpen = false;
+            }
+        }
+        private void Modify_Button_Clicked(object sender, RoutedEventArgs e)
+        {
+            if (DataContext is DolgozoViewModel dolgozoViewModel)
+            {
+                try
+                {
+                    if(dolgozoViewModel.SelectedRow != null)
+                    {
+                        if (!_isOpen)
+                        {
+                            dataGridColumnDef.Width = new GridLength(700);
+                            _isOpen = true;
+                        }
+                        else
+                        {
+                            dataGridColumnDef.Width = new GridLength(900);
+                            _isOpen = false;
+                        }
+                    }
+                }
+                catch { }
+            }
         }
     }
 }

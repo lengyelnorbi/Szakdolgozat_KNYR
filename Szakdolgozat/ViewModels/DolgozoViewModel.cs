@@ -72,6 +72,59 @@ namespace Szakdolgozat.ViewModels
             }
         }
 
+        private string _lastname;
+        private string _firstname;
+        private string _email;
+        private string _phonenumber;
+        public string Lastname
+        {
+            get
+            {
+                return _lastname;
+            }
+            set 
+            { 
+                _lastname = value;
+                OnPropertyChanged(nameof(Lastname));
+            }
+        }
+        public string Firstname
+        {
+            get
+            {
+                return _firstname;
+            }
+            set 
+            {
+                _firstname = value;
+                OnPropertyChanged(nameof(Firstname));
+            }
+        }
+        public string Email
+        {
+            get
+            {
+                return _email;
+            }
+            set
+            {
+                _email = value;
+                OnPropertyChanged(nameof(Email));
+            }
+        }
+        public string Phonenumber
+        {
+            get
+            {
+                return _phonenumber;
+            }
+            set 
+            {
+                _phonenumber = value;
+                OnPropertyChanged(nameof(Phonenumber));
+            }
+        }
+
         public Dictionary<string, bool> checkboxStatuses = new Dictionary<string, bool>();
 
         private ObservableCollection<Dolgozo> GetYourData()
@@ -230,10 +283,13 @@ namespace Szakdolgozat.ViewModels
         }
         private bool CanExecuteModifyDolgozoCommand(object obj)
         {
-            return true;
+            if (SelectedRow != null)
+                return true;
+            return false;
         }
         private void ExecuteModifyDolgozoCommand(object obj)
         {
+
         }
         private bool CanExecuteAddDolgozoCommand(object obj)
         {
@@ -241,6 +297,7 @@ namespace Szakdolgozat.ViewModels
         }
         private void ExecuteAddDolgozoCommand(object obj)
         {
+            
         }
     }
 }
