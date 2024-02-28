@@ -13,6 +13,10 @@ using System.Windows.Data;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Szakdolgozat.Repositories;
+using System.Windows.Input;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
+using System.Security.Principal;
+using System.Threading;
 
 namespace Szakdolgozat.ViewModels
 {
@@ -53,6 +57,18 @@ namespace Szakdolgozat.ViewModels
                 _searchQuery = value;
                 OnPropertyChanged(nameof(SearchQuery));
                 UpdateSearch(SearchQuery);
+            }
+        }
+
+        private Dolgozo _selectedRow;
+
+        public Dolgozo SelectedRow
+        {
+            get { return _selectedRow; }
+            set
+            {
+                _selectedRow = value;
+                OnPropertyChanged(nameof(SelectedRow));
             }
         }
 
@@ -105,6 +121,7 @@ namespace Szakdolgozat.ViewModels
             checkboxStatuses.Add("telefonszamCB", true);
             Dolgozok = _dolgozoRepository.GetDolgozok();
             FilteredDolgozok = new ObservableCollection<Dolgozo>(Dolgozok);
+            DeleteDolgozoCommand = new ViewModelCommand(ExecuteDeleteDolgozoCommand, CanExecuteDeleteDolgozoCommand);
             Debug.WriteLine("EREDETI FILTERED");
             Debug.WriteLine(FilteredDolgozok.Count);
         }
@@ -176,9 +193,35 @@ namespace Szakdolgozat.ViewModels
             FilterData(searchQuery);
         }
 
-        public void DeleteDolgozo()
+        public void DeleteDolgozo(int id)
         {
-            Dolgozok.RemoveAt(1);
+            try
+            {
+                _dolgozoRepository.DeleteDolgozo(id);
+                for(int i = 0; i < Dolgozok.Count; i++)
+                {
+                    if(Dolgozok.ElementAt(i).ID == id)
+                        Dolgozok.RemoveAt(i);
+                }
+            }
+            catch (Exception e) 
+            {
+                throw new Exception(e.Message);
+            }
+        }
+
+        public ICommand DeleteDolgozoCommand { get; }
+
+        private bool CanExecuteDeleteDolgozoCommand(object obj)
+        {
+            if(SelectedRow != null)
+                return true;
+            return false;
+        }
+        private void ExecuteDeleteDolgozoCommand(object obj)
+        {
+            MessageBox.Show(SelectedRow.ID.ToString() + SelectedRow.Vezeteknev);
+            //DeleteDolgozo(obj);
         }
     }
 }

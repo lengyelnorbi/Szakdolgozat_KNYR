@@ -14,6 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Szakdolgozat.Models;
 using Szakdolgozat.ViewModels;
 
 namespace Szakdolgozat.Views
@@ -136,6 +137,11 @@ namespace Szakdolgozat.Views
                 if(!selectedName.Equals("CB_default_text"))
                     comboBox.SelectedIndex = 0;
             }
+        }
+
+        private void dataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+           
         }
     }
 }

@@ -72,8 +72,14 @@
                     </CheckBox>
                 </ComboBoxItem>
             </ComboBox>
+            <Button Grid.Column="2" 
+                    Content="Delete"
+                    Foreground="White"
+                    Command="{Binding DeleteDolgozoCommand}"
+                    CommandParameter="{Binding SelectedRow}">
+            </Button>
         </Grid>
-        <DataGrid Grid.Row="1" x:Name="dataGrid" AutoGenerateColumns="True" ItemsSource="{Binding FilteredDolgozok,Mode=TwoWay, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}" IsReadOnly="True" SelectionUnit="FullRow">
+        <DataGrid Grid.Row="1" x:Name="dataGrid" AutoGenerateColumns="True" ItemsSource="{Binding FilteredDolgozok,Mode=TwoWay, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}" IsReadOnly="True" SelectionUnit="FullRow" SelectedItem="{Binding SelectedRow, Mode=TwoWay}">
         </DataGrid>
     </Grid>
 </UserControl>
