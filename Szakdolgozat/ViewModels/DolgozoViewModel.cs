@@ -122,6 +122,8 @@ namespace Szakdolgozat.ViewModels
             Dolgozok = _dolgozoRepository.GetDolgozok();
             FilteredDolgozok = new ObservableCollection<Dolgozo>(Dolgozok);
             DeleteDolgozoCommand = new ViewModelCommand(ExecuteDeleteDolgozoCommand, CanExecuteDeleteDolgozoCommand);
+            ModifyDolgozoCommand = new ViewModelCommand(ExecuteModifyDolgozoCommand, CanExecuteModifyDolgozoCommand);
+            AddDolgozoCommand = new ViewModelCommand(ExecuteAddDolgozoCommand, CanExecuteAddDolgozoCommand);
             Debug.WriteLine("EREDETI FILTERED");
             Debug.WriteLine(FilteredDolgozok.Count);
         }
@@ -198,11 +200,12 @@ namespace Szakdolgozat.ViewModels
             try
             {
                 _dolgozoRepository.DeleteDolgozo(id);
-                for(int i = 0; i < Dolgozok.Count; i++)
+                for (int i = 0; i < FilteredDolgozok.Count; i++)
                 {
-                    if(Dolgozok.ElementAt(i).ID == id)
-                        Dolgozok.RemoveAt(i);
+                    if (FilteredDolgozok.ElementAt(i).ID == id)
+                        FilteredDolgozok.RemoveAt(i);
                 }
+
             }
             catch (Exception e) 
             {
@@ -211,6 +214,8 @@ namespace Szakdolgozat.ViewModels
         }
 
         public ICommand DeleteDolgozoCommand { get; }
+        public ICommand ModifyDolgozoCommand { get; }
+        public ICommand AddDolgozoCommand { get; }
 
         private bool CanExecuteDeleteDolgozoCommand(object obj)
         {
@@ -221,7 +226,21 @@ namespace Szakdolgozat.ViewModels
         private void ExecuteDeleteDolgozoCommand(object obj)
         {
             MessageBox.Show(SelectedRow.ID.ToString() + SelectedRow.Vezeteknev);
-            //DeleteDolgozo(obj);
+            DeleteDolgozo(SelectedRow.ID);
+        }
+        private bool CanExecuteModifyDolgozoCommand(object obj)
+        {
+            return true;
+        }
+        private void ExecuteModifyDolgozoCommand(object obj)
+        {
+        }
+        private bool CanExecuteAddDolgozoCommand(object obj)
+        {
+            return true;
+        }
+        private void ExecuteAddDolgozoCommand(object obj)
+        {
         }
     }
 }
