@@ -147,12 +147,11 @@ namespace Szakdolgozat.Views
             if (!_isOpen)
             {
                 dataGridColumnDef.Width = new GridLength(700);
+                sidebar_lastnameTB.Text = string.Empty;
+                sidebar_firstnameTB.Text = string.Empty;
+                sidebar_emailTB.Text = string.Empty;
+                sidebar_phonenumberTB.Text = string.Empty;
                 _isOpen = true;
-            }
-            else
-            {
-                dataGridColumnDef.Width = new GridLength(900);
-                _isOpen = false;
             }
         }
         private void Modify_Button_Clicked(object sender, RoutedEventArgs e)
@@ -167,15 +166,23 @@ namespace Szakdolgozat.Views
                         {
                             dataGridColumnDef.Width = new GridLength(700);
                             _isOpen = true;
-                        }
-                        else
-                        {
-                            dataGridColumnDef.Width = new GridLength(900);
-                            _isOpen = false;
+                            sidebar_lastnameTB.Text = dolgozoViewModel.SelectedRow.Vezeteknev;
+                            sidebar_firstnameTB.Text = dolgozoViewModel.SelectedRow.Keresztnev;
+                            sidebar_emailTB.Text = dolgozoViewModel.SelectedRow.Email;
+                            sidebar_phonenumberTB.Text = dolgozoViewModel.SelectedRow.Telefonszam;
                         }
                     }
                 }
                 catch { }
+            }
+        }
+
+        private void Megse_Button_Clicked(object sender, RoutedEventArgs e)
+        {
+            if (_isOpen)
+            {
+                dataGridColumnDef.Width = new GridLength(900);
+                _isOpen = false;
             }
         }
     }

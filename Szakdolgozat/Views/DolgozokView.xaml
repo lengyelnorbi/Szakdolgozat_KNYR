@@ -107,6 +107,7 @@
                        Foreground="Black">
                 </TextBlock>
                 <TextBox FontSize="16"
+                         x:Name="sidebar_lastnameTB"
                          Text="{Binding Lastname,UpdateSourceTrigger=PropertyChanged}"
                      Background="LightGray"
                      HorizontalContentAlignment="Center"
@@ -118,6 +119,7 @@
                        Foreground="Black">
                 </TextBlock>
                 <TextBox FontSize="16"
+                         x:Name="sidebar_firstnameTB"
                          Text="{Binding Firstname,UpdateSourceTrigger=PropertyChanged}"
                      Background="LightGray"
                      HorizontalContentAlignment="Center"
@@ -129,6 +131,7 @@
                        Foreground="Black">
                 </TextBlock>
                 <TextBox FontSize="16"
+                         x:Name="sidebar_emailTB"
                          Text="{Binding Email,UpdateSourceTrigger=PropertyChanged}"
                      Background="LightGray"
                      HorizontalContentAlignment="Center"
@@ -140,6 +143,7 @@
                        Foreground="Black">
                 </TextBlock>
                 <TextBox FontSize="16"
+                         x:Name="sidebar_phonenumberTB"
                          Text="{Binding Phonenumber,UpdateSourceTrigger=PropertyChanged}"
                      Background="LightGray"
                      HorizontalContentAlignment="Center"
@@ -155,7 +159,8 @@
                     <Button Content="Mégse"
                     Foreground="White"
                     Width="75"
-                    Margin="20,0,5,0">
+                    Margin="20,0,5,0"
+                    Click="Megse_Button_Clicked">
                     </Button>
                 </StackPanel>
             </StackPanel>
