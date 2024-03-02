@@ -1,4 +1,6 @@
-﻿using System;
+﻿using LiveCharts.Wpf;
+using LiveCharts;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,5 +10,6 @@ namespace Szakdolgozat.ViewModels
 {
     public class UjDiagrammokViewModel : ViewModelBase
     {
+        
     }
 }

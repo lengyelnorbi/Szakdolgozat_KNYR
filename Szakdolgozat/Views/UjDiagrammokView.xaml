@@ -6,18 +6,18 @@
              xmlns:local="clr-namespace:Szakdolgozat.Views"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
-             mc:Ignorable="d" >
-    <Grid>
-        <Grid Grid.Row="1"
-                            Grid.Column="1">
+             mc:Ignorable="d"
+             d:DesignHeight="450" d:DesignWidth="900">
+    <ScrollViewer>
+        <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />
                 <ColumnDefinition />
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition />
-                <RowDefinition />
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*" />
             </Grid.RowDefinitions>
             <materialDesign:Card Grid.Row="0"
                                      Grid.Column="0"
@@ -25,84 +25,162 @@
                                      Foreground="White"
                                      Background="#272537"
                                      Margin="15"
-                                     x:Name="korDiagram">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="*"></RowDefinition>
-                        <RowDefinition Height="40"></RowDefinition>
-                    </Grid.RowDefinitions>
-                    <Image Source="../Assets/Images/korDiagram.jpg" Grid.Row="0"></Image>
-                    <Button Grid.Row="1" Content="Tovább"></Button>
-                </Grid>
-            </materialDesign:Card>
-
-            <materialDesign:Card Grid.Row="0"
-                                     Grid.Column="1"
-                                     VerticalAlignment="Stretch"
-                                     Foreground="White"
-                                     Background="#272537"
-                                     Margin="15"
                                      x:Name="alapXYDiagram">
                 <Grid>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="*"></RowDefinition>
+                        <RowDefinition Height="60"></RowDefinition>
+                        <RowDefinition Height="*" MinHeight="200"></RowDefinition>
                         <RowDefinition Height="40"></RowDefinition>
                     </Grid.RowDefinitions>
-                    <Image Source="../Assets/Images/alapXYDiagram.jpg" Grid.Row="0"></Image>
-                    <Button Grid.Row="1" Content="Tovább"></Button>
+                    <TextBlock Text="Row Series" Grid.Row="0" FontSize="30" HorizontalAlignment="Center"></TextBlock>
+                    <lvc:CartesianChart Grid.Row="1" Series="{Binding TestRowSeriesForShow}" LegendLocation="Bottom">
+                        <lvc:CartesianChart.AxisX>
+                            <lvc:Axis Title="Salesman" LabelFormatter="{Binding TestRowSeriesFormatterForShow}"></lvc:Axis>
+                        </lvc:CartesianChart.AxisX>
+                        <lvc:CartesianChart.AxisY>
+                            <lvc:Axis Title="Sold Apps" Labels="{Binding TestRowSeriesLabelsForShow}"></lvc:Axis>
+                        </lvc:CartesianChart.AxisY>
+                        <lvc:CartesianChart.DataTooltip>
+                            <lvc:DefaultTooltip SelectionMode="SharedYValues"></lvc:DefaultTooltip>
+                        </lvc:CartesianChart.DataTooltip>
+                    </lvc:CartesianChart>
+                    <Button Grid.Row="2" Content="Tovább" VerticalAlignment="Bottom"></Button>
                 </Grid>
             </materialDesign:Card>
-            <materialDesign:Card Grid.Row="1"
-                                     Grid.Column="0"
-                                     VerticalAlignment="Stretch"
-                                     Foreground="White"
-                                     Background="#272537"
-                                     Margin="15"
-                                     x:Name="fankDiagram">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="*"></RowDefinition>
-                        <RowDefinition Height="40"></RowDefinition>
-                    </Grid.RowDefinitions>
-                    <Image Source="../Assets/Images/fankDiagram.jpg" Grid.Row="0"></Image>
-                    <Button Grid.Row="1" Content="Tovább"></Button>
-                </Grid>
-            </materialDesign:Card>
-
-
-            <materialDesign:Card Grid.Row="1"
+        <materialDesign:Card Grid.Row="0"
                                      Grid.Column="1"
                                      VerticalAlignment="Stretch"
                                      Foreground="White"
                                      Background="#272537"
                                      Margin="15"
                                      x:Name="DoltOszlopDiagram">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="*"></RowDefinition>
-                        <RowDefinition Height="40"></RowDefinition>
-                    </Grid.RowDefinitions>
-                    <Image Source="../Assets/Images/doltOszlopDiagram.jpg" Grid.Row="0"></Image>
-                    <Button Grid.Row="1" Content="Tovább"></Button>
-                </Grid>
-            </materialDesign:Card>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="60"></RowDefinition>
+                    <RowDefinition Height="*"></RowDefinition>
+                    <RowDefinition Height="40"></RowDefinition>
+                </Grid.RowDefinitions>
+                <!--<StackPanel Grid.Row="0" Orientation="Vertical">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"></RowDefinition>
+                            <RowDefinition Height="45"></RowDefinition>
+                        </Grid.RowDefinitions>
+                        <StackPanel Grid.Row="1" Orientation="Horizontal">
+                            <Button Click="UpdateAllOnClick" Padding="10 0">
+                                Move All
+                            </Button>
+                            <Button Click="RestartOnClick">Restart</Button>
+                            <TextBlock VerticalAlignment="Center" Padding="10 0">Series</TextBlock>
+                            <Button Click="AddSeriesOnClick" MinWidth="30">
+                                +
+                            </Button>
+                            <Button Click="RemoveSeriesOnClick" MinWidth="30">
+                                -
+                            </Button>
+                            <TextBlock VerticalAlignment="Center" Padding="10 0">Values</TextBlock>
+                            <Button Height="30" Click="AddValueOnClick" MinWidth="30">
+                                +
+                            </Button>
+                            <Button  Height="30" Click="RemoveValueOnClick" MinWidth="30">
+                                -
+                            </Button>
 
-            <materialDesign:Card Grid.Row="0"
-                                     Grid.Column="2"
-                                     VerticalAlignment="Stretch"
-                                     Foreground="White"
-                                     Background="#272537"
-                                     Margin="15"
-                                     x:Name="OszlopDiagram">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="*"></RowDefinition>
-                        <RowDefinition Height="40"></RowDefinition>
-                    </Grid.RowDefinitions>
-                    <Image Source="../Assets/Images/oszlopDiagram.jpg" Grid.Row="0"></Image>
-                    <Button Grid.Row="1" Content="Tovább"></Button>
-                </Grid>
-            </materialDesign:Card>
+                        </StackPanel>-->
+                    <TextBlock Text="Doughnut Series" Grid.Row="0" FontSize="30" HorizontalAlignment="Center"></TextBlock>
+                    <lvc:PieChart Grid.Row="1" Name="Chart" Series="{Binding TestDoghnutSeriesForShow}" 
+                      LegendLocation="Right" InnerRadius="40" Margin="0 15">
+                            <lvc:PieChart.ChartLegend>
+                                <lvc:DefaultLegend BulletSize="20"></lvc:DefaultLegend>
+                            </lvc:PieChart.ChartLegend>
+                            <lvc:PieChart.DataTooltip>
+                                <lvc:DefaultTooltip BulletSize="20"></lvc:DefaultTooltip>
+                            </lvc:PieChart.DataTooltip>
+                        </lvc:PieChart>
+                    <!--</Grid>
+                </StackPanel>-->
+                <Button Grid.Row="2" Content="Új létrehozása"></Button>
+            </Grid>
+        </materialDesign:Card>
+        <materialDesign:Card Grid.Row="0"
+                                    Grid.Column="2"
+                                    VerticalAlignment="Stretch"
+                                    Foreground="White"
+                                    Background="#272537"
+                                    Margin="15"
+                                    x:Name="OszlopDiagram">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="60"></RowDefinition>
+                    <RowDefinition Height="*"></RowDefinition>
+                    <RowDefinition Height="40"></RowDefinition>
+                </Grid.RowDefinitions>
+                <TextBlock Text="Stacked Series" Grid.Row="0" FontSize="30" HorizontalAlignment="Center"></TextBlock>
+                <lvc:CartesianChart Grid.Row="1" Series="{Binding TestStackedColumnSeriesForShow}" LegendLocation="Bottom">
+                    <lvc:CartesianChart.AxisX>
+                        <lvc:Axis Title="Browser" 
+                        Labels="{Binding TestStackedColumnSeriesLabelsForShow}" 
+                        Separator="{x:Static lvc:DefaultAxes.CleanSeparator}" />
+                    </lvc:CartesianChart.AxisX>
+                    <lvc:CartesianChart.AxisY>
+                        <lvc:Axis Title="Usage" LabelFormatter="{Binding TestStackedColumnSeriesFormatterForShow}"></lvc:Axis>
+                    </lvc:CartesianChart.AxisY>
+                </lvc:CartesianChart>
+                <Button Grid.Row="2" Content="Új létrehozása"></Button>
+            </Grid>
+        </materialDesign:Card>
+        <materialDesign:Card Grid.Row="1"
+                                Grid.Column="0"
+                                VerticalAlignment="Stretch"
+                                Foreground="White"
+                                Background="#272537"
+                                Margin="15"
+                                x:Name="AlapOszlopDiagram">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="60"></RowDefinition>
+                    <RowDefinition Height="*" MinHeight="200"></RowDefinition>
+                    <RowDefinition Height="40"></RowDefinition>
+                </Grid.RowDefinitions>
+                <TextBlock Text="Basic Column Series" Grid.Row="0" FontSize="30" HorizontalAlignment="Center"></TextBlock>
+                <lvc:CartesianChart Grid.Row="1" Series="{Binding TestBasicColumnSeriesForShow}" LegendLocation="Bottom">
+                    <lvc:CartesianChart.AxisX>
+                        <lvc:Axis Title="Browser" 
+                    Labels="{Binding TestBasicColumnSeriesLabelsForShow}" 
+                    Separator="{x:Static lvc:DefaultAxes.CleanSeparator}" />
+                    </lvc:CartesianChart.AxisX>
+                    <lvc:CartesianChart.AxisY>
+                            <lvc:Axis Title="Usage" LabelFormatter="{Binding TestBasicColumnSeriesFormatterForShow}"></lvc:Axis>
+                    </lvc:CartesianChart.AxisY>
+                </lvc:CartesianChart>
+                <Button Grid.Row="2" Content="Új létrehozása"></Button>
+            </Grid>
+        </materialDesign:Card>
+        <materialDesign:Card Grid.Row="1"
+                            Grid.Column="1"
+                            VerticalAlignment="Stretch"
+                            Foreground="White"
+                            Background="#272537"
+                            Margin="15"
+                            x:Name="VonalDiagram">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="60"></RowDefinition>
+                    <RowDefinition Height="*"></RowDefinition>
+                    <RowDefinition Height="40"></RowDefinition>
+                </Grid.RowDefinitions>
+                <TextBlock Text="Line Series" Grid.Row="0" FontSize="30" HorizontalAlignment="Center"></TextBlock>
+                    <lvc:CartesianChart Grid.Row="1" Series="{Binding TestLineSeriesForShow}" LegendLocation="Right" >
+                    <lvc:CartesianChart.AxisY>
+                            <lvc:Axis Title="Sales" LabelFormatter="{Binding TestLineSeriesYFormatterForShow}"></lvc:Axis>
+                    </lvc:CartesianChart.AxisY>
+                    <lvc:CartesianChart.AxisX>
+                            <lvc:Axis Title="Month" Labels="{Binding TestLineSeriesLabelsForShow}"></lvc:Axis>
+                    </lvc:CartesianChart.AxisX>
+                </lvc:CartesianChart>
+                <Button Grid.Row="2" Content="Új létrehozása"></Button>
+            </Grid>
+        </materialDesign:Card>
         </Grid>
-    </Grid>
+    </ScrollViewer>
 </UserControl>

@@ -25,7 +25,8 @@ namespace Szakdolgozat.Views
     /// </summary>
     public partial class DolgozokView : UserControl
     {
-        private Boolean _isOpen = false;
+        private Boolean _isAddOpen = false;
+        private Boolean _isModifyOpen = false;
 
         public DolgozokView()
         {
@@ -144,28 +145,36 @@ namespace Szakdolgozat.Views
 
         private void Add_Button_Clicked(object sender, RoutedEventArgs e)
         {
-            if (!_isOpen)
+            if (_isModifyOpen)
+            {
+                _isModifyOpen = false;
+            }
+            if (!_isAddOpen)
             {
                 dataGridColumnDef.Width = new GridLength(700);
                 sidebar_lastnameTB.Text = string.Empty;
                 sidebar_firstnameTB.Text = string.Empty;
                 sidebar_emailTB.Text = string.Empty;
                 sidebar_phonenumberTB.Text = string.Empty;
-                _isOpen = true;
+                _isAddOpen = true;
             }
         }
         private void Modify_Button_Clicked(object sender, RoutedEventArgs e)
         {
+            if (_isAddOpen)
+            {
+                _isAddOpen = false;
+            }
             if (DataContext is DolgozoViewModel dolgozoViewModel)
             {
                 try
                 {
                     if(dolgozoViewModel.SelectedRow != null)
                     {
-                        if (!_isOpen)
+                        if (!_isModifyOpen)
                         {
                             dataGridColumnDef.Width = new GridLength(700);
-                            _isOpen = true;
+                            _isModifyOpen = true;
                             sidebar_lastnameTB.Text = dolgozoViewModel.SelectedRow.Vezeteknev;
                             sidebar_firstnameTB.Text = dolgozoViewModel.SelectedRow.Keresztnev;
                             sidebar_emailTB.Text = dolgozoViewModel.SelectedRow.Email;
@@ -179,10 +188,11 @@ namespace Szakdolgozat.Views
 
         private void Megse_Button_Clicked(object sender, RoutedEventArgs e)
         {
-            if (_isOpen)
+            if (_isAddOpen || _isModifyOpen)
             {
                 dataGridColumnDef.Width = new GridLength(900);
-                _isOpen = false;
+                _isAddOpen = false;
+                _isModifyOpen = false;
             }
         }
     }

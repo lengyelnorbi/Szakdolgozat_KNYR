@@ -72,7 +72,7 @@
                 </ComboBoxItem>
             </ComboBox>
         </Grid>
-        <DataGrid Grid.Row="1" x:Name="dataGrid" AutoGenerateColumns="True" ItemsSource="{Binding FilteredMaganSzemelyek}" IsReadOnly="True" SelectionUnit="FullRow">
+        <DataGrid Grid.Row="1" x:Name="dataGrid" CanUserResizeColumns="True" ColumnWidth="*" AutoGenerateColumns="True" ItemsSource="{Binding FilteredMaganSzemelyek}" IsReadOnly="True" SelectionUnit="FullRow">
         </DataGrid>
     </Grid>
 </UserControl>

@@ -17,6 +17,7 @@ using System.Windows.Input;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 using System.Security.Principal;
 using System.Threading;
+using Szakdolgozat.Views;
 
 namespace Szakdolgozat.ViewModels
 {
@@ -289,7 +290,30 @@ namespace Szakdolgozat.ViewModels
         }
         private void ExecuteModifyDolgozoCommand(object obj)
         {
-
+            try
+            {
+                if (Lastname != null && Firstname != null && Email != null && Phonenumber != null)
+                {
+                    Dolgozo dolgozo = new Dolgozo(SelectedRow.ID, Lastname, Firstname, Email, Phonenumber);
+                    _dolgozoRepository.ModifyDolgozo(dolgozo);
+                    for(int i = 0; i < Dolgozok.Count; i++)
+                    {
+                        if(Dolgozok.ElementAt(i).ID == SelectedRow.ID)
+                        {
+                            Dolgozok.ElementAt(i).Vezeteknev = Lastname;
+                            Dolgozok.ElementAt(i).Keresztnev = Firstname;
+                            Dolgozok.ElementAt(i).Email= Email;
+                            Dolgozok.ElementAt(i).Telefonszam = Phonenumber;
+                            break;
+                        }
+                    }
+                    FilteredDolgozok = Dolgozok;
+                }
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message, e);
+            }
         }
         private bool CanExecuteAddDolgozoCommand(object obj)
         {
@@ -297,7 +321,20 @@ namespace Szakdolgozat.ViewModels
         }
         private void ExecuteAddDolgozoCommand(object obj)
         {
-            
+            try
+            {
+                if(Lastname != null && Firstname != null && Email != null && Phonenumber != null)
+                {
+                    Dolgozo dolgozo = new Dolgozo(Lastname, Firstname, Email, Phonenumber);
+                    _dolgozoRepository.AddDolgozo(dolgozo);
+                    Dolgozok = GetYourData();
+                    FilteredDolgozok = Dolgozok;
+                }
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message, e);
+            }
         }
     }
 }

@@ -22,5 +22,12 @@ namespace Szakdolgozat.Models
             Email = email;
             Telefonszam = telefonszam;
         }
+        public Dolgozo(string vezeteknev, string keresztnev, string email, string telefonszam)
+        {
+            Vezeteknev = vezeteknev;
+            Keresztnev = keresztnev;
+            Email = email;
+            Telefonszam = telefonszam;
+        }
     }
 }

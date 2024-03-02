@@ -21,7 +21,7 @@ namespace Szakdolgozat.Repositories
             {
                 connection.Open();
 
-                string query = "INSERT INTO `dolgozok` (`id`, `vezeteknev`, `keresztnev`, `email`, `telefonszam`) VALUES (NULL, '@vezeteknev', '@keresztnev', '@email', '@telefonszam');";
+                string query = "INSERT INTO `dolgozok` (`id`, `vezeteknev`, `keresztnev`, `email`, `telefonszam`) VALUES (NULL, @vezeteknev, @keresztnev, @email, @telefonszam);";
                 using (MySqlCommand command = new MySqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@vezeteknev", dolgozo.Vezeteknev);
