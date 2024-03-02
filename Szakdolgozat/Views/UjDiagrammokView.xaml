@@ -6,8 +6,12 @@
              xmlns:local="clr-namespace:Szakdolgozat.Views"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
+             xmlns:dContext="clr-namespace:Szakdolgozat.ViewModels"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="900">
+    <UserControl.DataContext>
+        <dContext:UjDiagrammokViewModel />
+    </UserControl.DataContext>
     <ScrollViewer>
         <Grid>
             <Grid.ColumnDefinitions>
@@ -17,6 +21,7 @@
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
+                <RowDefinition Height="*" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
             <materialDesign:Card Grid.Row="0"
@@ -44,7 +49,7 @@
                             <lvc:DefaultTooltip SelectionMode="SharedYValues"></lvc:DefaultTooltip>
                         </lvc:CartesianChart.DataTooltip>
                     </lvc:CartesianChart>
-                    <Button Grid.Row="2" Content="Tovább" VerticalAlignment="Bottom"></Button>
+                    <Button Grid.Row="2" Content="Új létrehozása" Command="{Binding CreateChartCommand}" VerticalAlignment="Bottom"></Button>
                 </Grid>
             </materialDesign:Card>
         <materialDesign:Card Grid.Row="0"

@@ -159,6 +159,7 @@
     <Compile Include="Repositories\MaganSzemelyRepository.cs" />
     <Compile Include="Repositories\RepositoryBase.cs" />
     <Compile Include="Repositories\UserRepository.cs" />
+    <Compile Include="ViewModels\CreateChartsViewModel.cs" />
     <Compile Include="ViewModels\DolgozoViewModel.cs" />
     <Compile Include="ViewModels\ElozmenyekViewModel.cs" />
     <Compile Include="ViewModels\GazdalkodoSzervezetViewModel.cs" />
@@ -173,6 +174,9 @@
     <Compile Include="ViewModels\KoltsegvetesViewModel.cs" />
     <Compile Include="ViewModels\ViewModelBase.cs" />
     <Compile Include="ViewModels\ViewModelCommand.cs" />
+    <Compile Include="Views\CreateChartsView.xaml.cs">
+      <DependentUpon>CreateChartsView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\DolgozokView.xaml.cs">
       <DependentUpon>DolgozokView.xaml</DependentUpon>
     </Compile>
@@ -255,6 +259,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Styles\MenuItemStyle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\CreateChartsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
