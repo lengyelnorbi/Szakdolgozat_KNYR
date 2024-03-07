@@ -53,38 +53,7 @@ namespace Szakdolgozat.Repositories
                 }
             }
         }
-
-        public ObservableCollection<ModelContainer<object>> GetModelContainerDolgozok()
-        {
-            ObservableCollection<ModelContainer<object>> data = new ObservableCollection<ModelContainer<object>>();
-            string query = "SELECT * FROM dolgozok;";
-
-            using (MySqlConnection connection = GetConnection())
-            {
-                connection.Open();
-
-                using (MySqlCommand command = new MySqlCommand(query, connection))
-                {
-                    using (MySqlDataReader reader = command.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            int id = Convert.ToInt32(reader["id"]);
-                            string vezeteknev = Convert.ToString(reader["vezeteknev"]);
-                            string keresztnev = Convert.ToString(reader["keresztnev"]);
-                            string email = Convert.ToString(reader["email"]);
-                            string telefonszam = Convert.ToString(reader["telefonszam"]);
-
-                            ModelContainer<object> item = new ModelContainer<object>(new Dolgozo(id, vezeteknev, keresztnev, email, telefonszam));
-
-                            data.Add(item);
-                        }
-                    }
-                }
-            }
-            return data;
-        }
-
+        
         public ObservableCollection<Dolgozo> GetDolgozok()
         {
             ObservableCollection<Dolgozo> data = new ObservableCollection<Dolgozo>();
