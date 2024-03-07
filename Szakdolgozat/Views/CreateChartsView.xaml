@@ -3,25 +3,30 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:views="clr-namespace:Szakdolgozat.Views"
         xmlns:viewModels="clr-namespace:Szakdolgozat.ViewModels"
-        xmlns:local="clr-namespace:Szakdolgozat.Views"
         mc:Ignorable="d"
         Title="CreateChartsView" Height="600" Width="1000"
         HorizontalAlignment="Center"
         VerticalAlignment="Center"
         WindowStartupLocation="CenterScreen">
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"></ColumnDefinition>
-            <ColumnDefinition Width="150"></ColumnDefinition>
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="150"></RowDefinition>
-            <RowDefinition Height="*"></RowDefinition>
-        </Grid.RowDefinitions>
-        <ComboBox Grid.Row="0" Grid.Column="0" Width="150" HorizontalAlignment="Left" Margin="20,0,0,0" ItemsSource="{Binding DataSourceOptions}" SelectedItem="{Binding SelectedDataSourceName}">
-        </ComboBox>
-        <DataGrid Grid.Row="1" Grid.Column="0" ColumnWidth="*" x:Name="dataGrid" AutoGenerateColumns="True" IsReadOnly="True" SelectionUnit="FullRow" SelectedItem="{Binding SelectedRow, Mode=TwoWay}">
-        </DataGrid>
-    </Grid>
+    
+    <Window.Resources>
+        <DataTemplate DataType="{x:Type viewModels:SelectDataForNewChartViewModel}">
+            <views:SelectDataForNewChartView/>
+        </DataTemplate>
+        <BooleanToVisibilityConverter x:Key="BoolToVis" />
+    </Window.Resources>
+    <Border>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+                <ColumnDefinition Width="150"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Grid Grid.Column="0">
+                <ContentControl Grid.Row="0" Content="{Binding CurrentChildView}"
+                                    Margin="25, 0, 25, 25"/>
+            </Grid>
+        </Grid>
+    </Border>
 </Window>

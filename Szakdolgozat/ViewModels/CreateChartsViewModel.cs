@@ -1,28 +1,33 @@
 ﻿using System.Collections.ObjectModel;
+using System.Windows.Input;
 using Szakdolgozat.ViewModels;
 
 public class CreateChartsViewModel : ViewModelBase
 {
-    private string _selectedDataSourceName;
-    public string SelectedDataSourceName
+    private ViewModelBase _currentChildView;
+    public ViewModelBase CurrentChildView
     {
-        get { return _selectedDataSourceName; }
+        get
+        {
+            return _currentChildView;
+        }
         set
         {
-            _selectedDataSourceName = value;
-            OnPropertyChanged(nameof(SelectedDataSourceName));
-            OnPropertyChanged(nameof(DataChanged)); // Notify about a generic data change
+            _currentChildView = value;
+            OnPropertyChanged(nameof(CurrentChildView));
         }
     }
 
-    public ObservableCollection<string> DataSourceOptions { get; } = new ObservableCollection<string>
-    {
-        "Dolgozok",
-        "Bevétel",
-        "Kiadás",
-        "Gazdasági Szervezetek"
-    };
+    public ICommand ShowSelectDataForNewChartViewCommand { get; }
 
-    // Additional property to indicate a generic data change
-    public bool DataChanged { get; set; }
+    public CreateChartsViewModel()
+    {
+        CurrentChildView = new SelectDataForNewChartViewModel();
+        ShowSelectDataForNewChartViewCommand = new ViewModelCommand(ExecuteShowSelectDataForNewChartViewCommand);
+    }
+
+    private void ExecuteShowSelectDataForNewChartViewCommand(object obj)
+    {
+        CurrentChildView = new SelectDataForNewChartViewModel();
+    }
 }
