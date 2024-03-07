@@ -149,6 +149,7 @@
     <Compile Include="Models\MaganSzemely.cs" />
     <Compile Include="Models\BevetelKiadas.cs" />
     <Compile Include="Models\IUserRepository.cs" />
+    <Compile Include="Models\ModelContainer.cs" />
     <Compile Include="Models\Penznem.cs" />
     <Compile Include="Models\Role.cs" />
     <Compile Include="Models\Felhasznalo.cs" />

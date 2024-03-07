@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using Szakdolgozat.Models;
 
 namespace Szakdolgozat.Repositories
@@ -69,11 +70,35 @@ namespace Szakdolgozat.Repositories
                         {
                             int id = Convert.ToInt32(reader["id"]);
                             int osszeg = Convert.ToInt32(reader["osszeg"]);
-                            Penznem penznem = (Penznem)reader["penznem"];
+                            Penznem penznem;
+                            if (reader["penznem"] != DBNull.Value)
+                            {
+                                penznem = (Penznem)Enum.Parse(typeof(Penznem), (string)reader["penznem"], true);
+                            }
+                            else
+                            {
+                                throw new Exception("ERROR");
+                            }
                             string beKiKod = Convert.ToString(reader["be_ki_kod"]);
                             DateTime teljesitesiDatum = Convert.ToDateTime(reader["teljesitesi_datum"]);
-                            int kotelKovetID = Convert.ToInt32(reader["kotel_kovet_id"]);
-                            int partnerID = Convert.ToInt32(reader["partner_id"]);
+                            int kotelKovetID;
+                            if (reader["kotel_kovet_id"] != DBNull.Value)
+                            {
+                                kotelKovetID = Convert.ToInt32(reader["kotel_kovet_id"]);
+                            }
+                            else
+                            {
+                                kotelKovetID = 0;
+                            }
+                            int partnerID;
+                            if (reader["partner_id"] != DBNull.Value)
+                            {
+                                partnerID = Convert.ToInt32(reader["partner_id"]);
+                            }
+                            else
+                            {
+                                partnerID = 0;
+                            }
 
                             BevetelKiadas item = new BevetelKiadas(id, osszeg, penznem, beKiKod, teljesitesiDatum, kotelKovetID, partnerID);
 

@@ -6,12 +6,22 @@
         xmlns:viewModels="clr-namespace:Szakdolgozat.ViewModels"
         xmlns:local="clr-namespace:Szakdolgozat.Views"
         mc:Ignorable="d"
-        Title="CreateChartsView" Height="450" Width="800">
-    <Window.DataContext>
-        <viewModels:CreateChartsViewModel />
-    </Window.DataContext>
-    
+        Title="CreateChartsView" Height="600" Width="1000"
+        HorizontalAlignment="Center"
+        VerticalAlignment="Center"
+        WindowStartupLocation="CenterScreen">
     <Grid>
-        
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"></ColumnDefinition>
+            <ColumnDefinition Width="150"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="150"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+        </Grid.RowDefinitions>
+        <ComboBox Grid.Row="0" Grid.Column="0" Width="150" HorizontalAlignment="Left" Margin="20,0,0,0" ItemsSource="{Binding DataSourceOptions}" SelectedItem="{Binding SelectedDataSourceName}">
+        </ComboBox>
+        <DataGrid Grid.Row="1" Grid.Column="0" ColumnWidth="*" x:Name="dataGrid" AutoGenerateColumns="True" IsReadOnly="True" SelectionUnit="FullRow" SelectedItem="{Binding SelectedRow, Mode=TwoWay}">
+        </DataGrid>
     </Grid>
 </Window>
