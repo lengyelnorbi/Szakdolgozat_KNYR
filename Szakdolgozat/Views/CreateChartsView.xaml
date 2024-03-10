@@ -15,6 +15,9 @@
         <DataTemplate DataType="{x:Type viewModels:SelectDataForNewChartViewModel}">
             <views:SelectDataForNewChartView/>
         </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModels:AddOptionsToNewChartViewModel}">
+            <views:AddOptionsToNewChartView/>
+        </DataTemplate>
         <BooleanToVisibilityConverter x:Key="BoolToVis" />
     </Window.Resources>
     <Border>
@@ -27,6 +30,10 @@
                 <ContentControl Grid.Row="0" Content="{Binding CurrentChildView}"
                                     Margin="25, 0, 25, 25"/>
             </Grid>
+            <StackPanel Grid.Column="1">
+                <Button x:Name="goBackButton" Content="Vissza" Click="goBackButton_Click" Command="{Binding ShowSelectDataForNewChartViewCommand}" Visibility="Hidden"></Button>
+                <Button x:Name="nextButton" Command="{Binding ShowAddOptionToNewChartViewCommand}" Content="Tovább"></Button>
+            </StackPanel>
         </Grid>
     </Border>
 </Window>

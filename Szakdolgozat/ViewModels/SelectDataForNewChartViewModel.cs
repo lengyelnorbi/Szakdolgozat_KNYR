@@ -22,6 +22,17 @@ namespace Szakdolgozat.ViewModels
             }
         }
 
+        private ObservableCollection<object> _selectedRows;
+        public ObservableCollection<object> SelectedRows
+        {
+            get { return _selectedRows; }
+            set
+            {
+                _selectedRows = value;
+                OnPropertyChanged(nameof(SelectedRows));
+            }
+        }
+
         public ObservableCollection<string> DataSourceOptions { get; } = new ObservableCollection<string>
     {
         "Dolgozok",

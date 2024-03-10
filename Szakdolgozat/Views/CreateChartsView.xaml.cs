@@ -28,5 +28,33 @@ namespace Szakdolgozat.Views
 
             DataContext = new CreateChartsViewModel();
         }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            //if (DataContext is SelectDataForNewChartViewModel viewModel)
+            //{
+            //    foreach(var row in viewModel.SelectedRows)
+            //    {
+            //        if(row is Dolgozo dolgozo)
+            //        {
+
+            //        }
+            //        else if(row is BevetelKiadas bevetelKiadas)
+            //        {
+
+            //        }
+            //        else if(row is GazdalkodoSzervezet gazdalkodoSzervezet)
+            //        {
+
+            //        }
+            //    }
+            //}
+            goBackButton.Visibility = Visibility.Visible;
+        }
+
+        private void goBackButton_Click(object sender, RoutedEventArgs e)
+        {
+            goBackButton.Visibility = Visibility.Hidden;
+        }
     }
 }

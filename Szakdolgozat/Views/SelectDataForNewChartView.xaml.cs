@@ -17,6 +17,8 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Szakdolgozat.ViewModels;
 using Szakdolgozat.Repositories;
+using Szakdolgozat.Models;
+using System.Collections.ObjectModel;
 
 namespace Szakdolgozat.Views
 {
@@ -70,5 +72,20 @@ namespace Szakdolgozat.Views
                 }
             }
         }
+        private void DataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (DataContext is SelectDataForNewChartViewModel viewModel)
+            {
+                ObservableCollection<object> temp = new ObservableCollection<object>();
+
+                foreach (var selectedItem in dataGrid.SelectedItems)
+                {
+                    temp.Add(selectedItem);
+                }
+
+                viewModel.SelectedRows = temp;
+            }
+        }
+
     }
 }
