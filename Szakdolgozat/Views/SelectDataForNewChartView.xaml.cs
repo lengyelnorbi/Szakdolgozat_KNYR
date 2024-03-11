@@ -27,7 +27,6 @@ namespace Szakdolgozat.Views
     /// </summary>
     public partial class SelectDataForNewChartView : UserControl
     {
-        private SelectDataForNewChartViewModel _viewModel;
         DolgozoRepository _dolgozoRepository = new DolgozoRepository();
         KoltsegvetesRepository _koltsegvetesRepository = new KoltsegvetesRepository();
         KotelezettsegKovetelesRepository kotelezettsegKovetelesRepository = new KotelezettsegKovetelesRepository();
@@ -36,16 +35,19 @@ namespace Szakdolgozat.Views
         {
             InitializeComponent();
 
-            _viewModel = new SelectDataForNewChartViewModel();
-            DataContext = _viewModel;
+            //_viewModel = new SelectDataForNewChartViewModel();
+            //DataContext = _viewModel;
 
-            _viewModel.PropertyChanged += (sender, e) =>
+            if (DataContext is SelectDataForNewChartViewModel _viewModel)
             {
-                if (e.PropertyName == nameof(SelectDataForNewChartViewModel.DataChanged))
+                _viewModel.PropertyChanged += (sender, e) =>
                 {
-                    UpdateDataGrid();
-                }
-            };
+                    if (e.PropertyName == nameof(SelectDataForNewChartViewModel.DataChanged))
+                    {
+                        UpdateDataGrid();
+                    }
+                };
+            }
         }
 
         private void UpdateDataGrid()
@@ -74,18 +76,15 @@ namespace Szakdolgozat.Views
         }
         private void DataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (DataContext is SelectDataForNewChartViewModel viewModel)
+            ObservableCollection<object> temp = new ObservableCollection<object>();
+            if (DataContext is SelectDataForNewChartViewModel _viewModel)
             {
-                ObservableCollection<object> temp = new ObservableCollection<object>();
-
                 foreach (var selectedItem in dataGrid.SelectedItems)
                 {
                     temp.Add(selectedItem);
                 }
-
-                viewModel.SelectedRows = temp;
+                _viewModel.SelectedRows = temp;
             }
         }
-
     }
 }

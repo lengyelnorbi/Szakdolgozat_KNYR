@@ -19,6 +19,7 @@ using Szakdolgozat.Views;
 using LiveCharts;
 using System;
 using LiveCharts.Wpf;
+using System.Windows.Documents;
 
 namespace Szakdolgozat.ViewModels
 {
@@ -36,41 +37,117 @@ namespace Szakdolgozat.ViewModels
             set
             {
                 charts = value;
+                OnPropertyChanged(nameof(DataForCharts));
             }
         }
 
+        private string _selectedDataSourceName;
+        public string SelectedDataSourceName
+        {
+            get { return _selectedDataSourceName; }
+            set
+            {
+                _selectedDataSourceName = value;
+                OnPropertyChanged(nameof(SelectedDataSourceName));
+            }
+        }
+        private ObservableCollection<string> _dataSourceOptions;
+        public ObservableCollection<string> DataSourceOptions
+        {
+            get
+            {
+                return _dataSourceOptions;
+            }
+            set 
+            {
+                _dataSourceOptions = value;
+            }
+        }
+        private string _addtitle;
+        public string AddTitle
+        {
+            get 
+            { 
+                return _addtitle; 
+            } 
+            set
+            {
+                _addtitle = value;
+                OnPropertyChanged(nameof(AddTitle));
+            }
+        }
+        private List _values;
+        public List Values
+        {
+            get
+            {
+                return _values;
+            }
+            set
+            {
+                Values = value;
+                OnPropertyChanged(nameof(Values));
+            }
+        }
         public AddOptionsToNewChartViewModel(ObservableCollection<object> objects)
         {
             DataForCharts = objects;
             TestDataRowSeries();
+            foreach (var item in DataForCharts)
+            {
+                if (item is Dolgozo dolgozo)
+                {
+                    DataSourceOptions = new ObservableCollection<string>
+                    {
+                        "ID",
+                        "Vezetéknév",
+                        "Keresztnév",
+                        "Email",
+                        "Telefonszám"
+                    };
+                }
+                else
+                {
+                    DataSourceOptions = new ObservableCollection<string>
+                    {
+                        "ID"
+                    };
+                }
+            }
         }
         public AddOptionsToNewChartViewModel()
         {
             TestDataRowSeries();
         }
-        public SeriesCollection TestRowSeriesForShow { get; set; }
+        private SeriesCollection  _rowSeriesCollection = new SeriesCollection();
+        public SeriesCollection RowSeriesCollection
+        {
+            get { return _rowSeriesCollection; }
+            set { _rowSeriesCollection = value; }
+        }
         public string[] TestRowSeriesLabelsForShow { get; set; }
         public Func<double, string> TestRowSeriesFormatterForShow { get; set; }
         public void TestDataRowSeries()
         {
-            TestRowSeriesForShow = new SeriesCollection
+            RowSeriesCollection.Add(new RowSeries
             {
-                new RowSeries
-                {
-                    Title = "2015",
-                    Values = new ChartValues<double> { 10, 50, 39, 50 }
-                }
-            };
-
-            //adding series will update and animate the chart automatically
-            TestRowSeriesForShow.Add(new RowSeries
-            {
-                Title = "2016",
+                Title = AddTitle,
                 Values = new ChartValues<double> { 11, 56, 42 }
             });
 
-            //also adding values updates and animates the chart automatically
-            TestRowSeriesForShow[1].Values.Add(48d);
+
+            TestRowSeriesLabelsForShow = new[] { "Maria", "Susan", "Charles", "Frida" };
+            TestRowSeriesFormatterForShow = value => value.ToString("N");
+        }
+
+        public void AddNewRowSeries()
+        {
+
+            RowSeriesCollection.Add(new RowSeries
+            {
+                Title = AddTitle,
+                Values = new ChartValues<double> { 11, 56, 42 }
+            });
 
             TestRowSeriesLabelsForShow = new[] { "Maria", "Susan", "Charles", "Frida" };
             TestRowSeriesFormatterForShow = value => value.ToString("N");

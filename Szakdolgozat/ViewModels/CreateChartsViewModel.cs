@@ -1,51 +1,67 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
 using System.Windows.Input;
-using Szakdolgozat.ViewModels;
+using Szakdolgozat.Models;
 
-public class CreateChartsViewModel : ViewModelBase
+namespace Szakdolgozat.ViewModels
 {
-    private ViewModelBase _currentChildView;
-    public ViewModelBase CurrentChildView
+    public class CreateChartsViewModel : ViewModelBase
     {
-        get
+        private ViewModelBase _currentChildView;
+        public ViewModelBase CurrentChildView
         {
-            return _currentChildView;
-        }
-        set
-        {
-            _currentChildView = value;
-            OnPropertyChanged(nameof(CurrentChildView));
-        }
-    }
-    public ObservableCollection<object> SelectedRows
-    {
-        get
-        {
-            if (CurrentChildView is SelectDataForNewChartViewModel selectDataViewModel)
+            get
             {
-                return selectDataViewModel.SelectedRows;
+                return _currentChildView;
             }
-            return null; // or an empty list depending on your preference
+            set
+            {
+                _currentChildView = value;
+                OnPropertyChanged(nameof(CurrentChildView));
+            }
         }
-    }
+        private ObservableCollection<object> _selectedRows = new ObservableCollection<object>();
+        public ObservableCollection<object> SelectedRows
+        {
+            get
+            {
+                return _selectedRows;
+            }
+            set 
+            {
+                _selectedRows = value;
+                OnPropertyChanged(nameof(SelectedRows));
+            }
+        }
 
-    public ICommand ShowSelectDataForNewChartViewCommand { get; }
-    public ICommand ShowAddOptionToNewChartViewCommand { get; }
+        public void UpdateSelectedRows(ObservableCollection<object> selectedRows)
+        {
+            SelectedRows = selectedRows;
+        }
 
-    public CreateChartsViewModel()
-    {
-        CurrentChildView = new SelectDataForNewChartViewModel();
-        ShowSelectDataForNewChartViewCommand = new ViewModelCommand(ExecuteShowSelectDataForNewChartViewCommand);
-        ShowAddOptionToNewChartViewCommand = new ViewModelCommand(ExecuteShowAddOptionToNewChartViewCommand);
-    }
+        public ICommand ShowSelectDataForNewChartViewCommand { get; }
+        public ICommand ShowAddOptionToNewChartViewCommand { get; }
 
-    private void ExecuteShowSelectDataForNewChartViewCommand(object obj)
-    {
-        CurrentChildView = new SelectDataForNewChartViewModel();
-    }
-    private void ExecuteShowAddOptionToNewChartViewCommand(object obj)
-    {
-        CurrentChildView = new AddOptionsToNewChartViewModel(SelectedRows);
+        public CreateChartsViewModel()
+        {
+            Mediator.SelectedRowsChangedOnChildView += UpdateSelectedRows;
+            CurrentChildView = new SelectDataForNewChartViewModel();
+            ShowSelectDataForNewChartViewCommand = new ViewModelCommand(ExecuteShowSelectDataForNewChartViewCommand);
+            ShowAddOptionToNewChartViewCommand = new ViewModelCommand(ExecuteShowAddOptionToNewChartViewCommand);
+        }
+
+        private void ExecuteShowSelectDataForNewChartViewCommand(object obj)
+        {
+            CurrentChildView = new SelectDataForNewChartViewModel();
+        }
+        private void ExecuteShowAddOptionToNewChartViewCommand(object obj)
+        {
+            CurrentChildView = new AddOptionsToNewChartViewModel(SelectedRows);
+        }
     }
 }

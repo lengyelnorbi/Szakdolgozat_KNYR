@@ -23,6 +23,8 @@
             <RowDefinition Height="150"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
+        <ComboBox Grid.Row="0" Grid.Column="1" Width="150" HorizontalAlignment="Left" ItemsSource="{Binding DataSourceOptions}" SelectedItem="{Binding SelectedDataSourceName}">
+        </ComboBox>
         <lvc:CartesianChart Grid.Row="1" Series="{Binding TestRowSeriesForShow}" LegendLocation="Bottom">
             <lvc:CartesianChart.AxisX>
                 <lvc:Axis Title="Salesman" LabelFormatter="{Binding TestRowSeriesFormatterForShow}"></lvc:Axis>

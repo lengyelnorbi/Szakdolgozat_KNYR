@@ -170,6 +170,7 @@
     <Compile Include="ViewModels\LetezoStatisztikakViewModel.cs" />
     <Compile Include="ViewModels\LoginViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
+    <Compile Include="ViewModels\Mediator.cs" />
     <Compile Include="ViewModels\SelectDataForNewChartViewModel.cs" />
     <Compile Include="ViewModels\UjDiagrammokViewModel.cs" />
     <Compile Include="ViewModels\UjStatisztikakViewModel.cs" />

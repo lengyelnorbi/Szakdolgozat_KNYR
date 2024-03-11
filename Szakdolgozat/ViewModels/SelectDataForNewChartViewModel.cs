@@ -4,12 +4,13 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
+using Szakdolgozat.Models;
 
 namespace Szakdolgozat.ViewModels
 {
     public class SelectDataForNewChartViewModel : ViewModelBase
     {
-
         private string _selectedDataSourceName;
         public string SelectedDataSourceName
         {
@@ -22,7 +23,7 @@ namespace Szakdolgozat.ViewModels
             }
         }
 
-        private ObservableCollection<object> _selectedRows;
+        private ObservableCollection<object> _selectedRows = new ObservableCollection<object>();
         public ObservableCollection<object> SelectedRows
         {
             get { return _selectedRows; }
@@ -30,8 +31,10 @@ namespace Szakdolgozat.ViewModels
             {
                 _selectedRows = value;
                 OnPropertyChanged(nameof(SelectedRows));
+                Mediator.NotifySelectedRowsChangedOnChildView(value);
             }
         }
+
 
         public ObservableCollection<string> DataSourceOptions { get; } = new ObservableCollection<string>
     {
@@ -43,5 +46,16 @@ namespace Szakdolgozat.ViewModels
 
         // Additional property to indicate a generic data change
         public bool DataChanged { get; set; }
+
+        public void writeOut()
+        {
+            foreach(var item in SelectedRows)
+            {
+                if(item is Dolgozo dolgozo)
+                {
+                    MessageBox.Show(dolgozo.Vezeteknev);
+                }
+            }
+        }
     }
 }

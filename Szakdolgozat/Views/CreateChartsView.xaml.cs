@@ -25,8 +25,6 @@ namespace Szakdolgozat.Views
         public CreateChartsView()
         {
             InitializeComponent();
-
-            DataContext = new CreateChartsViewModel();
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)

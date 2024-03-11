@@ -10,7 +10,10 @@
         HorizontalAlignment="Center"
         VerticalAlignment="Center"
         WindowStartupLocation="CenterScreen">
-    
+
+    <Window.DataContext>
+        <viewModels:CreateChartsViewModel/>
+    </Window.DataContext>
     <Window.Resources>
         <DataTemplate DataType="{x:Type viewModels:SelectDataForNewChartViewModel}">
             <views:SelectDataForNewChartView/>
