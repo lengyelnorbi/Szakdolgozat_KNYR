@@ -30,14 +30,7 @@ namespace Szakdolgozat.ViewModels
         {
             get
             {
-                if (charts == null)
-                    return null;
-                return charts;
-            }
-            set
-            {
-                charts = value;
-                OnPropertyChanged(nameof(DataForCharts));
+                return Mediator.NotifyDataRequest();
             }
         }
 
@@ -49,6 +42,7 @@ namespace Szakdolgozat.ViewModels
             {
                 _selectedDataSourceName = value;
                 OnPropertyChanged(nameof(SelectedDataSourceName));
+                AddNewRowSeries();
             }
         }
         private ObservableCollection<string> _dataSourceOptions;
@@ -61,6 +55,7 @@ namespace Szakdolgozat.ViewModels
             set 
             {
                 _dataSourceOptions = value;
+                OnPropertyChanged(nameof(DataSourceOptions));
             }
         }
         private string _addtitle;
@@ -74,6 +69,7 @@ namespace Szakdolgozat.ViewModels
             {
                 _addtitle = value;
                 OnPropertyChanged(nameof(AddTitle));
+                AddNewRowSeries();
             }
         }
         private List _values;
@@ -91,8 +87,12 @@ namespace Szakdolgozat.ViewModels
         }
         public AddOptionsToNewChartViewModel(ObservableCollection<object> objects)
         {
-            DataForCharts = objects;
-            TestDataRowSeries();
+            AddNewRowSeries();
+            setDataSourceForCB();
+        }
+
+        public void setDataSourceForCB()
+        {
             foreach (var item in DataForCharts)
             {
                 if (item is Dolgozo dolgozo)
@@ -105,19 +105,44 @@ namespace Szakdolgozat.ViewModels
                         "Email",
                         "Telefonszám"
                     };
+                    break;
                 }
-                else
+                else if(item is BevetelKiadas bevetelKiadas)
                 {
                     DataSourceOptions = new ObservableCollection<string>
                     {
-                        "ID"
+                        "ID",
+                        "Összeg",
+                        "Pénznem",
+                        "Bevétel kód",
+                        "Kiadás kód",
+                        "Teljesítési dátum",
+                        "Kötelezettség ID",
+                        "Követelés ID",
+                        "Partner ID"
                     };
+                    break;
+                }
+                else if (item is GazdalkodoSzervezet gazdalkodoSzervezet)
+                {
+                    DataSourceOptions = new ObservableCollection<string>
+                    {
+                        "ID",
+                        "Név",
+                        "Pénznem",
+                        "Kapcsolattartó",
+                        "Email",
+                        "Telefonszám"
+                    };
+                    break;
                 }
             }
         }
+
         public AddOptionsToNewChartViewModel()
         {
-            TestDataRowSeries();
+            AddNewRowSeries();
+            setDataSourceForCB();
         }
         private SeriesCollection  _rowSeriesCollection = new SeriesCollection();
         public SeriesCollection RowSeriesCollection
@@ -125,32 +150,33 @@ namespace Szakdolgozat.ViewModels
             get { return _rowSeriesCollection; }
             set { _rowSeriesCollection = value; }
         }
-        public string[] TestRowSeriesLabelsForShow { get; set; }
-        public Func<double, string> TestRowSeriesFormatterForShow { get; set; }
-        public void TestDataRowSeries()
-        {
-            RowSeriesCollection.Add(new RowSeries
-            {
-                Title = AddTitle,
-                Values = new ChartValues<double> { 11, 56, 42 }
-            });
-
-
-            TestRowSeriesLabelsForShow = new[] { "Maria", "Susan", "Charles", "Frida" };
-            TestRowSeriesFormatterForShow = value => value.ToString("N");
-        }
+        public string[] RowSeriesLabels { get; set; }
+        public Func<double, string> RowSeriesFormatter { get; set; }
 
         public void AddNewRowSeries()
         {
 
             RowSeriesCollection.Add(new RowSeries
             {
-                Title = AddTitle,
-                Values = new ChartValues<double> { 11, 56, 42 }
+                Title = "AH1",
+                Values = new ChartValues<double> ()
             });
 
-            TestRowSeriesLabelsForShow = new[] { "Maria", "Susan", "Charles", "Frida" };
-            TestRowSeriesFormatterForShow = value => value.ToString("N");
+            RowSeriesCollection.Add(new RowSeries
+            {
+                Title = "AH2",
+                Values = new ChartValues<double> {12, 31, 21, 44, 55 }
+            });
+            RowSeriesLabels = new[] { "O1", "O2", "O3", "O4" };
+            RowSeriesFormatter = value => value.ToString("N");
+        }
+
+        public void Teszt()
+        {
+            foreach (var item in DataForCharts)
+            {
+                MessageBox.Show(item.ToString());
+            }
         }
     }
 }

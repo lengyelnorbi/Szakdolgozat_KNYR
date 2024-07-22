@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:Szakdolgozat.Views"
              xmlns:dContext="clr-namespace:Szakdolgozat.ViewModels"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="900">
+             d:DesignHeight="450" d:DesignWidth="1500">
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis" />
     </UserControl.Resources>
@@ -15,15 +15,16 @@
     </UserControl.DataContext>
 
     <Grid>
+        <!--xmlns:converters="clr-namespace:Szakdolgozat.Converters"-->
         <Grid.RowDefinitions>
-            <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition Height="100"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="100"></RowDefinition>
         </Grid.RowDefinitions>
         <Grid Grid.Row="0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="300"></ColumnDefinition>
                 <ColumnDefinition Width="140"></ColumnDefinition>
-                <ColumnDefinition Width="360"></ColumnDefinition>
             </Grid.ColumnDefinitions>
             <StackPanel Grid.Column="0" x:Name="pnlSearchBar" Margin="0,10,0,0">
                 <Grid Width="300" HorizontalAlignment="Left">
@@ -32,12 +33,11 @@
                 Visibility="{Binding ElementName=searchBarInput, Path=Text.IsEmpty, Converter={StaticResource BoolToVis}}" />
                     <TextBox x:Name="searchBarInput"
                             Text="{Binding SearchQuery, UpdateSourceTrigger=PropertyChanged}"
-                            Style="{StaticResource CustomTextBoxStyle}"
-                            >
+                            Style="{StaticResource CustomTextBoxStyle}">
                     </TextBox>
                 </Grid>
             </StackPanel>
-            <ComboBox Grid.Column="1" Width="120" Background="White" SelectedIndex="0" SelectionChanged="ComboBox_SelectionChanged">
+            <ComboBox VerticalAlignment="Top" Margin="0,12,0,0" Grid.Column="1" Width="120" Background="White" SelectedIndex="0" SelectionChanged="ComboBox_SelectionChanged">
                 <ComboBoxItem x:Name="CB_default_text" IsEnabled="False" Visibility="Collapsed">
                     <TextBlock Text="Keresési opciók"/>
                 </ComboBoxItem>
@@ -72,100 +72,30 @@
                     </CheckBox>
                 </ComboBoxItem>
             </ComboBox>
-            <StackPanel Grid.Column="2"
-                        Orientation="Horizontal">
-                <Button Content="Delete"
-                    Foreground="White"
-                    Command="{Binding DeleteDolgozoCommand}"
-                    CommandParameter="{Binding SelectedRow}"
-                    Width="100">
-                </Button>
-                <Button Content="Add"
-                    Foreground="White"
-                    Click="Add_Button_Clicked"
-                    Width="100">
-                </Button>
-                <Button Content="Modify"
-                    Foreground="White"
-                    Click="Modify_Button_Clicked"
-                    Width="100">
-                </Button>
-            </StackPanel>
-
         </Grid>
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition x:Name="dataGridColumnDef" Width="606.256"></ColumnDefinition>
-                <ColumnDefinition Width="293.744"/>
-                <ColumnDefinition x:Name="addAndModifyColumnDef" Width="*"></ColumnDefinition>
+                <ColumnDefinition x:Name="dataGridColumnDef"></ColumnDefinition>
             </Grid.ColumnDefinitions>
             <DataGrid Grid.Column="0" x:Name="dataGrid" CanUserResizeColumns="True" ColumnWidth="*" AutoGenerateColumns="True" ItemsSource="{Binding FilteredDolgozok,Mode=TwoWay, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}" IsReadOnly="True" SelectionUnit="FullRow" SelectedItem="{Binding SelectedRow, Mode=TwoWay}" Grid.ColumnSpan="2">
+                <DataGrid.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Törlés" Command="{Binding DeleteDolgozoCommand}"/>
+                        <MenuItem Header="Módosítás" Command="{Binding OpenDolgozoModifyOrAddWindowCommand}" CommandParameter="Modify"/>
+                    </ContextMenu>
+                </DataGrid.ContextMenu>
             </DataGrid>
-            <StackPanel Grid.Column="2" Background="White">
-                <TextBlock Text="Vezetéknév"
-                       FontSize="14"
-                       Margin="5,15,0,0"
-                       Foreground="Black">
-                </TextBlock>
-                <TextBox FontSize="16"
-                         x:Name="sidebar_lastnameTB"
-                         Text="{Binding Lastname,UpdateSourceTrigger=PropertyChanged}"
-                     Background="LightGray"
-                     HorizontalContentAlignment="Center"
-                     Margin="0,0,0,5"
-                     Height="28"/>
-                <TextBlock Text="Keresztnév"
-                       FontSize="14"
-                       Margin="5,15,0,0"
-                       Foreground="Black">
-                </TextBlock>
-                <TextBox FontSize="16"
-                         x:Name="sidebar_firstnameTB"
-                         Text="{Binding Firstname,UpdateSourceTrigger=PropertyChanged}"
-                     Background="LightGray"
-                     HorizontalContentAlignment="Center"
-                     Margin="0,0,0,5"
-                     Height="28"/>
-                <TextBlock Text="Email"
-                       FontSize="14"
-                       Margin="5,15,0,0"
-                       Foreground="Black">
-                </TextBlock>
-                <TextBox FontSize="16"
-                         x:Name="sidebar_emailTB"
-                         Text="{Binding Email,UpdateSourceTrigger=PropertyChanged}"
-                     Background="LightGray"
-                     HorizontalContentAlignment="Center"
-                     Margin="0,0,0,5"
-                     Height="28"/>
-                <TextBlock Text="Telefonszám"
-                       FontSize="14"
-                       Margin="5,15,0,0"
-                       Foreground="Black">
-                </TextBlock>
-                <TextBox FontSize="16"
-                         x:Name="sidebar_phonenumberTB"
-                         Text="{Binding Phonenumber,UpdateSourceTrigger=PropertyChanged}"
-                     Background="LightGray"
-                     HorizontalContentAlignment="Center"
-                     Margin="0,0,0,5"
-                     Height="28"/>
-                <StackPanel Orientation="Horizontal">
-                    <Button Content="Mentés"
+        </Grid>
+        <Grid Grid.Row="2">
+            <StackPanel
+                        Orientation="Horizontal">
+                <Button Content="+"
                     Foreground="White"
-                    Width="80"
-                    Margin="5,0,15,0"
-                    Command="{Binding AddDolgozoCommand}">
-                    </Button>
-                    <Button Content="Mégse"
-                    Foreground="White"
-                    Width="75"
-                    Margin="20,0,5,0"
-                    Click="Megse_Button_Clicked">
-                    </Button>
-                </StackPanel>
+                    Command="{Binding OpenDolgozoModifyOrAddWindowCommand}"
+                    CommandParameter="Add"
+                    Width="100">
+                </Button>
             </StackPanel>
         </Grid>
-
     </Grid>
 </UserControl>

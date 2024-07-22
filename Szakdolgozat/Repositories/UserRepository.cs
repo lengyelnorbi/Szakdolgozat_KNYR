@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Szakdolgozat.Models;
 using MySql.Data.MySqlClient;
+using System.Collections.ObjectModel;
 
 namespace Szakdolgozat.Repositories
 {
@@ -26,6 +27,33 @@ namespace Szakdolgozat.Repositories
                     int count = Convert.ToInt32(command.ExecuteScalar());
 
                     return count > 0;
+                }
+            }
+        }
+
+        public ObservableCollection<string> GetColumnNamesForTables(string tableName)
+        {
+            using(MySqlConnection connection = GetConnection())
+            {
+                connection.Open();
+
+                string query = "SELECT column_name FROM INFORMATION_SCHEMA.COLUMNS WHERE table_schema = @db AND table_name = @tableName;";
+
+                using(MySqlCommand command = new MySqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@db", "nyilvantarto_rendszer");
+                    command.Parameters.AddWithValue("@tableName", tableName);
+
+                    using(MySqlDataReader reader = command.ExecuteReader())
+                    {
+                        ObservableCollection<string> strings = new ObservableCollection<string>();
+                        while (reader.Read())
+                        {
+                            string columnName = Convert.ToString(reader["column_name"]);
+                            strings.Add(columnName);
+                        }
+                        return strings;
+                    }
                 }
             }
         }

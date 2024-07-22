@@ -35,14 +35,13 @@ namespace Szakdolgozat.ViewModels
             }
         }
 
-
         public ObservableCollection<string> DataSourceOptions { get; } = new ObservableCollection<string>
-    {
-        "Dolgozok",
-        "Bevétel",
-        "Kiadás",
-        "Gazdasági Szervezetek"
-    };
+        {
+            "Dolgozok",
+            "Bevétel",
+            "Kiadás",
+            "Gazdasági Szervezetek"
+        };
 
         // Additional property to indicate a generic data change
         public bool DataChanged { get; set; }

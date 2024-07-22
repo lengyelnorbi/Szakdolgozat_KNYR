@@ -32,6 +32,8 @@ namespace Szakdolgozat.Views
         {
             InitializeComponent();
 
+            var viewModel = (DolgozoViewModel)this.DataContext;
+
             mindCB.Checked += CheckBox_Checked;
             idCB.Checked += CheckBox_Checked;
             vezeteknevCB.Checked += CheckBox_Checked;
@@ -140,59 +142,6 @@ namespace Szakdolgozat.Views
                 string selectedName = ((ComboBoxItem)comboBox.SelectedItem).Name;
                 if(!selectedName.Equals("CB_default_text"))
                     comboBox.SelectedIndex = 0;
-            }
-        }
-
-        private void Add_Button_Clicked(object sender, RoutedEventArgs e)
-        {
-            if (_isModifyOpen)
-            {
-                _isModifyOpen = false;
-            }
-            if (!_isAddOpen)
-            {
-                dataGridColumnDef.Width = new GridLength(700);
-                sidebar_lastnameTB.Text = string.Empty;
-                sidebar_firstnameTB.Text = string.Empty;
-                sidebar_emailTB.Text = string.Empty;
-                sidebar_phonenumberTB.Text = string.Empty;
-                _isAddOpen = true;
-            }
-        }
-        private void Modify_Button_Clicked(object sender, RoutedEventArgs e)
-        {
-            if (_isAddOpen)
-            {
-                _isAddOpen = false;
-            }
-            if (DataContext is DolgozoViewModel dolgozoViewModel)
-            {
-                try
-                {
-                    if(dolgozoViewModel.SelectedRow != null)
-                    {
-                        if (!_isModifyOpen)
-                        {
-                            dataGridColumnDef.Width = new GridLength(700);
-                            _isModifyOpen = true;
-                            sidebar_lastnameTB.Text = dolgozoViewModel.SelectedRow.Vezeteknev;
-                            sidebar_firstnameTB.Text = dolgozoViewModel.SelectedRow.Keresztnev;
-                            sidebar_emailTB.Text = dolgozoViewModel.SelectedRow.Email;
-                            sidebar_phonenumberTB.Text = dolgozoViewModel.SelectedRow.Telefonszam;
-                        }
-                    }
-                }
-                catch { }
-            }
-        }
-
-        private void Megse_Button_Clicked(object sender, RoutedEventArgs e)
-        {
-            if (_isAddOpen || _isModifyOpen)
-            {
-                dataGridColumnDef.Width = new GridLength(900);
-                _isAddOpen = false;
-                _isModifyOpen = false;
             }
         }
     }

@@ -135,10 +135,12 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Converters\EnumToBooleanToVisibilityConverter.cs" />
     <Compile Include="CustomControls\BindablePasswordBox.xaml.cs">
       <DependentUpon>BindablePasswordBox.xaml</DependentUpon>
     </Compile>
     <Compile Include="Models\Dolgozo.cs" />
+    <Compile Include="Models\EditMode.cs" />
     <Compile Include="Models\GazdalkodoSzervezet.cs" />
     <Compile Include="Models\IDolgozoRepository.cs" />
     <Compile Include="Models\IGazdalkodoSzervezetRepository.cs" />
@@ -159,8 +161,10 @@
     <Compile Include="Repositories\MaganSzemelyRepository.cs" />
     <Compile Include="Repositories\RepositoryBase.cs" />
     <Compile Include="Repositories\UserRepository.cs" />
+    <Compile Include="Specials\WindowHelper.cs" />
     <Compile Include="ViewModels\AddOptionsToNewChartViewModel.cs" />
     <Compile Include="ViewModels\CreateChartsViewModel.cs" />
+    <Compile Include="ViewModels\DolgozokModifyOrAddViewModel.cs" />
     <Compile Include="ViewModels\DolgozoViewModel.cs" />
     <Compile Include="ViewModels\ElozmenyekViewModel.cs" />
     <Compile Include="ViewModels\GazdalkodoSzervezetViewModel.cs" />
@@ -170,7 +174,7 @@
     <Compile Include="ViewModels\LetezoStatisztikakViewModel.cs" />
     <Compile Include="ViewModels\LoginViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
-    <Compile Include="ViewModels\Mediator.cs" />
+    <Compile Include="Specials\Mediator.cs" />
     <Compile Include="ViewModels\SelectDataForNewChartViewModel.cs" />
     <Compile Include="ViewModels\UjDiagrammokViewModel.cs" />
     <Compile Include="ViewModels\UjStatisztikakViewModel.cs" />
@@ -182,6 +186,9 @@
     </Compile>
     <Compile Include="Views\CreateChartsView.xaml.cs">
       <DependentUpon>CreateChartsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\DolgozokModifyOrAddView.xaml.cs">
+      <DependentUpon>DolgozokModifyOrAddView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\DolgozokView.xaml.cs">
       <DependentUpon>DolgozokView.xaml</DependentUpon>
@@ -263,6 +270,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Styles\DataGridCellStyle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Styles\MenuButtonStyle.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -276,6 +287,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\CreateChartsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\DolgozokModifyOrAddView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

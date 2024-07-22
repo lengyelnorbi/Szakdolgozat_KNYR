@@ -36,7 +36,7 @@ namespace Szakdolgozat.ViewModels
         }
         private void ExecuteCreateChartCommand(object obj)
         {
-            CreateChartsView createCharts = new CreateChartsView();
+            CreateChartsView createCharts = new CreateChartsView(obj.ToString());
             createCharts.Show();
         }
 

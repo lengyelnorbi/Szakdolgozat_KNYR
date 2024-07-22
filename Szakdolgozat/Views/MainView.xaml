@@ -9,7 +9,7 @@
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:Icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
         mc:Ignorable="d"
-        Title="MainView" Height="600" Width="1200"
+        Title="MainView" Height="900" Width="1800"
         WindowStyle="None"
         Background="Transparent"
         AllowsTransparency="True"
@@ -273,7 +273,7 @@
                 </Grid>
                 <Grid Grid.Row="1">
                     <ContentControl Grid.Row="0" Content="{Binding CurrentChildView}"
-                                    Margin="25, 0, 25, 25"/>
+                                    Margin="75, 0, 75, 75"/>
                 </Grid>
             </Grid>
         </Grid>

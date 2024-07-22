@@ -49,7 +49,7 @@
                             <lvc:DefaultTooltip SelectionMode="SharedYValues"></lvc:DefaultTooltip>
                         </lvc:CartesianChart.DataTooltip>
                     </lvc:CartesianChart>
-                    <Button Grid.Row="2" Content="Új létrehozása" Command="{Binding CreateChartCommand}" VerticalAlignment="Bottom"></Button>
+                    <Button Grid.Row="2" x:Name="RowSeriesCreateNewButton" CommandParameter="RowSeries" Content="Új létrehozása" Command="{Binding CreateChartCommand}" VerticalAlignment="Bottom"></Button>
                 </Grid>
             </materialDesign:Card>
         <materialDesign:Card Grid.Row="0"
@@ -104,7 +104,7 @@
                         </lvc:PieChart>
                     <!--</Grid>
                 </StackPanel>-->
-                <Button Grid.Row="2" Content="Új létrehozása"></Button>
+                    <Button Grid.Row="2" x:Name="DoghnutSeriesCreateNewButton" CommandParameter="DoghnutSeries" Command="{Binding CreateChartCommand}" Content="Új létrehozása"></Button>
             </Grid>
         </materialDesign:Card>
         <materialDesign:Card Grid.Row="0"
@@ -131,7 +131,7 @@
                         <lvc:Axis Title="Usage" LabelFormatter="{Binding TestStackedColumnSeriesFormatterForShow}"></lvc:Axis>
                     </lvc:CartesianChart.AxisY>
                 </lvc:CartesianChart>
-                <Button Grid.Row="2" Content="Új létrehozása"></Button>
+                    <Button Grid.Row="2" CommandParameter="StackedSeries" Command="{Binding CreateChartCommand}" Content="Új létrehozása"></Button>
             </Grid>
         </materialDesign:Card>
         <materialDesign:Card Grid.Row="1"
@@ -158,7 +158,7 @@
                             <lvc:Axis Title="Usage" LabelFormatter="{Binding TestBasicColumnSeriesFormatterForShow}"></lvc:Axis>
                     </lvc:CartesianChart.AxisY>
                 </lvc:CartesianChart>
-                <Button Grid.Row="2" Content="Új létrehozása"></Button>
+                    <Button Grid.Row="2" CommandParameter="BasicColumnSeries" Command="{Binding CreateChartCommand}" Content="Új létrehozása"></Button>
             </Grid>
         </materialDesign:Card>
         <materialDesign:Card Grid.Row="1"
@@ -183,7 +183,7 @@
                             <lvc:Axis Title="Month" Labels="{Binding TestLineSeriesLabelsForShow}"></lvc:Axis>
                     </lvc:CartesianChart.AxisX>
                 </lvc:CartesianChart>
-                <Button Grid.Row="2" Content="Új létrehozása"></Button>
+                    <Button Grid.Row="2" CommandParameter="LineSeries" Command="{Binding CreateChartCommand}" Content="Új létrehozása"></Button>
             </Grid>
         </materialDesign:Card>
         </Grid>

@@ -91,7 +91,7 @@ namespace Szakdolgozat.Repositories
             {
                 connection.Open();
 
-                string query = "UPDATE `dolgozok` SET `vezeteknev`='@vezeteknev',`keresztnev`='@keresztnev',`email`='@email',`telefonszam`='@telefonszam' WHERE `dolgozok`.`id` = '@id'";
+                string query = "UPDATE `dolgozok` SET `vezeteknev`=@vezeteknev,`keresztnev`=@keresztnev,`email`=@email,`telefonszam`=@telefonszam WHERE `dolgozok`.`id` = @id";
                 using (MySqlCommand command = new MySqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@vezeteknev", dolgozo.Vezeteknev);

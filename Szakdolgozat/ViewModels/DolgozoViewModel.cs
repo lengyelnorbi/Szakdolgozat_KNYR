@@ -18,6 +18,9 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 using System.Security.Principal;
 using System.Threading;
 using Szakdolgozat.Views;
+using System.Windows.Forms;
+using static Org.BouncyCastle.Crypto.Digests.SkeinEngine;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace Szakdolgozat.ViewModels
 {
@@ -70,59 +73,27 @@ namespace Szakdolgozat.ViewModels
             {
                 _selectedRow = value;
                 OnPropertyChanged(nameof(SelectedRow));
+                //if(CurrentMode == EditMode.Modify)
+                //{
+                //    if(value != null)
+                //    {
+                //        FillEditFields(value);
+                //    }
+                //}
             }
         }
 
-        private string _lastname;
-        private string _firstname;
-        private string _email;
-        private string _phonenumber;
-        public string Lastname
+        public bool IsEditPanelVisible => CurrentMode != EditMode.None;
+
+        private EditMode _currentMode;
+        public EditMode CurrentMode
         {
-            get
-            {
-                return _lastname;
-            }
-            set 
-            { 
-                _lastname = value;
-                OnPropertyChanged(nameof(Lastname));
-            }
-        }
-        public string Firstname
-        {
-            get
-            {
-                return _firstname;
-            }
-            set 
-            {
-                _firstname = value;
-                OnPropertyChanged(nameof(Firstname));
-            }
-        }
-        public string Email
-        {
-            get
-            {
-                return _email;
-            }
+            get { return _currentMode; }
             set
             {
-                _email = value;
-                OnPropertyChanged(nameof(Email));
-            }
-        }
-        public string Phonenumber
-        {
-            get
-            {
-                return _phonenumber;
-            }
-            set 
-            {
-                _phonenumber = value;
-                OnPropertyChanged(nameof(Phonenumber));
+                _currentMode = value;
+                OnPropertyChanged(nameof(CurrentMode));
+                OnPropertyChanged(nameof(IsEditPanelVisible));
             }
         }
 
@@ -173,11 +144,16 @@ namespace Szakdolgozat.ViewModels
             checkboxStatuses.Add("keresztnevCB", true);
             checkboxStatuses.Add("emailCB", true);
             checkboxStatuses.Add("telefonszamCB", true);
-            Dolgozok = _dolgozoRepository.GetDolgozok();
-            FilteredDolgozok = new ObservableCollection<Dolgozo>(Dolgozok);
+            Dolgozok = _dolgozoRepository.GetDolgozok(); 
+            //Deep Copy - to ensure that the FilteredDolgozok does not affect the Dolgozok collection, and vica versa
+            FilteredDolgozok = new ObservableCollection<Dolgozo>(
+                Dolgozok.Select(d => new Dolgozo(d.ID, d.Vezeteknev, d.Keresztnev, d.Email, d.Telefonszam)).ToList()
+            );
             DeleteDolgozoCommand = new ViewModelCommand(ExecuteDeleteDolgozoCommand, CanExecuteDeleteDolgozoCommand);
-            ModifyDolgozoCommand = new ViewModelCommand(ExecuteModifyDolgozoCommand, CanExecuteModifyDolgozoCommand);
-            AddDolgozoCommand = new ViewModelCommand(ExecuteAddDolgozoCommand, CanExecuteAddDolgozoCommand);
+
+            OpenDolgozoModifyOrAddWindowCommand = new ViewModelCommand(ExecuteOpenDolgozoModifyOrAddWindowCommand, CanExecuteOpenDolgozoModifyOrAddWindowCommand);
+
+            CancelEditCommand = new ViewModelCommand(ExecuteCancelEditCommand);
             Debug.WriteLine("EREDETI FILTERED");
             Debug.WriteLine(FilteredDolgozok.Count);
         }
@@ -268,8 +244,14 @@ namespace Szakdolgozat.ViewModels
         }
 
         public ICommand DeleteDolgozoCommand { get; }
-        public ICommand ModifyDolgozoCommand { get; }
-        public ICommand AddDolgozoCommand { get; }
+
+
+
+        public ICommand OpenDolgozoModifyOrAddWindowCommand { get; }
+
+
+        public ICommand CancelEditCommand { get; }
+        public ICommand ModifyButtonViewRequestCommand { get; }
 
         private bool CanExecuteDeleteDolgozoCommand(object obj)
         {
@@ -279,62 +261,78 @@ namespace Szakdolgozat.ViewModels
         }
         private void ExecuteDeleteDolgozoCommand(object obj)
         {
-            MessageBox.Show(SelectedRow.ID.ToString() + SelectedRow.Vezeteknev);
+            System.Windows.MessageBox.Show(SelectedRow.ID.ToString() + SelectedRow.Vezeteknev);
             DeleteDolgozo(SelectedRow.ID);
         }
-        private bool CanExecuteModifyDolgozoCommand(object obj)
+
+        private bool CanExecuteOpenDolgozoModifyOrAddWindowCommand(object obj)
         {
-            if (SelectedRow != null)
-                return true;
-            return false;
-        }
-        private void ExecuteModifyDolgozoCommand(object obj)
-        {
-            try
-            {
-                if (Lastname != null && Firstname != null && Email != null && Phonenumber != null)
-                {
-                    Dolgozo dolgozo = new Dolgozo(SelectedRow.ID, Lastname, Firstname, Email, Phonenumber);
-                    _dolgozoRepository.ModifyDolgozo(dolgozo);
-                    for(int i = 0; i < Dolgozok.Count; i++)
-                    {
-                        if(Dolgozok.ElementAt(i).ID == SelectedRow.ID)
-                        {
-                            Dolgozok.ElementAt(i).Vezeteknev = Lastname;
-                            Dolgozok.ElementAt(i).Keresztnev = Firstname;
-                            Dolgozok.ElementAt(i).Email= Email;
-                            Dolgozok.ElementAt(i).Telefonszam = Phonenumber;
-                            break;
-                        }
-                    }
-                    FilteredDolgozok = Dolgozok;
-                }
-            }
-            catch (Exception e)
-            {
-                throw new Exception(e.Message, e);
-            }
-        }
-        private bool CanExecuteAddDolgozoCommand(object obj)
-        {
+            if((string)obj == "Modify")
+                return SelectedRow != null;
             return true;
         }
-        private void ExecuteAddDolgozoCommand(object obj)
+
+        private void ExecuteOpenDolgozoModifyOrAddWindowCommand(object obj)
         {
-            try
+            if (obj is string mode)
             {
-                if(Lastname != null && Firstname != null && Email != null && Phonenumber != null)
+                switch (mode)
                 {
-                    Dolgozo dolgozo = new Dolgozo(Lastname, Firstname, Email, Phonenumber);
-                    _dolgozoRepository.AddDolgozo(dolgozo);
-                    Dolgozok = GetYourData();
-                    FilteredDolgozok = Dolgozok;
+                    case "Add":
+                        DolgozokModifyOrAddView existingWindow;
+                        if (!WindowHelper.IsAddWindowOpen(out existingWindow))
+                        {
+                            // The window is not open, create and show a new instance
+                            DolgozokModifyOrAddView dolgozokModifyOrAddView = new DolgozokModifyOrAddView(EditMode.Add);
+                            dolgozokModifyOrAddView.Show();
+                            Mediator.NewDolgozoAdded += RefreshDolgozok;
+                        }
+                        else
+                        {
+                            // The window is already open, bring it to the foreground
+                            if(existingWindow.WindowState == WindowState.Minimized)
+                            {
+                                existingWindow.WindowState = WindowState.Normal;
+                            }
+                            existingWindow.Activate();        // Activate the window
+                            Mediator.NewDolgozoAdded += RefreshDolgozok;
+                        }
+                        break;
+                    case "Modify":
+                        DolgozokModifyOrAddView dolgozokModifyOrAddView2 = new DolgozokModifyOrAddView(EditMode.Modify, SelectedRow);
+                        dolgozokModifyOrAddView2.Show();
+                        Mediator.DolgozoModified += RefreshDolgozokAfterModify;
+                        break;
                 }
             }
-            catch (Exception e)
+        }
+        
+        private void RefreshDolgozok(Dolgozo dolgozo) 
+        {
+            Dolgozok = GetYourData();
+            //bad example for not making deep copy, also good example for making collection references: FilteredDolgozok = Dolgozok, in this case when clearing the FilteredDolgozok in later times, it will affect the Dolgozok collection too
+            FilteredDolgozok = new ObservableCollection<Dolgozo>(Dolgozok);
+        }
+
+        private void RefreshDolgozokAfterModify(Dolgozo dolgozo)
+        {
+            for (int i = 0; i < Dolgozok.Count; i++)
             {
-                throw new Exception(e.Message, e);
+                if (Dolgozok.ElementAt(i).ID == dolgozo.ID)
+                {
+                    Dolgozok.ElementAt(i).Vezeteknev = dolgozo.Vezeteknev;
+                    Dolgozok.ElementAt(i).Keresztnev = dolgozo.Keresztnev;
+                    Dolgozok.ElementAt(i).Email = dolgozo.Email;
+                    Dolgozok.ElementAt(i).Telefonszam = dolgozo.Telefonszam;
+                    break;
+                }
             }
+            FilteredDolgozok = new ObservableCollection<Dolgozo>(Dolgozok);
+        }
+
+        private void ExecuteCancelEditCommand(object parameter)
+        {
+            CurrentMode = EditMode.None;
         }
     }
 }
