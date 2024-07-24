@@ -22,5 +22,12 @@ namespace Szakdolgozat.Models
             Email = email;
             Lakcim = lakcim;
         }
+        public MaganSzemely(string nev, string telefonszam, string email, string lakcim)
+        {
+            Nev = nev;
+            Telefonszam = telefonszam;
+            Email = email;
+            Lakcim = lakcim;
+        }
     }
 }

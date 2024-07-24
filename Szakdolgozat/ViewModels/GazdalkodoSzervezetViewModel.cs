@@ -237,7 +237,7 @@ namespace Szakdolgozat.ViewModels
                 {
                     case "Add":
                         GazdalkodoSzervezetModifyOrAddView existingWindow;
-                        if (!WindowHelper.IsAddWindowOpen(out existingWindow))
+                        if (!WindowHelper.IsGazdalkodoSzervezetAddWindowOpen(out existingWindow))
                         {
                             // The window is not open, create and show a new instance
                             GazdalkodoSzervezetModifyOrAddView gazdalkodoSzervezetModifyOrAddView = new GazdalkodoSzervezetModifyOrAddView(EditMode.Add);

@@ -62,6 +62,24 @@ namespace Szakdolgozat.ViewModels
             GazdalkodoSzervezetModified?.Invoke(gazdalkodoSzervezet);
         }
 
+        //Visszaadja az újonnan hozzáadott magan szemely-t annak a view-nak, ami feliratkozott az eseményre
+        //It gives back the new magan szemely that was added to the view that subscribed to the event
+        public delegate void NewMaganSzemelyAddedEventHandler(MaganSzemely maganSzemely);
+        public static event NewMaganSzemelyAddedEventHandler NewMaganSzemelyAdded;
+        public static void NotifyNewMaganSzemelyAdded(MaganSzemely maganSzemely)
+        {
+            NewMaganSzemelyAdded?.Invoke(maganSzemely);
+        }
+
+        //Visszaadja a módosított magan szemely-t annak a view-nak, ami feliratkozott az eseményre
+        //It gives back the modified magan szemely to the view that subscribed to the event
+        public delegate void MaganSzemelyModifiedEventHandler(MaganSzemely maganSzemely);
+        public static event MaganSzemelyModifiedEventHandler MaganSzemelyModified;
+        public static void NotifyModifiedMaganSzemely(MaganSzemely maganSzemely)
+        {
+            MaganSzemelyModified?.Invoke(maganSzemely);
+        }
+
         //public delegate void CheckBoxChangedEventHandler(string dataGridName);
         //public static event CheckBoxChangedEventHandler CheckBoxChanged;
         //public static void NotifyCheckBoxChanged(string dataGridName)

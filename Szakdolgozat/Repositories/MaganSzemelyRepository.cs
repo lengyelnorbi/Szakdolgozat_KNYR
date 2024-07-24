@@ -17,7 +17,7 @@ namespace Szakdolgozat.Repositories
             {
                 connection.Open();
 
-                string query = "INSERT INTO `magan_szemelyek` (`id`, `nev`, `telefonszam`, `email`, `lakcim`) VALUES (NULL, '@nev', '@telefonszam', '@email', '@lakcim');";
+                string query = "INSERT INTO `magan_szemelyek` (`id`, `nev`, `telefonszam`, `email`, `lakcim`) VALUES (NULL, @nev, @telefonszam, @email, @lakcim);";
                 using (MySqlCommand command = new MySqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@nev", maganSzemely.Nev);
@@ -38,7 +38,7 @@ namespace Szakdolgozat.Repositories
             {
                 connection.Open();
 
-                string query = "DELETE FROM `magan_szemelyek` WHERE `magan_szemelyek`.`id` = '@id';";
+                string query = "DELETE FROM `magan_szemelyek` WHERE `magan_szemelyek`.`id` = @id;";
                 using (MySqlCommand command = new MySqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@id", id);
@@ -87,7 +87,7 @@ namespace Szakdolgozat.Repositories
             {
                 connection.Open();
 
-                string query = "UPDATE `magan_szemelyek` SET `nev`='@nev',`telefonszam`='@telefonszam',`email`='@email',`lakcim`='@lakcim' WHERE `magan_szemelyek`.`id` = '@id'";
+                string query = "UPDATE `magan_szemelyek` SET `nev`=@nev,`telefonszam`=@telefonszam,`email`=@email,`lakcim`=@lakcim WHERE `magan_szemelyek`.`id` = @id";
                 using (MySqlCommand command = new MySqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@nev", maganSzemely.Nev);

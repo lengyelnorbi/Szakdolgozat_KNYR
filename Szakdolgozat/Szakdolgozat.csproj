@@ -170,6 +170,7 @@
     <Compile Include="ViewModels\GazdalkodoSzervezetModifyOrAddViewModel.cs" />
     <Compile Include="ViewModels\GazdalkodoSzervezetViewModel.cs" />
     <Compile Include="ViewModels\KotelezettsegKovetelesViewModel.cs" />
+    <Compile Include="ViewModels\MaganSzemelyekModifyOrAddViewModel.cs" />
     <Compile Include="ViewModels\MaganSzemelyekViewModel.cs" />
     <Compile Include="ViewModels\LetezoDiagrammokViewModel.cs" />
     <Compile Include="ViewModels\LetezoStatisztikakViewModel.cs" />
@@ -214,6 +215,9 @@
     </Compile>
     <Compile Include="Views\LoginView.xaml.cs">
       <DependentUpon>LoginView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\MaganSzemelyekModifyOrAddView.xaml.cs">
+      <DependentUpon>MaganSzemelyekModifyOrAddView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\MaganSzemelyekView.xaml.cs">
       <DependentUpon>MaganSzemelyekView.xaml</DependentUpon>
@@ -327,6 +331,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\LoginView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\MaganSzemelyekModifyOrAddView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

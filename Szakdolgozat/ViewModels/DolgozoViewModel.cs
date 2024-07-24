@@ -269,7 +269,7 @@ namespace Szakdolgozat.ViewModels
                 {
                     case "Add":
                         DolgozokModifyOrAddView existingWindow;
-                        if (!WindowHelper.IsAddWindowOpen(out existingWindow))
+                        if (!WindowHelper.IsDolgozoAddWindowOpen(out existingWindow))
                         {
                             // The window is not open, create and show a new instance
                             DolgozokModifyOrAddView dolgozokModifyOrAddView = new DolgozokModifyOrAddView(EditMode.Add);

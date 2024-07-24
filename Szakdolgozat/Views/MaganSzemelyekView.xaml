@@ -15,28 +15,27 @@
     </UserControl.DataContext>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition Height="100"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="100"></RowDefinition>
         </Grid.RowDefinitions>
         <Grid Grid.Row="0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="300"></ColumnDefinition>
                 <ColumnDefinition Width="140"></ColumnDefinition>
-                <ColumnDefinition Width="360"></ColumnDefinition>
             </Grid.ColumnDefinitions>
             <StackPanel Grid.Column="0" x:Name="pnlSearchBar" Margin="0,10,0,0">
                 <Grid Width="300" HorizontalAlignment="Left">
                     <TextBlock VerticalAlignment="Center" Foreground="#B0B9C6" IsHitTestVisible="False"
-                           Panel.ZIndex="1" Text="Keresés" Margin="10,0,0,0"
-                           Visibility="{Binding ElementName=searchBarInput, Path=Text.IsEmpty, Converter={StaticResource BoolToVis}}" />
+                Panel.ZIndex="1" Text="Keresés" Margin="10,0,0,0"
+                Visibility="{Binding ElementName=searchBarInput, Path=Text.IsEmpty, Converter={StaticResource BoolToVis}}" />
                     <TextBox x:Name="searchBarInput"
-                                     Text="{Binding SearchQuery, UpdateSourceTrigger=PropertyChanged}"
-                                     Style="{StaticResource CustomTextBoxStyle}"
-                                     >
+                            Text="{Binding SearchQuery, UpdateSourceTrigger=PropertyChanged}"
+                            Style="{StaticResource CustomTextBoxStyle}">
                     </TextBox>
                 </Grid>
             </StackPanel>
-            <ComboBox Grid.Column="1" Width="120" Background="White" SelectedIndex="0" SelectionChanged="ComboBox_SelectionChanged">
+            <ComboBox Grid.Column="1" VerticalAlignment="Top" Margin="0,12,0,0" Width="120" Background="White" SelectedIndex="0" SelectionChanged="ComboBox_SelectionChanged">
                 <ComboBoxItem x:Name="CB_default_text" IsEnabled="False" Visibility="Collapsed">
                     <TextBlock Text="Keresési opciók"/>
                 </ComboBoxItem>
@@ -72,7 +71,29 @@
                 </ComboBoxItem>
             </ComboBox>
         </Grid>
-        <DataGrid Grid.Row="1" x:Name="dataGrid" CanUserResizeColumns="True" ColumnWidth="*" AutoGenerateColumns="True" ItemsSource="{Binding FilteredMaganSzemelyek}" IsReadOnly="True" SelectionUnit="FullRow">
-        </DataGrid>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition x:Name="dataGridColumnDef"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <DataGrid Grid.Row="1" x:Name="dataGrid" CanUserResizeColumns="True" ColumnWidth="*" AutoGenerateColumns="True" ItemsSource="{Binding FilteredMaganSzemelyek,Mode=TwoWay, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}" IsReadOnly="True" SelectionUnit="FullRow" SelectedItem="{Binding SelectedRow, Mode=TwoWay}" Grid.ColumnSpan="2">
+                <DataGrid.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Törlés" Command="{Binding DeleteMaganSzemelyCommand}"/>
+                        <MenuItem Header="Módosítás" Command="{Binding OpenMaganSzemelyModifyOrAddWindowCommand}" CommandParameter="Modify"/>
+                    </ContextMenu>
+                </DataGrid.ContextMenu>
+            </DataGrid>
+        </Grid>
+        <Grid Grid.Row="2">
+            <StackPanel
+                        Orientation="Horizontal">
+                <Button Content="+"
+                    Foreground="White"
+                    Command="{Binding OpenMaganSzemelyModifyOrAddWindowCommand}"
+                    CommandParameter="Add"
+                    Width="100">
+                </Button>
+            </StackPanel>
+        </Grid>
     </Grid>
 </UserControl>

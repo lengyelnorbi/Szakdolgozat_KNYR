@@ -7,6 +7,10 @@ using System.Collections.ObjectModel;
 using Szakdolgozat.Models;
 using MySql.Data.MySqlClient;
 using System.Diagnostics;
+using System.Windows.Input;
+using System.Windows;
+using Szakdolgozat.Repositories;
+using Szakdolgozat.Views;
 
 namespace Szakdolgozat.ViewModels
 {
@@ -14,6 +18,7 @@ namespace Szakdolgozat.ViewModels
     {
 
         private ObservableCollection<MaganSzemely> _maganSzemelyek;
+        private MaganSzemelyRepository _maganSzemelyRepository;
 
         public ObservableCollection<MaganSzemely> MaganSzemelyek
         {
@@ -46,6 +51,17 @@ namespace Szakdolgozat.ViewModels
                 _searchQuery = value;
                 OnPropertyChanged(nameof(SearchQuery));
                 UpdateSearch(SearchQuery);
+            }
+        }
+        private MaganSzemely _selectedRow;
+
+        public MaganSzemely SelectedRow
+        {
+            get { return _selectedRow; }
+            set
+            {
+                _selectedRow = value;
+                OnPropertyChanged(nameof(SelectedRow));
             }
         }
 
@@ -90,6 +106,7 @@ namespace Szakdolgozat.ViewModels
 
         public MaganSzemelyekViewModel()
         {
+            _maganSzemelyRepository = new MaganSzemelyRepository();
             checkboxStatuses.Add("mindCB", true);
             checkboxStatuses.Add("idCB", true);
             checkboxStatuses.Add("nevCB", true);
@@ -97,7 +114,14 @@ namespace Szakdolgozat.ViewModels
             checkboxStatuses.Add("emailCB", true);
             checkboxStatuses.Add("lakcimCB", true);
             MaganSzemelyek = GetYourData();
-            FilteredMaganSzemelyek= new ObservableCollection<MaganSzemely>(MaganSzemelyek);
+            //Deep Copy - to ensure that the FilteredDolgozok does not affect the Dolgozok collection, and vica versa
+            FilteredMaganSzemelyek = new ObservableCollection<MaganSzemely>(
+                MaganSzemelyek.Select(d => new MaganSzemely(d.ID, d.Nev, d.Lakcim, d.Email, d.Telefonszam)).ToList()
+            );
+
+            DeleteMaganSzemelyCommand = new ViewModelCommand(ExecuteDeleteMaganSzemelyCommand, CanExecuteDeleteMaganSzemelyCommand);
+
+            OpenMaganSzemelyModifyOrAddWindowCommand = new ViewModelCommand(ExecuteOpenMaganSzemelyModifyOrAddWindowCommand, CanExecuteOpenMaganSzemelyModifyOrAddWindowCommand);
         }
 
         private void FilterData(string searchQuery)
@@ -166,6 +190,109 @@ namespace Szakdolgozat.ViewModels
         public void UpdateSearch(string searchQuery)
         {
             FilterData(searchQuery);
+        }
+
+        public void DeleteMaganSzemely(int id)
+        {
+            try
+            {
+                _maganSzemelyRepository.DeleteMaganSzemely(id);
+                for (int i = 0; i < FilteredMaganSzemelyek.Count; i++)
+                {
+                    if (FilteredMaganSzemelyek.ElementAt(i).ID == id)
+                        FilteredMaganSzemelyek.RemoveAt(i);
+                }
+
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+
+        public ICommand DeleteMaganSzemelyCommand { get; }
+
+
+
+        public ICommand OpenMaganSzemelyModifyOrAddWindowCommand { get; }
+
+
+        private bool CanExecuteDeleteMaganSzemelyCommand(object obj)
+        {
+            if (SelectedRow != null)
+                return true;
+            return false;
+        }
+        private void ExecuteDeleteMaganSzemelyCommand(object obj)
+        {
+            System.Windows.MessageBox.Show(SelectedRow.ID.ToString() + SelectedRow.Nev);
+            DeleteMaganSzemely(SelectedRow.ID);
+        }
+
+        private bool CanExecuteOpenMaganSzemelyModifyOrAddWindowCommand(object obj)
+        {
+            if ((string)obj == "Modify")
+                return SelectedRow != null;
+            return true;
+        }
+
+        private void ExecuteOpenMaganSzemelyModifyOrAddWindowCommand(object obj)
+        {
+            if (obj is string mode)
+            {
+                switch (mode)
+                {
+                    case "Add":
+                        MaganSzemelyekModifyOrAddView existingWindow;
+                        if (!WindowHelper.IsMaganSzemelyAddWindowOpen(out existingWindow))
+                        {
+                            // The window is not open, create and show a new instance
+                            MaganSzemelyekModifyOrAddView maganSzemelyekModifyOrAddView = new MaganSzemelyekModifyOrAddView(EditMode.Add);
+                            maganSzemelyekModifyOrAddView.Show();
+                            Mediator.NewMaganSzemelyAdded += RefreshMaganSzemely;
+                        }
+                        else
+                        {
+                            // The window is already open, bring it to the foreground
+                            if (existingWindow.WindowState == WindowState.Minimized)
+                            {
+                                existingWindow.WindowState = WindowState.Normal;
+                            }
+                            existingWindow.Activate();        // Activate the window
+                            Mediator.NewMaganSzemelyAdded += RefreshMaganSzemely;
+                        }
+                        break;
+                    case "Modify":
+                        MaganSzemelyekModifyOrAddView maganSzemelyekModifyOrAddView2 = new MaganSzemelyekModifyOrAddView(EditMode.Modify, SelectedRow);
+                        maganSzemelyekModifyOrAddView2.Show();
+                        Mediator.MaganSzemelyModified += RefreshMaganSzemelyAfterModify;
+                        break;
+                }
+            }
+        }
+
+        private void RefreshMaganSzemely(MaganSzemely maganSzemely)
+        {
+            MaganSzemelyek = GetYourData();
+            //bad example for not making deep copy, also good example for making collection references:
+            //FilteredDolgozok = Dolgozok, in this case when clearing the FilteredDolgozok in later times, it will affect the Dolgozok collection too
+            FilteredMaganSzemelyek = new ObservableCollection<MaganSzemely>(MaganSzemelyek);
+        }
+
+        private void RefreshMaganSzemelyAfterModify(MaganSzemely maganSzemely)
+        {
+            for (int i = 0; i < MaganSzemelyek.Count; i++)
+            {
+                if (MaganSzemelyek.ElementAt(i).ID == maganSzemely.ID)
+                {
+                    MaganSzemelyek.ElementAt(i).Nev = maganSzemely.Nev;
+                    MaganSzemelyek.ElementAt(i).Lakcim = maganSzemely.Lakcim;
+                    MaganSzemelyek.ElementAt(i).Email = maganSzemely.Email;
+                    MaganSzemelyek.ElementAt(i).Telefonszam = maganSzemely.Telefonszam;
+                    break;
+                }
+            }
+            FilteredMaganSzemelyek = new ObservableCollection<MaganSzemely>(MaganSzemelyek);
         }
     }
 }
