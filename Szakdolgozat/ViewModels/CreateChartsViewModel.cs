@@ -37,6 +37,7 @@ namespace Szakdolgozat.ViewModels
         private bool AllCheckBoxChecked = false;
         private ObservableCollection<System.Windows.Controls.TabItem> _tabs = new ObservableCollection<System.Windows.Controls.TabItem>();
         public List<System.Windows.Controls.DataGridCell> selectedDataGridCells = new List<System.Windows.Controls.DataGridCell>();
+        public Dictionary<string, Dictionary<string, ObservableCollection<object>>> sortedSelectedCells = new Dictionary<string, Dictionary<string, ObservableCollection<object>>>();
         public ObservableCollection<System.Windows.Controls.TabItem> Tabs
         {
             get { return _tabs; }
@@ -139,6 +140,15 @@ namespace Szakdolgozat.ViewModels
             UserRepository userRepository = new UserRepository();
             foreach (var table in _dbTableNames)
             {
+                sortedSelectedCells.Add(table, new Dictionary<string, ObservableCollection<object>>
+                {
+                    { "Strings", new ObservableCollection<object>() },
+                    { "Ints", new ObservableCollection<object>() },
+                    { "Doubles", new ObservableCollection<object>() },
+                    { "Bools", new ObservableCollection<object>() },
+                    { "Dates", new ObservableCollection<object>() }
+                });
+
                 //Combobox title
                 ComboBoxItem cbitem2 = new ComboBoxItem();
                 cbitem2.Name = "datafilter";

@@ -167,6 +167,7 @@
     <Compile Include="ViewModels\DolgozokModifyOrAddViewModel.cs" />
     <Compile Include="ViewModels\DolgozoViewModel.cs" />
     <Compile Include="ViewModels\ElozmenyekViewModel.cs" />
+    <Compile Include="ViewModels\GazdalkodoSzervezetModifyOrAddViewModel.cs" />
     <Compile Include="ViewModels\GazdalkodoSzervezetViewModel.cs" />
     <Compile Include="ViewModels\KotelezettsegKovetelesViewModel.cs" />
     <Compile Include="ViewModels\MaganSzemelyekViewModel.cs" />
@@ -195,6 +196,9 @@
     </Compile>
     <Compile Include="Views\ElozmenyekView.xaml.cs">
       <DependentUpon>ElozmenyekView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\GazdalkodoSzervezetModifyOrAddView.xaml.cs">
+      <DependentUpon>GazdalkodoSzervezetModifyOrAddView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\GazdalkodoSzervezetView.xaml.cs">
       <DependentUpon>GazdalkodoSzervezetView.xaml</DependentUpon>
@@ -299,6 +303,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\ElozmenyekView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\GazdalkodoSzervezetModifyOrAddView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

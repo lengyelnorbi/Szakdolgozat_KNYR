@@ -17,7 +17,7 @@ namespace Szakdolgozat.Repositories
             {
                 connection.Open();
 
-                string query = "DELETE FROM `gazdalkodo_szervezetek` WHERE `gazdalkodo_szervezetek`.`id` = '@id';";
+                string query = "DELETE FROM `gazdalkodo_szervezetek` WHERE `gazdalkodo_szervezetek`.`id` = @id;";
                 using (MySqlCommand command = new MySqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@id", id);
@@ -35,7 +35,7 @@ namespace Szakdolgozat.Repositories
             {
                 connection.Open();
 
-                string query = "INSERT INTO `gazdalkodo_szervezetek` (`id`, `nev`, `kapcsolattarto`, `email`, `telefonszam`) VALUES (NULL, '@nev', '@kapcsolattarto', '@email', '@telefonszam');";
+                string query = "INSERT INTO `gazdalkodo_szervezetek` (`id`, `nev`, `kapcsolattarto`, `email`, `telefonszam`) VALUES (NULL, @nev, @kapcsolattarto, @email, @telefonszam);";
                 using (MySqlCommand command = new MySqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@nev", gazdalkodoSzervezet.Nev);
@@ -87,7 +87,7 @@ namespace Szakdolgozat.Repositories
             {
                 connection.Open();
 
-                string query = "UPDATE `gazdalkodo_szervezetek` SET `nev`='@nev',`kapcsolattarto`='@kapcsolattarto',`email`='@email',`telefonszam`='@telefonszam' WHERE `gazdalkodo_szervezetek`.`id` = '@id'";
+                string query = "UPDATE `gazdalkodo_szervezetek` SET `nev`=@nev,`kapcsolattarto`=@kapcsolattarto,`email`=@email,`telefonszam`=@telefonszam WHERE `gazdalkodo_szervezetek`.`id` = @id";
                 using (MySqlCommand command = new MySqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@nev", gazdalkodoSzervezet.Nev);

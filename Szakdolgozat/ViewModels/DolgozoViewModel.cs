@@ -73,13 +73,6 @@ namespace Szakdolgozat.ViewModels
             {
                 _selectedRow = value;
                 OnPropertyChanged(nameof(SelectedRow));
-                //if(CurrentMode == EditMode.Modify)
-                //{
-                //    if(value != null)
-                //    {
-                //        FillEditFields(value);
-                //    }
-                //}
             }
         }
 
@@ -153,7 +146,6 @@ namespace Szakdolgozat.ViewModels
 
             OpenDolgozoModifyOrAddWindowCommand = new ViewModelCommand(ExecuteOpenDolgozoModifyOrAddWindowCommand, CanExecuteOpenDolgozoModifyOrAddWindowCommand);
 
-            CancelEditCommand = new ViewModelCommand(ExecuteCancelEditCommand);
             Debug.WriteLine("EREDETI FILTERED");
             Debug.WriteLine(FilteredDolgozok.Count);
         }
@@ -250,9 +242,6 @@ namespace Szakdolgozat.ViewModels
         public ICommand OpenDolgozoModifyOrAddWindowCommand { get; }
 
 
-        public ICommand CancelEditCommand { get; }
-        public ICommand ModifyButtonViewRequestCommand { get; }
-
         private bool CanExecuteDeleteDolgozoCommand(object obj)
         {
             if(SelectedRow != null)
@@ -310,7 +299,8 @@ namespace Szakdolgozat.ViewModels
         private void RefreshDolgozok(Dolgozo dolgozo) 
         {
             Dolgozok = GetYourData();
-            //bad example for not making deep copy, also good example for making collection references: FilteredDolgozok = Dolgozok, in this case when clearing the FilteredDolgozok in later times, it will affect the Dolgozok collection too
+            //bad example for not making deep copy, also good example for making collection references:
+            //FilteredDolgozok = Dolgozok, in this case when clearing the FilteredDolgozok in later times, it will affect the Dolgozok collection too
             FilteredDolgozok = new ObservableCollection<Dolgozo>(Dolgozok);
         }
 
@@ -328,11 +318,6 @@ namespace Szakdolgozat.ViewModels
                 }
             }
             FilteredDolgozok = new ObservableCollection<Dolgozo>(Dolgozok);
-        }
-
-        private void ExecuteCancelEditCommand(object parameter)
-        {
-            CurrentMode = EditMode.None;
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Org.BouncyCastle.Utilities;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Dynamic;
@@ -104,8 +105,55 @@ namespace Szakdolgozat.Views
                             // Get the type of the property
                             var propertyType = propertyInfo.PropertyType;
                             var dataGridInfo = GetDataGrid(o);
-                            System.Windows.MessageBox.Show($"Column: {propertyName}, Type: {propertyType}");
-                            System.Windows.MessageBox.Show($"DataGrid Name: {dataGridInfo.Name}");
+                            if(dataGridInfo != null)
+                            {
+                                if (propertyType.ToString().ToLower().Contains("string"))
+                                {
+                                    createChartsViewModel.sortedSelectedCells[dataGridInfo.Name]["Strings"].Add(o);
+                                }
+                                else if (propertyType.ToString().ToLower().Contains("int"))
+                                {
+                                    createChartsViewModel.sortedSelectedCells[dataGridInfo.Name]["Ints"].Add(o);
+                                }
+                                else if (propertyType.ToString().ToLower().Contains("double"))
+                                {
+                                    createChartsViewModel.sortedSelectedCells[dataGridInfo.Name]["Doubles"].Add(o);
+                                }
+                                else if (propertyType.ToString().ToLower().Contains("bool"))
+                                {
+                                    createChartsViewModel.sortedSelectedCells[dataGridInfo.Name]["Bools"].Add(o);
+                                }
+                                else if (propertyType.ToString().ToLower().Contains("date"))
+                                {
+                                    createChartsViewModel.sortedSelectedCells[dataGridInfo.Name]["Dates"].Add(o);
+                                }
+                            }
+                            //System.Windows.MessageBox.Show($"Column: {propertyName}, Type: {propertyType}");
+                            //System.Windows.MessageBox.Show($"DataGrid Name: {dataGridInfo.Name}");
+                        }
+                    }
+                }
+
+                foreach (var tableEntry in createChartsViewModel.sortedSelectedCells)
+                {
+                    string tableName = tableEntry.Key;
+                    var collections = tableEntry.Value;
+
+                    MessageBox.Show($"Table: {tableName}");
+
+                    foreach (var collectionEntry in collections)
+                    {
+                        string collectionName = collectionEntry.Key;
+                        var collection = collectionEntry.Value;
+
+                        MessageBox.Show($"  {collectionName} Collection contains {collection.Count} items.");
+
+                        foreach (DataGridCell item in collection)
+                        {
+                            if(item.Content is TextBlock textBlock)
+                            {
+                                MessageBox.Show($" {textBlock.Text} ");
+                            }
                         }
                     }
                 }

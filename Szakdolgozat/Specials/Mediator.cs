@@ -44,6 +44,24 @@ namespace Szakdolgozat.ViewModels
             DolgozoModified?.Invoke(dolgozo);
         }
 
+        //Visszaadja az újonnan hozzáadott gazdalkodo szervezet-et annak a view-nak, ami feliratkozott az eseményre
+        //It gives back the new gazdalkodo szervezet that was added to the view that subscribed to the event
+        public delegate void NewGazdalkodoSzervezetAddedEventHandler(GazdalkodoSzervezet gazdalkodoSzervezet);
+        public static event NewGazdalkodoSzervezetAddedEventHandler NewGazdalkodoSzervezetAdded;
+        public static void NotifyNewGazdalkodoSzervezetAdded(GazdalkodoSzervezet gazdalkodoSzervezet)
+        {
+            NewGazdalkodoSzervezetAdded?.Invoke(gazdalkodoSzervezet);
+        }
+
+        //Visszaadja a módosított gazdalkodo szervezet-et annak a view-nak, ami feliratkozott az eseményre
+        //It gives back the modified gazdalkodo szervezet to the view that subscribed to the event
+        public delegate void GazdalkodoSzervezetModifiedEventHandler(GazdalkodoSzervezet gazdalkodoSzervezet);
+        public static event GazdalkodoSzervezetModifiedEventHandler GazdalkodoSzervezetModified;
+        public static void NotifyModifiedGazdalkodoSzervezet(GazdalkodoSzervezet gazdalkodoSzervezet)
+        {
+            GazdalkodoSzervezetModified?.Invoke(gazdalkodoSzervezet);
+        }
+
         //public delegate void CheckBoxChangedEventHandler(string dataGridName);
         //public static event CheckBoxChangedEventHandler CheckBoxChanged;
         //public static void NotifyCheckBoxChanged(string dataGridName)

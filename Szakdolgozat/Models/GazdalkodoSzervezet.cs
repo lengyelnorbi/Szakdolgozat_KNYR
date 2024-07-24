@@ -22,5 +22,12 @@ namespace Szakdolgozat.Models
             Email = email;
             Telefonszam = telefonszam;
         }
+        public GazdalkodoSzervezet(string nev, string kapcsolattarto, string email, string telefonszam)
+        {
+            Nev = nev;
+            Kapcsolattarto = kapcsolattarto;
+            Email = email;
+            Telefonszam = telefonszam;
+        }
     }
 }
