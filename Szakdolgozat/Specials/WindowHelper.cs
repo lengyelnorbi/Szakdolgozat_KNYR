@@ -60,4 +60,21 @@ public static class WindowHelper
         }
         return false;
     }
+    public static bool IsKoltsegvetesAddWindowOpen<T>(out T window) where T : Window
+    {
+        window = Application.Current.Windows.OfType<T>().FirstOrDefault();
+
+        foreach (var a in Application.Current.Windows.OfType<T>())
+        {
+            if (a.DataContext is KoltsegvetesModifyOrAddViewModel viewModel)
+            {
+                if (viewModel.EditMode == EditMode.Add)
+                {
+                    window = a;
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 }

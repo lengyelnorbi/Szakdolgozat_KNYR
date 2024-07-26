@@ -18,7 +18,7 @@ namespace Szakdolgozat.Repositories
             {
                 connection.Open();
 
-                string query = "INSERT INTO `bevetelek_kiadasok` (`id`, `osszeg`, `penznem`, `be_ki_kod`, `teljesitesi_datum`, `kotel_kovet_id`, `partner_id`) VALUES (NULL, '@osszeg', '@penznem', '@be_ki_kod', '@teljesitesi_datum', '@kotel_kovet_id', '@partner_id');";
+                string query = "INSERT INTO `bevetelek_kiadasok` (`id`, `osszeg`, `penznem`, `be_ki_kod`, `teljesitesi_datum`, `kotel_kovet_id`, `partner_id`) VALUES (NULL, @osszeg, @penznem, @be_ki_kod, @teljesitesi_datum, @kotel_kovet_id, @partner_id);";
                 using (MySqlCommand command = new MySqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@osszeg", bevetelKiadas.Osszeg);
@@ -41,7 +41,7 @@ namespace Szakdolgozat.Repositories
             {
                 connection.Open();
 
-                string query = "DELETE FROM `bevetelek_kiadasok` WHERE `bevetelek_kiadasok`.`id` = '@id';";
+                string query = "DELETE FROM `bevetelek_kiadasok` WHERE `bevetelek_kiadasok`.`id` = @id;";
                 using (MySqlCommand command = new MySqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@id", id);
@@ -115,8 +115,7 @@ namespace Szakdolgozat.Repositories
             using (MySqlConnection connection = GetConnection())
             {
                 connection.Open();
-
-                string query = "UPDATE `bevetelek_kiadasok` SET `osszeg`='@osszeg',`penznem`='@penznem',`be_ki_kod`='@bekikod',`teljesitesi_datum`='@teljesitesiDatum',`kotel_kovet_id`='@kotelKovetID',`partner_id`='@partnerID' WHERE `bevetelek_kiadasok`.`id` = '@id'";
+                string query = "UPDATE `bevetelek_kiadasok` SET `osszeg`=@osszeg,`penznem`=@penznem,`be_ki_kod`=@bekikod,`teljesitesi_datum`=@teljesitesiDatum,`kotel_kovet_id`=@kotelKovetID,`partner_id`=@partnerID WHERE `bevetelek_kiadasok`.`id` = @id";
                 using (MySqlCommand command = new MySqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@osszeg", bevetelKiadas.Osszeg);

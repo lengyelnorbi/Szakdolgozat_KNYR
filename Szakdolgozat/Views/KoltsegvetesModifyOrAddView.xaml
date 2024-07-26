@@ -1,0 +1,55 @@
+﻿<Window x:Class="Szakdolgozat.Views.KoltsegvetesModifyOrAddView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Szakdolgozat.Views"
+        xmlns:dContext="clr-namespace:Szakdolgozat.ViewModels"
+        xmlns:specials="clr-namespace:Szakdolgozat.Specials"
+        xmlns:models="clr-namespace:Szakdolgozat.Models"
+        mc:Ignorable="d"
+        HorizontalAlignment="Center"
+        VerticalAlignment="Center"
+        WindowStartupLocation="CenterScreen"
+        Title="KoltsegvetesModifyOrAddView" Height="600" Width="300">
+    <Window.DataContext>
+        <dContext:KoltsegvetesModifyOrAddViewModel />
+    </Window.DataContext>
+    <Border>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="50"></RowDefinition>
+                <RowDefinition Height="*"></RowDefinition>
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0" Text="{Binding Title}"/>
+            <Grid Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Bottom" Visibility="{Binding IsEditPanelVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <Border Background="White" Width="300" Height="550" BorderBrush="Black" BorderThickness="1">
+                    <StackPanel Margin="25,50">
+                        <TextBlock Text="Összeg" FontSize="14" Margin="5,15,0,0" Foreground="Black"/>
+                        <TextBox FontSize="16" x:Name="sidebar_osszegTB" Text="{Binding Osszeg, UpdateSourceTrigger=PropertyChanged}" Background="LightGray" HorizontalContentAlignment="Center" Margin="0,0,0,5" Height="28"/>
+
+                        <TextBlock Text="Pénznem" FontSize="14" Margin="5,15,0,0" Foreground="Black"/>
+                        <ComboBox FontSize="16" x:Name="sidebar_penznemTB" ItemsSource="{Binding Source={specials:EnumBindingSource {x:Type models:Penznem}}}" SelectedItem="{Binding Penznem, UpdateSourceTrigger=PropertyChanged}" Background="LightGray" HorizontalContentAlignment="Center" Margin="0,0,0,5" Height="28"/>
+
+                        <TextBlock Text="BeKiKód" FontSize="14" Margin="5,15,0,0" Foreground="Black"/>
+                        <TextBox FontSize="16" x:Name="sidebar_beKiKodTB" Text="{Binding BeKiKod, UpdateSourceTrigger=PropertyChanged}" Background="LightGray" HorizontalContentAlignment="Center" Margin="0,0,0,5" Height="28"/>
+
+                        <TextBlock Text="Teljesítési Dátum" FontSize="14" Margin="5,15,0,0" Foreground="Black"/>
+                        <DatePicker FontSize="16" x:Name="sidebar_teljesitesiDatumTB" SelectedDate="{Binding TeljesitesiDatum, UpdateSourceTrigger=PropertyChanged}" Background="LightGray" HorizontalContentAlignment="Center" Margin="0,0,0,5" Height="28" />
+
+                        <TextBlock Text="Kötelezettség/Követelés ID" FontSize="14" Margin="5,15,0,0" Foreground="Black"/>
+                        <TextBox FontSize="16" x:Name="sidebar_kotelKovetIDTB" Text="{Binding KotelKovetID, UpdateSourceTrigger=PropertyChanged}" Background="LightGray" HorizontalContentAlignment="Center" Margin="0,0,0,5" Height="28"/>
+
+                        <TextBlock Text="Partner ID" FontSize="14" Margin="5,15,0,0" Foreground="Black"/>
+                        <TextBox FontSize="16" x:Name="sidebar_partnerIDTB" Text="{Binding PartnerID, UpdateSourceTrigger=PropertyChanged}" Background="LightGray" HorizontalContentAlignment="Center" Margin="0,0,0,5" Height="28"/>
+                        
+                        <StackPanel Orientation="Horizontal">
+                            <Button Content="Mentés" Command="{Binding SaveCommand}" Foreground="White" Width="80" Margin="5,0,15,0"/>
+                            <Button Content="Mégse" Foreground="White" Width="75" Margin="20,0,5,0" Command="{Binding CancelEditCommand}"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </Grid>
+    </Border>
+</Window>

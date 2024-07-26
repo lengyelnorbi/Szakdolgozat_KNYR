@@ -161,6 +161,7 @@
     <Compile Include="Repositories\MaganSzemelyRepository.cs" />
     <Compile Include="Repositories\RepositoryBase.cs" />
     <Compile Include="Repositories\UserRepository.cs" />
+    <Compile Include="Specials\EnumBindingSourceExtension.cs" />
     <Compile Include="Specials\WindowHelper.cs" />
     <Compile Include="ViewModels\AddOptionsToNewChartViewModel.cs" />
     <Compile Include="ViewModels\CreateChartsViewModel.cs" />
@@ -169,6 +170,7 @@
     <Compile Include="ViewModels\ElozmenyekViewModel.cs" />
     <Compile Include="ViewModels\GazdalkodoSzervezetModifyOrAddViewModel.cs" />
     <Compile Include="ViewModels\GazdalkodoSzervezetViewModel.cs" />
+    <Compile Include="ViewModels\KoltsegvetesModifyOrAddViewModel.cs" />
     <Compile Include="ViewModels\KotelezettsegKovetelesViewModel.cs" />
     <Compile Include="ViewModels\MaganSzemelyekModifyOrAddViewModel.cs" />
     <Compile Include="ViewModels\MaganSzemelyekViewModel.cs" />
@@ -203,6 +205,9 @@
     </Compile>
     <Compile Include="Views\GazdalkodoSzervezetView.xaml.cs">
       <DependentUpon>GazdalkodoSzervezetView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\KoltsegvetesModifyOrAddView.xaml.cs">
+      <DependentUpon>KoltsegvetesModifyOrAddView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\KotelezettsegKovetelesView.xaml.cs">
       <DependentUpon>KotelezettsegKovetelesView.xaml</DependentUpon>
@@ -315,6 +320,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\GazdalkodoSzervezetView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\KoltsegvetesModifyOrAddView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

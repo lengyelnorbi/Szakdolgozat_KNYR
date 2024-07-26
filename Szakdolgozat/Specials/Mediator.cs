@@ -80,6 +80,24 @@ namespace Szakdolgozat.ViewModels
             MaganSzemelyModified?.Invoke(maganSzemely);
         }
 
+        //Visszaadja az újonnan hozzáadott bevetelKiadas-t annak a view-nak, ami feliratkozott az eseményre
+        //It gives back the new bevetelKiadas that was added to the view that subscribed to the event
+        public delegate void NewBevetelKiadasAddedEventHandler(BevetelKiadas bevetelKiadas);
+        public static event NewBevetelKiadasAddedEventHandler NewBevetelKiadasAdded;
+        public static void NotifyNewBevetelKiadasAdded(BevetelKiadas bevetelKiadas)
+        {
+            NewBevetelKiadasAdded?.Invoke(bevetelKiadas);
+        }
+
+        //Visszaadja a módosított bevetelKiadas-t annak a view-nak, ami feliratkozott az eseményre
+        //It gives back the modified bevetelKiadas to the view that subscribed to the event
+        public delegate void BevetelKiadasModifiedEventHandler(BevetelKiadas bevetelKiadas);
+        public static event BevetelKiadasModifiedEventHandler BevetelKiadasModified;
+        public static void NotifyModifiedBevetelKiadas(BevetelKiadas bevetelKiadas)
+        {
+            BevetelKiadasModified?.Invoke(bevetelKiadas);
+        }
+
         //public delegate void CheckBoxChangedEventHandler(string dataGridName);
         //public static event CheckBoxChangedEventHandler CheckBoxChanged;
         //public static void NotifyCheckBoxChanged(string dataGridName)
