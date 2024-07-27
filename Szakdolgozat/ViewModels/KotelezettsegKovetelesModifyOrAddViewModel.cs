@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,36 +11,33 @@ using Szakdolgozat.Repositories;
 
 namespace Szakdolgozat.ViewModels
 {
-    public class KoltsegvetesModifyOrAddViewModel : ViewModelBase
+    public class KotelezettsegKovetelesModifyOrAddViewModel : ViewModelBase
     {
         public event Action RequestClose;
+        //Obligation - kötelezettség, Claim - követelés
+        private string _oblClaimType;
         private int _amount;
         private Penznem _currency;
-        //Expenditure - kiadás, Income - bevétel
-        private string _incExpID;
-        private DateTime _completionDate = DateTime.Now;
-        //Obligation - kötelezettség, Claim - követelés
-        private int? _oblClaimID;
-        private int? _partnerID;
+        private DateTime _paymentDeadline = DateTime.Now;
+        private Int16 _completed;
         private string _title;
         private EditMode _editMode;
-        private BevetelKiadas _modifiableKoltsegvetes;
-        private KoltsegvetesRepository _koltsegvetesRepository= new KoltsegvetesRepository();
-        public BevetelKiadas ModifiableKoltsegvetes
+        private KotelezettsegKoveteles _modifiableKotelezettsegKoveteles;
+        private KotelezettsegKovetelesRepository _kotelezettsegKovetelesRepository = new KotelezettsegKovetelesRepository();
+        public KotelezettsegKoveteles ModifiableKotelezettsegKoveteles
         {
             get
             {
-                return _modifiableKoltsegvetes;
+                return _modifiableKotelezettsegKoveteles;
             }
             set
             {
-                _modifiableKoltsegvetes = value;
+                _modifiableKotelezettsegKoveteles = value;
+                OblClaimType = value.Tipus;
                 Amount = value.Osszeg;
                 Currency = value.Penznem;
-                IncExpID = value.BeKiKod;
-                CompletionDate = value.TeljesitesiDatum;
-                OblClaimID = value.KotelKovetID;
-                PartnerID = value.PartnerID;
+                PaymentDeadline = value.KifizetesHatarideje;
+                Completed = value.Kifizetett;
             }
         }
         public string Title
@@ -69,6 +67,18 @@ namespace Szakdolgozat.ViewModels
                     Title = "Bevétel/Kiadás Módosítása";
             }
         }
+        public string OblClaimType
+        {
+            get
+            {
+                return _oblClaimType;
+            }
+            set
+            {
+                _oblClaimType = value;
+                OnPropertyChanged(nameof(OblClaimType));
+            }
+        }
         public int Amount
         {
             get
@@ -93,58 +103,35 @@ namespace Szakdolgozat.ViewModels
                 OnPropertyChanged(nameof(Currency));
             }
         }
-        public string IncExpID
+        public DateTime PaymentDeadline
         {
             get
             {
-                return _incExpID;
+                return _paymentDeadline;
             }
             set
             {
-                _incExpID = value;
-                OnPropertyChanged(nameof(IncExpID));
+                _paymentDeadline = value;
+                OnPropertyChanged(nameof(PaymentDeadline));
             }
         }
-        public DateTime CompletionDate
+        public Int16 Completed
         {
             get
             {
-                return _completionDate;
+                return _completed;
             }
             set
             {
-                _completionDate = value;
-                OnPropertyChanged(nameof(CompletionDate));
-            }
-        }
-        public int? OblClaimID
-        {
-            get
-            {
-                return _oblClaimID;
-            }
-            set
-            {
-                _oblClaimID = value;
-                OnPropertyChanged(nameof(OblClaimID));
-            }
-        }
-        public int? PartnerID
-        {
-            get
-            {
-                return _partnerID;
-            }
-            set
-            {
-                _partnerID = value;
-                OnPropertyChanged(nameof(PartnerID));
+                _completed = value;
+                OnPropertyChanged(nameof(Completed));
+                MessageBox.Show($"SelectedOption set to: {_completed}");
             }
         }
 
         public ICommand SaveCommand { get; }
 
-        public KoltsegvetesModifyOrAddViewModel()
+        public KotelezettsegKovetelesModifyOrAddViewModel()
         {
             SaveCommand = new ViewModelCommand(ExecuteSaveCommand);
         }
@@ -159,23 +146,23 @@ namespace Szakdolgozat.ViewModels
             switch (this.EditMode)
             {
                 case EditMode.Add:
-                    AddBevetelKiadas();
+                    AddKotelezettsegKoveteles();
                     break;
                 case EditMode.Modify:
-                    ModifyBevetelKiadas();
+                    ModifyKotelezettsegKoveteles();
                     break;
             }
         }
 
-        private void AddBevetelKiadas()
+        private void AddKotelezettsegKoveteles()
         {
             try
             {
-                if (Amount != null && IncExpID != null && Currency != null && CompletionDate != null)
+                if (Amount != null && PaymentDeadline != null && OblClaimType != null)
                 {
-                    BevetelKiadas bevetelKiadas = new BevetelKiadas(Amount, Currency, IncExpID, CompletionDate, OblClaimID, PartnerID);
-                    _koltsegvetesRepository.AddKoltsegvetes(bevetelKiadas);
-                    Mediator.NotifyNewBevetelKiadasAdded(bevetelKiadas);
+                    KotelezettsegKoveteles kotelezettsegKoveteles = new KotelezettsegKoveteles(OblClaimType, Amount, Currency, PaymentDeadline, Completed);
+                    _kotelezettsegKovetelesRepository.AddKotelezettsegKoveteles(kotelezettsegKoveteles);
+                    Mediator.NotifyNewKotelezettsegKovetelesAdded(kotelezettsegKoveteles);
                     CloseWindow();
                 }
             }
@@ -185,15 +172,15 @@ namespace Szakdolgozat.ViewModels
             }
         }
 
-        private void ModifyBevetelKiadas()
+        private void ModifyKotelezettsegKoveteles()
         {
             try
             {
-                if (Amount != null && IncExpID != null && Currency != null && CompletionDate != null)
+                if (Amount != null && OblClaimType != null && PaymentDeadline != null)
                 {
-                    BevetelKiadas bevetelKiadas = new BevetelKiadas(ModifiableKoltsegvetes.ID, Amount, Currency, IncExpID, CompletionDate, OblClaimID, PartnerID);
-                    _koltsegvetesRepository.ModifyKoltsegvetes(bevetelKiadas);
-                    Mediator.NotifyModifiedBevetelKiadas(bevetelKiadas);
+                    KotelezettsegKoveteles kotelezettsegKoveteles = new KotelezettsegKoveteles(OblClaimType, Amount, Currency, PaymentDeadline, Completed);
+                    _kotelezettsegKovetelesRepository.ModifyKotelezettsegKoveteles(kotelezettsegKoveteles);
+                    Mediator.NotifyModifiedKotelezettsegKoveteles(kotelezettsegKoveteles);
                     CloseWindow();
                 }
             }

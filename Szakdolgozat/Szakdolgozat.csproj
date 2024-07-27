@@ -136,6 +136,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Converters\EnumToBooleanToVisibilityConverter.cs" />
+    <Compile Include="Converters\TinyIntToYesNoConverter.cs" />
     <Compile Include="CustomControls\BindablePasswordBox.xaml.cs">
       <DependentUpon>BindablePasswordBox.xaml</DependentUpon>
     </Compile>
@@ -171,6 +172,7 @@
     <Compile Include="ViewModels\GazdalkodoSzervezetModifyOrAddViewModel.cs" />
     <Compile Include="ViewModels\GazdalkodoSzervezetViewModel.cs" />
     <Compile Include="ViewModels\KoltsegvetesModifyOrAddViewModel.cs" />
+    <Compile Include="ViewModels\KotelezettsegKovetelesModifyOrAddViewModel.cs" />
     <Compile Include="ViewModels\KotelezettsegKovetelesViewModel.cs" />
     <Compile Include="ViewModels\MaganSzemelyekModifyOrAddViewModel.cs" />
     <Compile Include="ViewModels\MaganSzemelyekViewModel.cs" />
@@ -208,6 +210,9 @@
     </Compile>
     <Compile Include="Views\KoltsegvetesModifyOrAddView.xaml.cs">
       <DependentUpon>KoltsegvetesModifyOrAddView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\KotelezettsegKovetelesModifyOrAddView.xaml.cs">
+      <DependentUpon>KotelezettsegKovetelesModifyOrAddView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\KotelezettsegKovetelesView.xaml.cs">
       <DependentUpon>KotelezettsegKovetelesView.xaml</DependentUpon>
@@ -324,6 +329,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\KoltsegvetesModifyOrAddView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\KotelezettsegKovetelesModifyOrAddView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

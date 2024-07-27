@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using Szakdolgozat.Models;
 
 namespace Szakdolgozat.Repositories
@@ -17,7 +18,7 @@ namespace Szakdolgozat.Repositories
             {
                 connection.Open();
 
-                string query = "INSERT INTO `kotelezettsegek_kovetelesek` (`id`, `tipus`, `osszeg`, `penznem`, `kifizetes_hatarideje`, `kifizetett`) VALUES (NULL, '@tipus', '@osszeg', '@penznem', '@kifizetesHatarideje', '@kifizetett');";
+                string query = "INSERT INTO `kotelezettsegek_kovetelesek` (`id`, `tipus`, `osszeg`, `penznem`, `kifizetes_hatarideje`, `kifizetett`) VALUES (NULL, @tipus, @osszeg, @penznem, @kifizetesHatarideje, @kifizetett);";
                 using (MySqlCommand command = new MySqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@tipus", kotelezettsegKoveteles.Tipus);
@@ -39,7 +40,7 @@ namespace Szakdolgozat.Repositories
             {
                 connection.Open();
 
-                string query = "DELETE FROM `kotelezettsegek_kovetelesek` WHERE `kotelezettsegek_kovetelesek`.`id` = '@id';";
+                string query = "DELETE FROM `kotelezettsegek_kovetelesek` WHERE `kotelezettsegek_kovetelesek`.`id` = @id;";
                 using (MySqlCommand command = new MySqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@id", id);
@@ -71,7 +72,7 @@ namespace Szakdolgozat.Repositories
                             int osszeg = Convert.ToInt32(reader["osszeg"]);
                             Penznem penznem = (Penznem)reader["penznem"];
                             DateTime kifizetesHatarideje = Convert.ToDateTime(reader["kifizetes_hatarideje"]);
-                            bool kifizetett = Convert.ToBoolean(reader["kifizetett"]);
+                            Int16 kifizetett = Convert.ToInt16(reader["kifizetett"]);
 
                             KotelezettsegKoveteles item = new KotelezettsegKoveteles(id, tipus, osszeg, penznem, kifizetesHatarideje, kifizetett);
 
@@ -89,9 +90,10 @@ namespace Szakdolgozat.Repositories
             {
                 connection.Open();
 
-                string query = "UPDATE `kotelezettsegek_kovetelesek` SET `tipus`='@tipus',`osszeg`='@osszeg',`penznem`='@penznem',`kifizetes_hatarideje`='@kifizetesHatarideje',`kifizetett`='@kifizetett' WHERE `kotelezettsegek_kovetelesek`.`id` = '@id'";
+                string query = "UPDATE `kotelezettsegek_kovetelesek` SET `tipus`=@tipus,`osszeg`=@osszeg,`penznem`=@penznem,`kifizetes_hatarideje`=@kifizetesHatarideje,`kifizetett`=@kifizetett WHERE `kotelezettsegek_kovetelesek`.`id` = @id";
                 using (MySqlCommand command = new MySqlCommand(query, connection))
                 {
+                    MessageBox.Show(kotelezettsegKoveteles.Kifizetett.ToString());
                     command.Parameters.AddWithValue("@osszeg", kotelezettsegKoveteles.Osszeg);
                     command.Parameters.AddWithValue("@tipus", kotelezettsegKoveteles.Tipus);
                     command.Parameters.AddWithValue("@penznem", kotelezettsegKoveteles.Penznem);

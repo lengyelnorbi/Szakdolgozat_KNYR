@@ -25,16 +25,16 @@
                 <Border Background="White" Width="300" Height="400" BorderBrush="Black" BorderThickness="1">
                     <StackPanel Margin="25,50">
                         <TextBlock Text="Név" FontSize="14" Margin="5,15,0,0" Foreground="Black"/>
-                        <TextBox FontSize="16" x:Name="sidebar_lastnameTB" Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" Background="LightGray" HorizontalContentAlignment="Center" Margin="0,0,0,5" Height="28"/>
+                        <TextBox FontSize="16" x:Name="lastnameTB" Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" Background="LightGray" HorizontalContentAlignment="Center" Margin="0,0,0,5" Height="28"/>
 
                         <TextBlock Text="Email" FontSize="14" Margin="5,15,0,0" Foreground="Black"/>
-                        <TextBox FontSize="16" x:Name="sidebar_emailTB" Text="{Binding Email, UpdateSourceTrigger=PropertyChanged}" Background="LightGray" HorizontalContentAlignment="Center" Margin="0,0,0,5" Height="28"/>
+                        <TextBox FontSize="16" x:Name="emailTB" Text="{Binding Email, UpdateSourceTrigger=PropertyChanged}" Background="LightGray" HorizontalContentAlignment="Center" Margin="0,0,0,5" Height="28"/>
                        
                         <TextBlock Text="Telefonszám" FontSize="14" Margin="5,15,0,0" Foreground="Black"/>
-                        <TextBox FontSize="16" x:Name="sidebar_phonenumberTB" Text="{Binding Phonenumber, UpdateSourceTrigger=PropertyChanged}" Background="LightGray" HorizontalContentAlignment="Center" Margin="0,0,0,5" Height="28"/>
+                        <TextBox FontSize="16" x:Name="phonenumberTB" Text="{Binding Phonenumber, UpdateSourceTrigger=PropertyChanged}" Background="LightGray" HorizontalContentAlignment="Center" Margin="0,0,0,5" Height="28"/>
                         
                         <TextBlock Text="Lakcím" FontSize="14" Margin="5,15,0,0" Foreground="Black"/>
-                        <TextBox FontSize="16" x:Name="sidebar_firstnameTB" Text="{Binding HomeAddress, UpdateSourceTrigger=PropertyChanged}" Background="LightGray" HorizontalContentAlignment="Center" Margin="0,0,0,5" Height="28"/>
+                        <TextBox FontSize="16" x:Name="firstnameTB" Text="{Binding HomeAddress, UpdateSourceTrigger=PropertyChanged}" Background="LightGray" HorizontalContentAlignment="Center" Margin="0,0,0,5" Height="28"/>
                        
                         <StackPanel Orientation="Horizontal">
                             <Button Content="Mentés" Command="{Binding SaveCommand}" Foreground="White" Width="80" Margin="5,0,15,0"/>

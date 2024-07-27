@@ -12,7 +12,6 @@ namespace Szakdolgozat.ViewModels
     public class GazdalkodoSzervezetModifyOrAddViewModel : ViewModelBase
     {
         public event Action RequestClose;
-        private int _id;
         private string _name;
         private string _contactPerson;
         private string _phonenumber;

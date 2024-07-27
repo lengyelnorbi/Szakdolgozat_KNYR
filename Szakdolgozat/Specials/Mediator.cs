@@ -98,6 +98,24 @@ namespace Szakdolgozat.ViewModels
             BevetelKiadasModified?.Invoke(bevetelKiadas);
         }
 
+        //Visszaadja az újonnan hozzáadott kotelezettsegKoveteles-t annak a view-nak, ami feliratkozott az eseményre
+        //It gives back the new kotelezettsegKoveteles that was added to the view that subscribed to the event
+        public delegate void NewKotelezettsegKovetelesAddedEventHandler(KotelezettsegKoveteles kotelezettsegKoveteles);
+        public static event NewKotelezettsegKovetelesAddedEventHandler NewKotelezettsegKovetelesAdded;
+        public static void NotifyNewKotelezettsegKovetelesAdded(KotelezettsegKoveteles kotelezettsegKoveteles)
+        {
+            NewKotelezettsegKovetelesAdded?.Invoke(kotelezettsegKoveteles);
+        }
+
+        //Visszaadja a módosított kotelezettsegKoveteles-t annak a view-nak, ami feliratkozott az eseményre
+        //It gives back the modified kotelezettsegKoveteles to the view that subscribed to the event
+        public delegate void KotelezettsegKovetelesModifiedEventHandler(KotelezettsegKoveteles kotelezettsegKoveteles);
+        public static event KotelezettsegKovetelesModifiedEventHandler KotelezettsegKovetelesModified;
+        public static void NotifyModifiedKotelezettsegKoveteles(KotelezettsegKoveteles kotelezettsegKoveteles)
+        {
+            KotelezettsegKovetelesModified?.Invoke(kotelezettsegKoveteles);
+        }
+
         //public delegate void CheckBoxChangedEventHandler(string dataGridName);
         //public static event CheckBoxChangedEventHandler CheckBoxChanged;
         //public static void NotifyCheckBoxChanged(string dataGridName)

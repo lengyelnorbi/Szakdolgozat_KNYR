@@ -275,7 +275,7 @@ namespace Szakdolgozat.ViewModels
         {
             MaganSzemelyek = GetYourData();
             //bad example for not making deep copy, also good example for making collection references:
-            //FilteredDolgozok = Dolgozok, in this case when clearing the FilteredDolgozok in later times, it will affect the Dolgozok collection too
+            //FilteredMaganSzemelyek = MaganSzemelyek, in this case when clearing the FilteredMaganSzemelyek in later times, it will affect the MaganSzemelyek collection too
             FilteredMaganSzemelyek = new ObservableCollection<MaganSzemely>(MaganSzemelyek);
         }
 
