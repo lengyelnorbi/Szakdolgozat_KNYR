@@ -6,7 +6,8 @@
         xmlns:views="clr-namespace:Szakdolgozat.Views"
         xmlns:viewModels="clr-namespace:Szakdolgozat.ViewModels"
         mc:Ignorable="d"
-        Title="CreateChartsView" Height="600" Width="1000"
+        xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
+        Title="CreateChartsView" Height="1000" Width="1200"
         HorizontalAlignment="Center"
         VerticalAlignment="Center"
         WindowStartupLocation="CenterScreen">
@@ -15,9 +16,6 @@
         <viewModels:CreateChartsViewModel/>
     </Window.DataContext>
     <Window.Resources>
-        <DataTemplate DataType="{x:Type viewModels:SelectDataForNewChartViewModel}">
-            <views:SelectDataForNewChartView/>
-        </DataTemplate>
         <DataTemplate DataType="{x:Type viewModels:AddOptionsToNewChartViewModel}">
             <views:AddOptionsToNewChartView/>
         </DataTemplate>
@@ -29,13 +27,9 @@
                 <ColumnDefinition Width="*"></ColumnDefinition>
                 <ColumnDefinition Width="150"></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <!--<Grid Grid.Column="0">
-                <ContentControl Grid.Row="0" Content="{Binding CurrentChildView}"
-                                    Margin="25, 0, 25, 25"/>
-            </Grid>-->
             <Grid Grid.Column="0">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="150"></RowDefinition>
+                    <RowDefinition Height="350"></RowDefinition>
                     <RowDefinition Height="*"></RowDefinition>
                 </Grid.RowDefinitions>
                 <!--<StackPanel Grid.Row="0">
@@ -60,19 +54,34 @@
                         </StackPanel>
                     </StackPanel>
                 </StackPanel>-->
+                <Grid Grid.Column="0" Grid.Row="0">
+                    <lvc:CartesianChart Series="{Binding LineSeries}" LegendLocation="Bottom" Visibility="Visible">
+                        <lvc:CartesianChart.AxisY>
+                            <lvc:Axis Title="Sales" LabelFormatter="{Binding LineSeriesYFormatter}"></lvc:Axis>
+                        </lvc:CartesianChart.AxisY>
+                        <lvc:CartesianChart.AxisX>
+                            <lvc:Axis Title="Month" Labels="{Binding LineSeriesLabels}"></lvc:Axis>
+                        </lvc:CartesianChart.AxisX>
+                    </lvc:CartesianChart>
+                    <lvc:PieChart Series="{Binding Series}" LegendLocation="Right" Visibility="Hidden">
+                        <lvc:PieChart.DataTooltip>
+                            <lvc:DefaultTooltip SelectionMode="OnlySender"/>
+                        </lvc:PieChart.DataTooltip>
+                    </lvc:PieChart>
+                </Grid>
                 <Grid Grid.Row="1">
                     <TabControl x:Name="chartsTabControl" ItemsSource="{Binding Tabs,Mode=TwoWay, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}">
                     </TabControl>
                 </Grid>
             </Grid>
             <StackPanel Grid.Column="1">
-                <Button x:Name="goBackButton" Content="Vissza" Click="goBackButton_Click" Command="{Binding ShowSelectDataForNewChartViewCommand}" Visibility="Hidden"></Button>
-                <Button x:Name="nextButton" Click="Button_Click" Command="{Binding ShowAddOptionToNewChartViewCommand}" Content="Tovább" Visibility="Hidden"></Button>
-                <ComboBox x:Name="optionsCB" ItemsSource="{Binding CheckBoxes}" Grid.Column="1" Width="150" Background="White" SelectedIndex="0" SelectionChanged="ComboBox_SelectionChanged">
-                </ComboBox>
+                <!--<Button x:Name="goBackButton" Content="Vissza" Click="goBackButton_Click" Command="{Binding ShowSelectDataForNewChartViewCommand}" Visibility="Hidden"></Button>
+                <Button x:Name="nextButton" Click="Button_Click" Command="{Binding ShowAddOptionToNewChartViewCommand}" Content="Tovább" Visibility="Hidden"></Button>-->
+                <!--<ComboBox x:Name="optionsCB" ItemsSource="{Binding CheckBoxes}" Grid.Column="1" Width="150" Background="White" SelectedIndex="0" SelectionChanged="ComboBox_SelectionChanged">
+                </ComboBox>-->
                 <Button x:Name="cellSelectionTrue" Click="ChangeCellColor_Click" Content="Kiválaszt"></Button>
                 <Button x:Name="cellSelectionFalse" Click="ChangeCellColor_Click" Content="Töröl"></Button>
-                <Button Click="Button_Click_1" Content="TESZT"></Button>
+                <Button x:Name="asd" Click="asd_Click" Content="ASD"></Button>
             </StackPanel>
         </Grid>
     </Border>

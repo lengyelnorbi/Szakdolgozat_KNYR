@@ -11,12 +11,12 @@ namespace Szakdolgozat.Models
         public int ID { get; set; }
         public int Osszeg{ get; set; }
         public Penznem Penznem { get; set; }
-        public string BeKiKod { get; set; }
+        public BeKiKod BeKiKod { get; set; }
         public DateTime TeljesitesiDatum { get; set; }
         public int? KotelKovetID { get; set; }
         public int? PartnerID { get; set; }
 
-        public BevetelKiadas(int id, int osszeg, Penznem penznem, string beKiKod, DateTime teljesitesiDatum, int kotelKovetID, int partnerID)
+        public BevetelKiadas(int id, int osszeg, Penznem penznem, BeKiKod beKiKod, DateTime teljesitesiDatum, int kotelKovetID, int partnerID)
         {
             ID = id;
             Osszeg = osszeg;
@@ -26,7 +26,7 @@ namespace Szakdolgozat.Models
             KotelKovetID = kotelKovetID;
             PartnerID = partnerID;
         }
-        public BevetelKiadas(int id, int osszeg, Penznem penznem, string beKiKod, DateTime teljesitesiDatum, int? kotelKovetID = null, int? partnerID = null)
+        public BevetelKiadas(int id, int osszeg, Penznem penznem, BeKiKod beKiKod, DateTime teljesitesiDatum, int? kotelKovetID = null, int? partnerID = null)
         {
             ID = id;
             Osszeg = osszeg;
@@ -43,7 +43,7 @@ namespace Szakdolgozat.Models
                 PartnerID = partnerID;
         }
 
-        public BevetelKiadas(int osszeg, Penznem penznem, string beKiKod, DateTime teljesitesiDatum, int kotelKovetID, int partnerID)
+        public BevetelKiadas(int osszeg, Penznem penznem, BeKiKod beKiKod, DateTime teljesitesiDatum, int kotelKovetID, int partnerID)
         {
             Osszeg = osszeg;
             Penznem = penznem;
@@ -52,7 +52,7 @@ namespace Szakdolgozat.Models
             KotelKovetID = kotelKovetID;
             PartnerID = partnerID;
         }
-        public BevetelKiadas(int osszeg, Penznem penznem, string beKiKod, DateTime teljesitesiDatum, int? kotelKovetID = null, int? partnerID = null)
+        public BevetelKiadas(int osszeg, Penznem penznem, BeKiKod beKiKod, DateTime teljesitesiDatum, int? kotelKovetID = null, int? partnerID = null)
         {
             Osszeg = osszeg;
             Penznem = penznem;

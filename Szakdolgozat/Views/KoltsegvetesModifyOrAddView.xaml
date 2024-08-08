@@ -32,8 +32,8 @@
                         <ComboBox FontSize="16" x:Name="penznemTB" ItemsSource="{Binding Source={specials:EnumBindingSource {x:Type models:Penznem}}}" SelectedItem="{Binding Currency, UpdateSourceTrigger=PropertyChanged}" Background="LightGray" HorizontalContentAlignment="Center" Margin="0,0,0,5" Height="28"/>
 
                         <TextBlock Text="BeKiKód" FontSize="14" Margin="5,15,0,0" Foreground="Black"/>
-                        <TextBox FontSize="16" x:Name="beKiKodTB" Text="{Binding IncExpID, UpdateSourceTrigger=PropertyChanged}" Background="LightGray" HorizontalContentAlignment="Center" Margin="0,0,0,5" Height="28"/>
-
+                        <ComboBox FontSize="16" x:Name="beKiKodTB" ItemsSource="{Binding Source={specials:EnumBindingSource {x:Type models:BeKiKod}}}" SelectedItem="{Binding IncExpID, UpdateSourceTrigger=PropertyChanged}" Background="LightGray" HorizontalContentAlignment="Center" Margin="0,0,0,5" Height="28"/>
+                        
                         <TextBlock Text="Teljesítési Dátum" FontSize="14" Margin="5,15,0,0" Foreground="Black"/>
                         <DatePicker FontSize="16" x:Name="teljesitesiDatumTB" SelectedDate="{Binding CompletionDate, UpdateSourceTrigger=PropertyChanged}" Background="LightGray" HorizontalContentAlignment="Center" Margin="0,0,0,5" Height="28" />
 

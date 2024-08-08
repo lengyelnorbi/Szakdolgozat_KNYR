@@ -69,62 +69,6 @@ namespace Szakdolgozat.ViewModels
 
         public Dictionary<string, bool> checkboxStatuses = new Dictionary<string, bool>();
 
-        private ObservableCollection<BevetelKiadas> GetYourData()
-        {
-            ObservableCollection<BevetelKiadas> data = new ObservableCollection<BevetelKiadas>();
-
-            // Replace the connection string and query with your actual database details
-            string connectionString = "Server=localhost;Database=nyilvantarto_rendszer;User=Norbi;Password=/-j@DoZ*S-_7w@EP";
-
-            //string connectionString = "Server = localhost; Database = nyilvantarto_rendszer; Integrated Security = true; ";
-            string query = "SELECT * FROM bevetelek_kiadasok;";
-
-            using (MySqlConnection connection = new MySqlConnection(connectionString))
-            {
-                connection.Open();
-
-                using (MySqlCommand command = new MySqlCommand(query, connection))
-                {
-                    using (MySqlDataReader reader = command.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            int id = Convert.ToInt32(reader["id"]);
-                            int osszeg = Convert.ToInt32(reader["osszeg"]);
-                            Penznem penznem = (Penznem)Enum.Parse(typeof(Penznem), reader["penznem"].ToString());
-                            string beKiKod = Convert.ToString(reader["be_ki_kod"]);
-                            DateTime teljesitesiDatum = Convert.ToDateTime(reader["teljesitesi_datum"]);
-                            int kotelKovetID;
-                            if (reader["kotel_kovet_id"] != DBNull.Value)
-                            {
-                                kotelKovetID = Convert.ToInt32(reader["kotel_kovet_id"]);
-                            }
-                            else
-                            {
-                                kotelKovetID = 0;
-                            }
-
-                            int partnerID;
-                            if (reader["partner_id"] != DBNull.Value)
-                            {
-                                partnerID = Convert.ToInt32(reader["partner_id"]);
-                            }
-                            else
-                            {
-                                partnerID = 0;
-                            }
-
-                            BevetelKiadas item = new BevetelKiadas(id, osszeg, penznem, beKiKod, teljesitesiDatum, kotelKovetID, partnerID);
-
-                            data.Add(item);
-                        }
-                    }
-                }
-            }
-
-            return data;
-        }
-
         public KoltsegvetesViewModel()
         {
             _koltsegvetesRepository = new KoltsegvetesRepository();
@@ -136,7 +80,7 @@ namespace Szakdolgozat.ViewModels
             checkboxStatuses.Add("teljesitesiDatumCB", true);
             checkboxStatuses.Add("kotelKovetIDCB", true);
             checkboxStatuses.Add("partnerIDCB", true);
-            BevetelekKiadasok = GetYourData();
+            BevetelekKiadasok = _koltsegvetesRepository.GetKoltsegvetesek();
             FilteredBevetelekKiadasok = new ObservableCollection<BevetelKiadas>(BevetelekKiadasok);
             FilteredBevetelekKiadasok = new ObservableCollection<BevetelKiadas>(
                BevetelekKiadasok.Select(d => new BevetelKiadas(d.ID, d.Osszeg, d.Penznem, d.BeKiKod, d.TeljesitesiDatum, d.KotelKovetID, d.KotelKovetID)).ToList()
@@ -182,7 +126,7 @@ namespace Szakdolgozat.ViewModels
                     }
                     if (checkboxStatuses["beKiKodCB"] == true)
                     {
-                        if (d.BeKiKod.Contains(searchQuery))
+                        if (d.BeKiKod.ToString().Contains(searchQuery))
                         {
                             FilteredBevetelekKiadasok.Add(d);
                             continue;
@@ -312,7 +256,7 @@ namespace Szakdolgozat.ViewModels
 
         private void RefreshBevetelKiadas(BevetelKiadas bevetelKiadas)
         {
-            BevetelekKiadasok = GetYourData();
+            BevetelekKiadasok = _koltsegvetesRepository.GetKoltsegvetesek();
             //bad example for not making deep copy, also good example for making collection references:
             //FilteredBevetelekKiadasok = BevetelekKiadasok, in this case when clearing the FilteredBevetelekKiadasok in later times, it will affect the BevetelekKiadasok collection too
             FilteredBevetelekKiadasok = new ObservableCollection<BevetelKiadas>(BevetelekKiadasok);

@@ -70,7 +70,15 @@ namespace Szakdolgozat.Repositories
                             int id = Convert.ToInt32(reader["id"]);
                             string tipus = Convert.ToString(reader["tipus"]);
                             int osszeg = Convert.ToInt32(reader["osszeg"]);
-                            Penznem penznem = (Penznem)reader["penznem"];
+                            Penznem penznem;
+                            if (reader["penznem"] != DBNull.Value)
+                            {
+                                penznem = (Penznem)Enum.Parse(typeof(Penznem), (string)reader["penznem"], true);
+                            }
+                            else
+                            {
+                                throw new Exception("ERROR");
+                            }
                             DateTime kifizetesHatarideje = Convert.ToDateTime(reader["kifizetes_hatarideje"]);
                             Int16 kifizetett = Convert.ToInt16(reader["kifizetett"]);
 
@@ -100,7 +108,7 @@ namespace Szakdolgozat.Repositories
                     command.Parameters.AddWithValue("@kifizetesHatarideje", kotelezettsegKoveteles.KifizetesHatarideje);
                     command.Parameters.AddWithValue("@kifizetett", kotelezettsegKoveteles.Kifizetett);
                     command.Parameters.AddWithValue("@id", kotelezettsegKoveteles.ID);
-
+                    MessageBox.Show(command.ToString());
                     int count = Convert.ToInt32(command.ExecuteScalar());
 
                     return count > 0;

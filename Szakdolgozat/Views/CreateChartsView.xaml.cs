@@ -11,6 +11,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Documents.DocumentStructures;
+using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -34,47 +35,77 @@ namespace Szakdolgozat.Views
             if(DataContext is CreateChartsViewModel viewModel)
             {
                 Mediator.GetTabControl += () => chartsTabControl;
+                viewModel.SeriesType = type;
             }
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            if(DataContext is CreateChartsViewModel viewmodel)
-            {
-                MessageBox.Show(viewmodel.SeriesType);
-            }
-            goBackButton.Visibility = Visibility.Visible;
-        }
+        //private void Button_Click(object sender, RoutedEventArgs e)
+        //{
+        //    if(DataContext is CreateChartsViewModel viewmodel)
+        //    {
+        //        MessageBox.Show(viewmodel.SeriesType);
+        //    }
+        //    goBackButton.Visibility = Visibility.Visible;
+        //}
 
-        private void goBackButton_Click(object sender, RoutedEventArgs e)
-        {
-            goBackButton.Visibility = Visibility.Hidden;
-        }
+        //private void goBackButton_Click(object sender, RoutedEventArgs e)
+        //{
+        //    goBackButton.Visibility = Visibility.Hidden;
+        //}
 
         private void ChangeCellColor_Click(object sender, RoutedEventArgs e)
         {
-            if(DataContext is CreateChartsViewModel viewModel)
+            if (DataContext is CreateChartsViewModel viewModel)
             {
                 SolidColorBrush color = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#90EE90"));
-                if (chartsTabControl.SelectedContent is DataGrid dataGrid)
+                if (chartsTabControl.SelectedContent is System.Windows.Controls.DataGrid dataGrid)
                 {
+                    if (dataGrid.Name.Equals("bevetelek_kiadasok"))
+                    {
+                        foreach (var item in dataGrid.SelectedItems)
+                        {
+                            BevetelKiadas i = (BevetelKiadas)item;
+                            if (sender == cellSelectionTrue)
+                            {
+                                viewModel._selectedBevetelekKiadasok.Add(i);
+                            }
+                            else
+                            {
+                                viewModel._selectedBevetelekKiadasok.Remove(i);
+                            }
+                        }
+                    }
+                    else if (dataGrid.Name.Equals("kotelezettsegek_kovetelesek"))
+                    {
+                        foreach (var item in dataGrid.SelectedItems)
+                        {
+                            KotelezettsegKoveteles i = (KotelezettsegKoveteles)item;
+                            if (sender == cellSelectionTrue)
+                            {
+                                viewModel._selectedKotelezettsegekKovetelesek.Add(i);
+
+                            }
+                            else
+                            {
+                                viewModel._selectedKotelezettsegekKovetelesek.Remove(i);
+                            }
+                        }
+                    }
                     foreach (var cellInfo in dataGrid.SelectedCells)
                     {
                         var cellContent = cellInfo.Column.GetCellContent(cellInfo.Item);
                         if (cellContent != null)
                         {
-                            var cell = cellContent.Parent as DataGridCell;
+                            var cell = cellContent.Parent as System.Windows.Controls.DataGridCell;
                             if (cell != null)
                             {
                                 if (sender == cellSelectionTrue)
                                 {
-                                    viewModel.selectedDataGridCells.Add(cell);
                                     cell.Style = (Style)this.FindResource("DataGridCellStyle");
                                 }
                                 else
                                 {
-                                    viewModel.selectedDataGridCells.Remove(cell);
-                                    cell.ClearValue(DataGridCell.StyleProperty);
+                                    cell.ClearValue(System.Windows.Controls.DataGridCell.StyleProperty);
                                 }
                             }
                         }
@@ -82,102 +113,8 @@ namespace Szakdolgozat.Views
                 }
             }
         }
-        private void GetSelectedCells()
-        {
-            if(DataContext is CreateChartsViewModel createChartsViewModel)
-            {
-                foreach (var o in createChartsViewModel.selectedDataGridCells)
-                {
-                    var dataGridRow = GetDataGridRow(o);
-
-                    if (dataGridRow != null)
-                    {
-                        // Get the data item associated with this row
-                        var dataItem = dataGridRow.Item;
-
-                        // Get the property name from the column header
-                        var propertyName = o.Column.Header.ToString();
-
-                        // Get the property info using reflection
-                        var propertyInfo = dataItem.GetType().GetProperty(propertyName);
-                        if (propertyInfo != null)
-                        {
-                            // Get the type of the property
-                            var propertyType = propertyInfo.PropertyType;
-                            var dataGridInfo = GetDataGrid(o);
-                            if(dataGridInfo != null)
-                            {
-                                if (propertyType.ToString().ToLower().Contains("string"))
-                                {
-                                    createChartsViewModel.sortedSelectedCells[dataGridInfo.Name]["Strings"].Add(o);
-                                }
-                                else if (propertyType.ToString().ToLower().Contains("int"))
-                                {
-                                    createChartsViewModel.sortedSelectedCells[dataGridInfo.Name]["Ints"].Add(o);
-                                }
-                                else if (propertyType.ToString().ToLower().Contains("double"))
-                                {
-                                    createChartsViewModel.sortedSelectedCells[dataGridInfo.Name]["Doubles"].Add(o);
-                                }
-                                else if (propertyType.ToString().ToLower().Contains("bool"))
-                                {
-                                    createChartsViewModel.sortedSelectedCells[dataGridInfo.Name]["Bools"].Add(o);
-                                }
-                                else if (propertyType.ToString().ToLower().Contains("date"))
-                                {
-                                    createChartsViewModel.sortedSelectedCells[dataGridInfo.Name]["Dates"].Add(o);
-                                }
-                            }
-                            //System.Windows.MessageBox.Show($"Column: {propertyName}, Type: {propertyType}");
-                            //System.Windows.MessageBox.Show($"DataGrid Name: {dataGridInfo.Name}");
-                        }
-                    }
-                }
-
-                foreach (var tableEntry in createChartsViewModel.sortedSelectedCells)
-                {
-                    string tableName = tableEntry.Key;
-                    var collections = tableEntry.Value;
-
-                    MessageBox.Show($"Table: {tableName}");
-
-                    foreach (var collectionEntry in collections)
-                    {
-                        string collectionName = collectionEntry.Key;
-                        var collection = collectionEntry.Value;
-
-                        MessageBox.Show($"  {collectionName} Collection contains {collection.Count} items.");
-
-                        foreach (DataGridCell item in collection)
-                        {
-                            if(item.Content is TextBlock textBlock)
-                            {
-                                MessageBox.Show($" {textBlock.Text} ");
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        // Helper method to get the DataGridRow containing the specified DataGridCell
-        private DataGridRow GetDataGridRow(System.Windows.Controls.DataGridCell cell)
-        {
-            DependencyObject parent = cell;
-            while (parent != null && !(parent is DataGridRow))
-            {
-                parent = VisualTreeHelper.GetParent(parent);
-            }
-            return parent as DataGridRow;
-        }
-        private DataGrid GetDataGrid(DataGridCell cell)
-        {
-            DependencyObject parent = cell;
-            while (parent != null && !(parent is DataGrid))
-            {
-                parent = VisualTreeHelper.GetParent(parent);
-            }
-            return parent as DataGrid;
-        }
+        
+        
         //private void basicColumnNamesButton_Click(object sender, RoutedEventArgs e)
         //{
         //    if (uniqueColumnNamesButton.Visibility is Visibility.Hidden)
@@ -283,7 +220,7 @@ namespace Szakdolgozat.Views
         //If a click occurs on a comboboxitem, then this method prevents any changes to the combobox placeholder text
         private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            ComboBox comboBox = (ComboBox)sender;
+            System.Windows.Controls.ComboBox comboBox = (System.Windows.Controls.ComboBox)sender;
             if (comboBox.SelectedItem != null)
             {
                 string selectedName = ((ComboBoxItem)comboBox.SelectedItem).Name;
@@ -292,9 +229,17 @@ namespace Szakdolgozat.Views
             }
         }
 
-        private void Button_Click_1(object sender, RoutedEventArgs e)
+        private void asd_Click(object sender, RoutedEventArgs e)
         {
-            GetSelectedCells();
+            if(DataContext is CreateChartsViewModel viewModel)
+            {
+                viewModel.SetSeries();
+            }
         }
+
+        //private void Button_Click_1(object sender, RoutedEventArgs e)
+        //{
+        //    GetSelectedCells();
+        //}
     }
 }

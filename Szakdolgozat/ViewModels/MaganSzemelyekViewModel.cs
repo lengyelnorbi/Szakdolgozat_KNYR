@@ -67,43 +67,6 @@ namespace Szakdolgozat.ViewModels
 
         public Dictionary<string, bool> checkboxStatuses = new Dictionary<string, bool>();
 
-        private ObservableCollection<MaganSzemely> GetYourData()
-        {
-            ObservableCollection<MaganSzemely> data = new ObservableCollection<MaganSzemely>();
-
-            // Replace the connection string and query with your actual database details
-            string connectionString = "Server=localhost;Database=nyilvantarto_rendszer;User=Norbi;Password=/-j@DoZ*S-_7w@EP";
-
-            //string connectionString = "Server = localhost; Database = nyilvantarto_rendszer; Integrated Security = true; ";
-            string query = "SELECT * FROM magan_szemelyek;";
-
-            using (MySqlConnection connection = new MySqlConnection(connectionString))
-            {
-                connection.Open();
-
-                using (MySqlCommand command = new MySqlCommand(query, connection))
-                {
-                    using (MySqlDataReader reader = command.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            int id = Convert.ToInt32(reader["id"]);
-                            string nev = Convert.ToString(reader["nev"]);
-                            string telefonszam = Convert.ToString(reader["telefonszam"]);
-                            string email = Convert.ToString(reader["email"]);
-                            string lakcim = Convert.ToString(reader["lakcim"]);
-
-                            MaganSzemely item = new MaganSzemely(id, nev, telefonszam, email, lakcim);
-
-                            data.Add(item);
-                        }
-                    }
-                }
-            }
-
-            return data;
-        }
-
         public MaganSzemelyekViewModel()
         {
             _maganSzemelyRepository = new MaganSzemelyRepository();
@@ -113,7 +76,7 @@ namespace Szakdolgozat.ViewModels
             checkboxStatuses.Add("telefonszamCB", true);
             checkboxStatuses.Add("emailCB", true);
             checkboxStatuses.Add("lakcimCB", true);
-            MaganSzemelyek = GetYourData();
+            MaganSzemelyek = _maganSzemelyRepository.GetMaganSzemelyek();
             //Deep Copy - to ensure that the FilteredDolgozok does not affect the Dolgozok collection, and vica versa
             FilteredMaganSzemelyek = new ObservableCollection<MaganSzemely>(
                 MaganSzemelyek.Select(d => new MaganSzemely(d.ID, d.Nev, d.Lakcim, d.Email, d.Telefonszam)).ToList()
@@ -273,7 +236,7 @@ namespace Szakdolgozat.ViewModels
 
         private void RefreshMaganSzemely(MaganSzemely maganSzemely)
         {
-            MaganSzemelyek = GetYourData();
+            MaganSzemelyek = _maganSzemelyRepository.GetMaganSzemelyek();
             //bad example for not making deep copy, also good example for making collection references:
             //FilteredMaganSzemelyek = MaganSzemelyek, in this case when clearing the FilteredMaganSzemelyek in later times, it will affect the MaganSzemelyek collection too
             FilteredMaganSzemelyek = new ObservableCollection<MaganSzemely>(MaganSzemelyek);

@@ -140,6 +140,7 @@
     <Compile Include="CustomControls\BindablePasswordBox.xaml.cs">
       <DependentUpon>BindablePasswordBox.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Models\BeKiKod.cs" />
     <Compile Include="Models\Dolgozo.cs" />
     <Compile Include="Models\EditMode.cs" />
     <Compile Include="Models\GazdalkodoSzervezet.cs" />
@@ -155,6 +156,7 @@
     <Compile Include="Models\Penznem.cs" />
     <Compile Include="Models\Role.cs" />
     <Compile Include="Models\Felhasznalo.cs" />
+    <Compile Include="Repositories\DiagrammRepository.cs" />
     <Compile Include="Repositories\DolgozoRepository.cs" />
     <Compile Include="Repositories\GazdalkodoSzervezetRepository.cs" />
     <Compile Include="Repositories\KoltsegvetesRepository.cs" />
@@ -181,7 +183,6 @@
     <Compile Include="ViewModels\LoginViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="Specials\Mediator.cs" />
-    <Compile Include="ViewModels\SelectDataForNewChartViewModel.cs" />
     <Compile Include="ViewModels\UjDiagrammokViewModel.cs" />
     <Compile Include="ViewModels\UjStatisztikakViewModel.cs" />
     <Compile Include="ViewModels\KoltsegvetesViewModel.cs" />
@@ -234,9 +235,6 @@
     </Compile>
     <Compile Include="Views\MainView.xaml.cs">
       <DependentUpon>MainView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\SelectDataForNewChartView.xaml.cs">
-      <DependentUpon>SelectDataForNewChartView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\UjDiagrammokView.xaml.cs">
       <DependentUpon>UjDiagrammokView.xaml</DependentUpon>
@@ -361,10 +359,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\MainView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\SelectDataForNewChartView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

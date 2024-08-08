@@ -68,44 +68,6 @@ namespace Szakdolgozat.ViewModels
 
         public Dictionary<string, bool> checkboxStatuses = new Dictionary<string, bool>();
 
-        private ObservableCollection<KotelezettsegKoveteles> GetYourData()
-        {
-            ObservableCollection<KotelezettsegKoveteles> data = new ObservableCollection<KotelezettsegKoveteles>();
-
-            // Replace the connection string and query with your actual database details
-            string connectionString = "Server=localhost;Database=nyilvantarto_rendszer;User=Norbi;Password=/-j@DoZ*S-_7w@EP";
-
-            //string connectionString = "Server = localhost; Database = nyilvantarto_rendszer; Integrated Security = true; ";
-            string query = "SELECT * FROM kotelezettsegek_kovetelesek;";
-
-            using (MySqlConnection connection = new MySqlConnection(connectionString))
-            {
-                connection.Open();
-
-                using (MySqlCommand command = new MySqlCommand(query, connection))
-                {
-                    using (MySqlDataReader reader = command.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            int id = Convert.ToInt32(reader["id"]);
-                            string tipus = Convert.ToString(reader["tipus"]);
-                            int osszeg = Convert.ToInt32(reader["osszeg"]);
-                            Penznem penznem = (Penznem)Enum.Parse(typeof(Penznem), reader["penznem"].ToString());
-                            DateTime kifizetesHatarideje = Convert.ToDateTime(reader["kifizetes_hatarideje"]);
-                            Int16 kifizetett = Convert.ToInt16(reader["kifizetett"]);
-
-                            KotelezettsegKoveteles item = new KotelezettsegKoveteles(id, tipus, osszeg, penznem, kifizetesHatarideje, kifizetett);
-
-                            data.Add(item);
-                        }
-                    }
-                }
-            }
-
-            return data;
-        }
-
         public KotelezettsegKovetelesViewModel()
         {
             _kotelezettsegKovetelesRepository = new KotelezettsegKovetelesRepository();
@@ -116,7 +78,7 @@ namespace Szakdolgozat.ViewModels
             checkboxStatuses.Add("penznemCB", true);
             checkboxStatuses.Add("kifizetesHataridejeCB", true);
             checkboxStatuses.Add("kifizetettCB", true);
-            KotelezettsegekKovetelesek = GetYourData();
+            KotelezettsegekKovetelesek = _kotelezettsegKovetelesRepository.GetKotelezettsegekKovetelesek();
             FilteredKotelezettsegekKovetelesek = new ObservableCollection<KotelezettsegKoveteles>(KotelezettsegekKovetelesek);
 
             FilteredKotelezettsegekKovetelesek = new ObservableCollection<KotelezettsegKoveteles>(
@@ -285,7 +247,7 @@ namespace Szakdolgozat.ViewModels
 
         private void RefreshKotelezettsegKoveteles(KotelezettsegKoveteles kotelezettsegKoveteles)
         {
-            KotelezettsegekKovetelesek = GetYourData();
+            KotelezettsegekKovetelesek = _kotelezettsegKovetelesRepository.GetKotelezettsegekKovetelesek();
             //bad example for not making deep copy, also good example for making collection references:
             //FilteredKotelezettsegekKovetelesek = KotelezettsegekKovetelesek, in this case when clearing the FilteredKotelezettsegekKovetelesek in later times, it will affect the KotelezettsegekKovetelesek collection too
             FilteredKotelezettsegekKovetelesek = new ObservableCollection<KotelezettsegKoveteles>(KotelezettsegekKovetelesek);

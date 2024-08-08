@@ -16,7 +16,7 @@ namespace Szakdolgozat.ViewModels
         private int _amount;
         private Penznem _currency;
         //Expenditure - kiadás, Income - bevétel
-        private string _incExpID;
+        private BeKiKod _incExpID;
         private DateTime _completionDate = DateTime.Now;
         //Obligation - kötelezettség, Claim - követelés
         private int? _oblClaimID;
@@ -93,7 +93,7 @@ namespace Szakdolgozat.ViewModels
                 OnPropertyChanged(nameof(Currency));
             }
         }
-        public string IncExpID
+        public BeKiKod IncExpID
         {
             get
             {

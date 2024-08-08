@@ -68,43 +68,6 @@ namespace Szakdolgozat.ViewModels
 
         public Dictionary<string, bool> checkboxStatuses = new Dictionary<string, bool>();
 
-        private ObservableCollection<GazdalkodoSzervezet> GetYourData()
-        {
-            ObservableCollection<GazdalkodoSzervezet> data = new ObservableCollection<GazdalkodoSzervezet>();
-
-            // Replace the connection string and query with your actual database details
-            string connectionString = "Server=localhost;Database=nyilvantarto_rendszer;User=Norbi;Password=/-j@DoZ*S-_7w@EP";
-
-            //string connectionString = "Server = localhost; Database = nyilvantarto_rendszer; Integrated Security = true; ";
-            string query = "SELECT * FROM gazdalkodo_szervezetek;";
-
-            using (MySqlConnection connection = new MySqlConnection(connectionString))
-            {
-                connection.Open();
-
-                using (MySqlCommand command = new MySqlCommand(query, connection))
-                {
-                    using (MySqlDataReader reader = command.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            int id = Convert.ToInt32(reader["id"]);
-                            string nev = Convert.ToString(reader["nev"]);
-                            string kapcsolattarto = Convert.ToString(reader["kapcsolattarto"]);
-                            string email = Convert.ToString(reader["email"]);
-                            string telefonszam = Convert.ToString(reader["telefonszam"]);
-
-                            GazdalkodoSzervezet item = new GazdalkodoSzervezet(id, nev, kapcsolattarto, email, telefonszam);
-
-                            data.Add(item);
-                        }
-                    }
-                }
-            }
-
-            return data;
-        }
-
         public GazdalkodoSzervezetViewModel()
         {
             _gazdalkodoSzervezetRepository = new GazdalkodoSzervezetRepository();
@@ -114,7 +77,7 @@ namespace Szakdolgozat.ViewModels
             checkboxStatuses.Add("kapcsolattartoCB", true);
             checkboxStatuses.Add("emailCB", true);
             checkboxStatuses.Add("telefonszamCB", true);
-            GazdalkodoSzervezetek = GetYourData();
+            GazdalkodoSzervezetek = _gazdalkodoSzervezetRepository.GetGazdalkodoSzervezetek();
             FilteredGazdalkodoSzervezetek = new ObservableCollection<GazdalkodoSzervezet>(
                 GazdalkodoSzervezetek.Select(d => new GazdalkodoSzervezet(d.ID, d.Nev, d.Kapcsolattarto, d.Email, d.Telefonszam)).ToList()
             );
@@ -266,7 +229,7 @@ namespace Szakdolgozat.ViewModels
 
         private void RefreshGazdalkodoSzervezet(GazdalkodoSzervezet gazdalkodoSzervezet)
         {
-            GazdalkodoSzervezetek = GetYourData();
+            GazdalkodoSzervezetek = _gazdalkodoSzervezetRepository.GetGazdalkodoSzervezetek();
             //bad example for not making deep copy, also good example for making collection references:
             //FilteredGazdalkodoSzervezetek = GazdalkodoSzervezetek, in this case when clearing the FilteredGazdalkodoSzervezetek in later times, it will affect the GazdalkodoSzervezetek collection too
             FilteredGazdalkodoSzervezetek = new ObservableCollection<GazdalkodoSzervezet>(GazdalkodoSzervezetek);

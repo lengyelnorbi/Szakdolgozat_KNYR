@@ -1,16 +1,9 @@
 ﻿using LiveCharts.Wpf;
 using LiveCharts;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
 using Szakdolgozat.Views;
-using System.Windows;
-using System.Diagnostics;
 using LiveCharts.Defaults;
-using LiveCharts.Wpf.Charts.Base;
 using System.Windows.Media;
 
 namespace Szakdolgozat.ViewModels
@@ -115,6 +108,7 @@ namespace Szakdolgozat.ViewModels
             {
                 Title = "Series 4",
                 Values = new ChartValues<double> { 5, 3, 2, 4 },
+                //Line and point designs
                 LineSmoothness = 0, //0: straight lines, 1: really smooth lines
                 PointGeometry = Geometry.Parse("m 25 70.36218 20 -28 -20 22 -8 -6 z"),
                 PointGeometrySize = 50,
@@ -156,7 +150,7 @@ namespace Szakdolgozat.ViewModels
                 new PieSeries
                 {
                     Title = "Chrome",
-                    Values = new ChartValues<ObservableValue> { new ObservableValue(8) },
+                    Values = new ChartValues<ObservableValue> { new ObservableValue(8), new ObservableValue(2), new ObservableValue(5) },
                     DataLabels = true
                 },
                 new PieSeries

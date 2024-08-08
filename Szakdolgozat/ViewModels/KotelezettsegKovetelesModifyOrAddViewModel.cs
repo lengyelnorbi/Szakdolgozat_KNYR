@@ -178,7 +178,7 @@ namespace Szakdolgozat.ViewModels
             {
                 if (Amount != null && OblClaimType != null && PaymentDeadline != null)
                 {
-                    KotelezettsegKoveteles kotelezettsegKoveteles = new KotelezettsegKoveteles(OblClaimType, Amount, Currency, PaymentDeadline, Completed);
+                    KotelezettsegKoveteles kotelezettsegKoveteles = new KotelezettsegKoveteles(ModifiableKotelezettsegKoveteles.ID, OblClaimType, Amount, Currency, PaymentDeadline, Completed);
                     _kotelezettsegKovetelesRepository.ModifyKotelezettsegKoveteles(kotelezettsegKoveteles);
                     Mediator.NotifyModifiedKotelezettsegKoveteles(kotelezettsegKoveteles);
                     CloseWindow();

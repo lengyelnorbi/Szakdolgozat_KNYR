@@ -79,7 +79,15 @@ namespace Szakdolgozat.Repositories
                             {
                                 throw new Exception("ERROR");
                             }
-                            string beKiKod = Convert.ToString(reader["be_ki_kod"]);
+                            BeKiKod beKiKod;
+                            if (reader["be_ki_kod"] != DBNull.Value)
+                            {
+                                beKiKod = (BeKiKod)Enum.Parse(typeof(BeKiKod), (string)reader["be_ki_kod"], true);
+                            }
+                            else
+                            {
+                                throw new Exception("ERROR");
+                            }
                             DateTime teljesitesiDatum = Convert.ToDateTime(reader["teljesitesi_datum"]);
                             int kotelKovetID;
                             if (reader["kotel_kovet_id"] != DBNull.Value)

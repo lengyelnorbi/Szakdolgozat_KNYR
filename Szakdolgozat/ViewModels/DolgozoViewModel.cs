@@ -92,41 +92,6 @@ namespace Szakdolgozat.ViewModels
 
         public Dictionary<string, bool> checkboxStatuses = new Dictionary<string, bool>();
 
-        private ObservableCollection<Dolgozo> GetYourData()
-        {
-            ObservableCollection<Dolgozo> data = new ObservableCollection<Dolgozo>();
-
-            // Replace the connection string and query with your actual database details
-            string connectionString = "Server=localhost;Database=nyilvantarto_rendszer;User=Norbi;Password=/-j@DoZ*S-_7w@EP";
-
-            //string connectionString = "Server = localhost; Database = nyilvantarto_rendszer; Integrated Security = true; ";
-            string query = "SELECT * FROM dolgozok;";
-
-            using (MySqlConnection connection = new MySqlConnection(connectionString))
-            {
-                connection.Open();
-
-                using (MySqlCommand command = new MySqlCommand(query, connection))
-                {
-                    using (MySqlDataReader reader = command.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            int id = Convert.ToInt32(reader["id"]);
-                            string vezeteknev = Convert.ToString(reader["vezeteknev"]);
-                            string keresztnev = Convert.ToString(reader["keresztnev"]);
-                            string email = Convert.ToString(reader["email"]);
-                            string telefonszam = Convert.ToString(reader["telefonszam"]);
-
-                            Dolgozo item = new Dolgozo(id, vezeteknev, keresztnev, email, telefonszam);
-
-                            data.Add(item);
-                        }
-                    }
-                }
-            }
-            return data;
-        }
 
         public DolgozoViewModel()
         {
@@ -298,7 +263,7 @@ namespace Szakdolgozat.ViewModels
         
         private void RefreshDolgozok(Dolgozo dolgozo) 
         {
-            Dolgozok = GetYourData();
+            Dolgozok = _dolgozoRepository.GetDolgozok();
             //bad example for not making deep copy, also good example for making collection references:
             //FilteredDolgozok = Dolgozok, in this case when clearing the FilteredDolgozok in later times, it will affect the Dolgozok collection too
             FilteredDolgozok = new ObservableCollection<Dolgozo>(Dolgozok);
