@@ -35,9 +35,75 @@ namespace Szakdolgozat.Views
             if(DataContext is CreateChartsViewModel viewModel)
             {
                 Mediator.GetTabControl += () => chartsTabControl;
+                Mediator.SetSeriesVisibility += SetDiagramsVisibility;
                 viewModel.SeriesType = type;
             }
+
+            mindCB.Checked += CheckBox_Checked;
+            idCB.Checked += CheckBox_Checked;
+            osszegCB.Checked += CheckBox_Checked;
+            penznemCB.Checked += CheckBox_Checked;
+            bekikodCB.Checked += CheckBox_Checked;
+            teljesitesiDatumCB.Checked += CheckBox_Checked;
+            kotelKovetIDCB.Checked += CheckBox_Checked;
+            partnerIDCB.Checked += CheckBox_Checked;
+            mindCB.Unchecked += Checkbox_Unchecked;
+            idCB.Unchecked += Checkbox_Unchecked;
+            osszegCB.Unchecked += Checkbox_Unchecked;
+            penznemCB.Unchecked += Checkbox_Unchecked;
+            bekikodCB.Unchecked += Checkbox_Unchecked;
+            teljesitesiDatumCB.Unchecked += Checkbox_Unchecked;
+            kotelKovetIDCB.Unchecked += Checkbox_Unchecked;
+            partnerIDCB.Unchecked += Checkbox_Unchecked;
+
+            GroupByBeKiKodCB.Checked += GroupByCheckBox_Checked;
+            GroupByBeKiKodCB.Unchecked += GroupByCheckBox_Unchecked;
+            GroupByPenznemCB.Checked += GroupByCheckBox_Checked;
+            GroupByPenznemCB.Unchecked += GroupByCheckBox_Unchecked;
         }
+
+        private void GroupByCheckBox_Unchecked(object sender, RoutedEventArgs e)
+        {
+            if (sender is System.Windows.Controls.CheckBox checkBox)
+            {
+                if (DataContext is CreateChartsViewModel createChartsView)
+                {
+                    switch (checkBox.Name)
+                    {
+                        case "GroupByPenznemCB":
+                            createChartsView.GroupByPenznemCheckBoxIsChecked = false;
+                            break;
+                        case "GroupByBeKiKodCB":
+                            createChartsView.GroupByBeKiKodCheckBoxIsChecked = false;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+        }
+
+        private void GroupByCheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            if (sender is System.Windows.Controls.CheckBox checkBox)
+            {
+                if (DataContext is CreateChartsViewModel createChartsView)
+                {
+                    switch (checkBox.Name)
+                    {
+                        case "GroupByPenznemCB":
+                            createChartsView.GroupByPenznemCheckBoxIsChecked = true;
+                            break;
+                        case "GroupByBeKiKodCB":
+                            createChartsView.GroupByBeKiKodCheckBoxIsChecked = true;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+        }
+
 
         //private void Button_Click(object sender, RoutedEventArgs e)
         //{
@@ -113,7 +179,26 @@ namespace Szakdolgozat.Views
                 }
             }
         }
-        
+        private void SetDiagramsVisibility(string seriesType)
+        {
+            switch (seriesType)
+            {
+                case "DoghnutSeries":
+                    pieSeries.Visibility = Visibility.Visible;
+                    break;
+                case "RowSeries":
+                    break;
+                case "StackedSeries":
+                    break;
+                case "BasicColumnSeries":
+                    break;
+                case "LineSeries":
+                    lineSeries.Visibility = Visibility.Visible;
+                    break;
+                default:
+                    break;
+            }
+        }
         
         //private void basicColumnNamesButton_Click(object sender, RoutedEventArgs e)
         //{
@@ -224,7 +309,7 @@ namespace Szakdolgozat.Views
             if (comboBox.SelectedItem != null)
             {
                 string selectedName = ((ComboBoxItem)comboBox.SelectedItem).Name;
-                if (!selectedName.Equals("datafilter"))
+                if (!selectedName.Equals("CB_default_text"))
                     comboBox.SelectedIndex = 0;
             }
         }
@@ -234,6 +319,109 @@ namespace Szakdolgozat.Views
             if(DataContext is CreateChartsViewModel viewModel)
             {
                 viewModel.SetSeries();
+            }
+        }
+
+        private void CheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            if (sender is System.Windows.Controls.CheckBox checkBox)
+            {
+                if (DataContext is CreateChartsViewModel createChartsView)
+                {
+                    try
+                    {
+                        switch (checkBox.Name)
+                        {
+                            case "mindCB":
+                                createChartsView.checkboxStatuses["mindCB"] = true;
+                                createChartsView.checkboxStatuses["idCB"] = true;
+                                idCB.IsChecked = true;
+                                createChartsView.checkboxStatuses["osszegCB"] = true;
+                                osszegCB.IsChecked = true;
+                                createChartsView.checkboxStatuses["penznemCB"] = true;
+                                penznemCB.IsChecked = true;
+                                createChartsView.checkboxStatuses["bekikodCB"] = true;
+                                bekikodCB.IsChecked = true;
+                                createChartsView.checkboxStatuses["teljesitesiDatumCB"] = true;
+                                teljesitesiDatumCB.IsChecked = true;
+                                createChartsView.checkboxStatuses["kotelKovetIDCB"] = true;
+                                kotelKovetIDCB.IsChecked = true;
+                                createChartsView.checkboxStatuses["partnerIDCB"] = true;
+                                partnerIDCB.IsChecked = true;
+                                break;
+                            case "idCB":
+                                createChartsView.checkboxStatuses["idCB"] = true;
+                                break;
+                            case "osszegCB":
+                                createChartsView.checkboxStatuses["osszegCB"] = true;
+                                break;
+                            case "penznemCB":
+                                createChartsView.checkboxStatuses["penznemCB"] = true;
+                                break;
+                            case "bekikodCB":
+                                createChartsView.checkboxStatuses["bekikodCB"] = true;
+                                break;
+                            case "teljesitesiDatumCB":
+                                createChartsView.checkboxStatuses["teljesitesiDatumCB"] = true;
+                                break;
+                            case "kotelKovetIDCB":
+                                createChartsView.checkboxStatuses["kotelKovetIDCB"] = true;
+                                break;
+                            case "partnerIDCB":
+                                createChartsView.checkboxStatuses["partnerIDCB"] = true;
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+
+                    }
+                    createChartsView.UpdateSearch(createChartsView.SearchQuery);
+                }
+            }
+
+        }
+        
+
+        private void Checkbox_Unchecked(object sender, RoutedEventArgs e)
+        {
+            if (sender is System.Windows.Controls.CheckBox checkBox)
+            {
+                if (DataContext is CreateChartsViewModel createChartsView)
+                {
+                    switch (checkBox.Name)
+                    {
+                        case "mindCB":
+                            createChartsView.checkboxStatuses["mindCB"] = false;
+                            break;
+                        case "idCB":
+                            createChartsView.checkboxStatuses["idCB"] = false;
+                            break;
+                        case "osszegCB":
+                            createChartsView.checkboxStatuses["osszegCB"] = false;
+                            break;
+                        case "penznemCB":
+                            createChartsView.checkboxStatuses["penznemCB"] = false;
+                            break;
+                        case "bekikodCB":
+                            createChartsView.checkboxStatuses["bekikodCB"] = false;
+                            break;
+                        case "teljesitesiDatumCB":
+                            createChartsView.checkboxStatuses["teljesitesiDatumCB"] = false;
+                            break;
+                        case "kotelKovetIDCB":
+                            createChartsView.checkboxStatuses["kotelKovetIDCB"] = false;
+                            break;
+                        case "partnerIDCB":
+                            createChartsView.checkboxStatuses["partnerIDCB"] = false;
+                            break;
+                        default:
+                            break;
+                    }
+                    createChartsView.UpdateSearch(createChartsView.SearchQuery);
+                }
             }
         }
 

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
+using System.Windows.Media;
 using Szakdolgozat.Models;
 
 namespace Szakdolgozat.ViewModels
@@ -129,6 +130,27 @@ namespace Szakdolgozat.ViewModels
         public static TabControl NotifyGetTabControl()
         {
             return GetTabControl?.Invoke();
+        }
+
+        public delegate void SetSeriesVisibilityEventHandler(string seriesType);
+        public static event SetSeriesVisibilityEventHandler SetSeriesVisibility;
+        public static void NotifySetSeriesVisibility(string seriesType)
+        {
+            SetSeriesVisibility?.Invoke(seriesType);
+        }
+
+        public delegate void HideOrShowLineSeriesEventHandler(string name, bool isSelected);
+        public static event HideOrShowLineSeriesEventHandler HideOrShowLineSeries;
+        public static void NotifyHideOrShowLineSeries(string name, bool isSelected)
+        {
+            HideOrShowLineSeries?.Invoke(name, isSelected);
+        }
+
+        public delegate void SetLineSeriesNewColorEventHandler(string name, SolidColorBrush color);
+        public static event SetLineSeriesNewColorEventHandler SetLineSeriesNewColor;
+        public static void NotifySetLineSeriesNewColor(string name, SolidColorBrush color)
+        {
+            SetLineSeriesNewColor?.Invoke(name, color);
         }
     }
 }

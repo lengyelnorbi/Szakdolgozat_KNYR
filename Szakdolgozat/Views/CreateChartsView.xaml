@@ -5,8 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:views="clr-namespace:Szakdolgozat.Views"
         xmlns:viewModels="clr-namespace:Szakdolgozat.ViewModels"
+        xmlns:converters="clr-namespace:Szakdolgozat.Converters"
         mc:Ignorable="d"
-        xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf" xmlns:xctk1="http://materialdesigninxaml.net/winfx/xaml/themes"
         Title="CreateChartsView" Height="1000" Width="1200"
         HorizontalAlignment="Center"
         VerticalAlignment="Center"
@@ -20,69 +22,146 @@
             <views:AddOptionsToNewChartView/>
         </DataTemplate>
         <BooleanToVisibilityConverter x:Key="BoolToVis" />
+        <converters:BrushToColorConverter x:Key="BrushToColorConverter" />
     </Window.Resources>
     <Border>
         <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"></ColumnDefinition>
-                <ColumnDefinition Width="150"></ColumnDefinition>
-            </Grid.ColumnDefinitions>
-            <Grid Grid.Column="0">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="350"></RowDefinition>
-                    <RowDefinition Height="*"></RowDefinition>
-                </Grid.RowDefinitions>
-                <!--<StackPanel Grid.Row="0">
-                    <StackPanel>
-                        <TextBlock Text="Kattintson arra a lehetőségre, amit szeretne választani!" FontSize="20"></TextBlock>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="350"></RowDefinition>
+                <RowDefinition Height="*"></RowDefinition>
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0">
+                <lvc:CartesianChart x:Name="lineSeries" Series="{Binding LineSeries}" LegendLocation="Bottom" Visibility="Hidden">
+                    <lvc:CartesianChart.AxisY>
+                        <lvc:Axis Title="Sales" LabelFormatter="{Binding LineSeriesYFormatter}"></lvc:Axis>
+                    </lvc:CartesianChart.AxisY>
+                    <lvc:CartesianChart.AxisX>
+                        <lvc:Axis Title="Month" Labels="{Binding LineSeriesLabels}"></lvc:Axis>
+                    </lvc:CartesianChart.AxisX>
+                </lvc:CartesianChart>
+                <lvc:PieChart x:Name="pieSeries" Series="{Binding Series}" LegendLocation="Right" Visibility="Hidden">
+                    <lvc:PieChart.DataTooltip>
+                        <lvc:DefaultTooltip SelectionMode="OnlySender"/>
+                    </lvc:PieChart.DataTooltip>
+                </lvc:PieChart>
+            </Grid>
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                    <ColumnDefinition Width="350"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="120"/>
+                    </Grid.RowDefinitions>
+                    <TabControl Grid.Row="0" x:Name="chartsTabControl" ItemsSource="{Binding Tabs,Mode=TwoWay, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}">
+                    </TabControl>
+                    <StackPanel Grid.Row="1" Orientation="Vertical">
                         <StackPanel Orientation="Horizontal">
-                            <Button x:Name="uniqueColumnNamesButton" Click="uniqueColumnNamesButton_Click" Content="Egyedi Oszlop Nevek"></Button>
-                            <Button x:Name="basicColumnNamesButton" Click="basicColumnNamesButton_Click" Content="Alap Oszlop Nevek"></Button>
-                        </StackPanel>
-                    </StackPanel>
-                    <StackPanel Visibility="Hidden" x:Name="basicColumnNameOptions">
-                        <TextBlock Text="Válasszon egyet a felsoroltak közül, majd pipálja be a kívánt oszlop neveket!" FontSize="18"></TextBlock>
-                        <StackPanel Orientation="Horizontal">
-                            <ComboBox x:Name="monthsCombobox" Grid.Column="1" Width="150" Background="White" SelectedIndex="0" SelectionChanged="ComboBox_SelectionChanged">
-                                <ComboBoxItem x:Name="Month_CB_default_text" IsEnabled="False" Visibility="Collapsed">
-                                    <TextBlock Text="Hónapok"/>
+                            <StackPanel  x:Name="pnlSearchBar" Margin="10,10,0,0">
+                                <Grid Width="300" HorizontalAlignment="Left">
+                                    <TextBlock VerticalAlignment="Center" Foreground="#B0B9C6" IsHitTestVisible="False"
+Panel.ZIndex="1" Text="Keresés" Margin="10,0,0,0"
+Visibility="{Binding ElementName=searchBarInput, Path=Text.IsEmpty, Converter={StaticResource BoolToVis}}" />
+                                    <TextBox x:Name="searchBarInput"
+            Text="{Binding SearchQuery, UpdateSourceTrigger=PropertyChanged}"
+            Style="{StaticResource CustomTextBoxStyle}">
+                                    </TextBox>
+                                </Grid>
+                            </StackPanel>
+                            <ComboBox VerticalAlignment="Top" Margin="10,12,0,0" Width="120" Background="White" SelectedIndex="0" SelectionChanged="ComboBox_SelectionChanged">
+                                <ComboBoxItem x:Name="CB_default_text" IsEnabled="False" Visibility="Collapsed">
+                                    <TextBlock Text="Keresési opciók"/>
+                                </ComboBoxItem>
+                                <ComboBoxItem IsEnabled="True">
+                                    <CheckBox x:Name="mindCB" IsChecked="True">
+                                        <TextBlock Text="Mind"></TextBlock>
+                                    </CheckBox>
+                                </ComboBoxItem>
+                                <ComboBoxItem>
+                                    <CheckBox x:Name="idCB" IsChecked="True">
+                                        <TextBlock Text="ID"></TextBlock>
+                                    </CheckBox>
+                                </ComboBoxItem>
+                                <ComboBoxItem>
+                                    <CheckBox x:Name="osszegCB" IsChecked="True">
+                                        <TextBlock Text="Összeg"></TextBlock>
+                                    </CheckBox>
+                                </ComboBoxItem>
+                                <ComboBoxItem>
+                                    <CheckBox x:Name="penznemCB" IsChecked="True">
+                                        <TextBlock Text="Pénznem"></TextBlock>
+                                    </CheckBox>
+                                </ComboBoxItem>
+                                <ComboBoxItem>
+                                    <CheckBox x:Name="bekikodCB" IsChecked="True">
+                                        <TextBlock Text="Be Ki Kód"></TextBlock>
+                                    </CheckBox>
+                                </ComboBoxItem>
+                                <ComboBoxItem>
+                                    <CheckBox x:Name="teljesitesiDatumCB" IsChecked="True">
+                                        <TextBlock Text="Teljesítési Dátum"></TextBlock>
+                                    </CheckBox>
+                                </ComboBoxItem>
+                                <ComboBoxItem>
+                                    <CheckBox x:Name="kotelKovetIDCB" IsChecked="True">
+                                        <TextBlock Text="Kötel Követ ID"></TextBlock>
+                                    </CheckBox>
+                                </ComboBoxItem>
+                                <ComboBoxItem>
+                                    <CheckBox x:Name="partnerIDCB" IsChecked="True">
+                                        <TextBlock Text="Partner ID"></TextBlock>
+                                    </CheckBox>
                                 </ComboBoxItem>
                             </ComboBox>
-                            <ComboBox Width="150"></ComboBox>
-                            <ComboBox Width="150"></ComboBox>
-                            <ComboBox Width="150"></ComboBox>
+                        </StackPanel>
+                        <StackPanel Orientation="Vertical" Margin="10,20,0,0">
+                            <TextBlock Text="Csoportosítási Opciók"/>
+                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                <CheckBox x:Name="GroupByPenznemCB" IsChecked="False" Margin="0,0,20,0">
+                                    <TextBlock Text="Penznem" Margin="0,0,0,3"/>
+                                </CheckBox>
+                                <CheckBox x:Name="GroupByBeKiKodCB" IsChecked="False" Margin="0,0,0,0">
+                                    <TextBlock Text="BeKiKód" Margin="0,0,0,3"/>
+                                </CheckBox>
+                            </StackPanel>
                         </StackPanel>
                     </StackPanel>
-                </StackPanel>-->
-                <Grid Grid.Column="0" Grid.Row="0">
-                    <lvc:CartesianChart Series="{Binding LineSeries}" LegendLocation="Bottom" Visibility="Visible">
-                        <lvc:CartesianChart.AxisY>
-                            <lvc:Axis Title="Sales" LabelFormatter="{Binding LineSeriesYFormatter}"></lvc:Axis>
-                        </lvc:CartesianChart.AxisY>
-                        <lvc:CartesianChart.AxisX>
-                            <lvc:Axis Title="Month" Labels="{Binding LineSeriesLabels}"></lvc:Axis>
-                        </lvc:CartesianChart.AxisX>
-                    </lvc:CartesianChart>
-                    <lvc:PieChart Series="{Binding Series}" LegendLocation="Right" Visibility="Hidden">
-                        <lvc:PieChart.DataTooltip>
-                            <lvc:DefaultTooltip SelectionMode="OnlySender"/>
-                        </lvc:PieChart.DataTooltip>
-                    </lvc:PieChart>
                 </Grid>
-                <Grid Grid.Row="1">
-                    <TabControl x:Name="chartsTabControl" ItemsSource="{Binding Tabs,Mode=TwoWay, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}">
-                    </TabControl>
-                </Grid>
+                <StackPanel Grid.Row="1" Grid.Column="1">
+                    <Button x:Name="cellSelectionTrue" Click="ChangeCellColor_Click" Content="Kiválaszt"></Button>
+                    <Button x:Name="cellSelectionFalse" Click="ChangeCellColor_Click" Content="Töröl"></Button>
+                    <Button x:Name="asd" Click="asd_Click" Content="ASD"></Button>
+                    <Button x:Name="asd2" Content="ASD2" Command="{Binding TesztCommand}"></Button>
+                    <Grid>
+                        <DataGrid ItemsSource="{Binding GroupBySelections}" AutoGenerateColumns="False" HeadersVisibility="Column" Margin="10">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*" IsReadOnly="True" />
+                                <DataGridCheckBoxColumn Header="Selected" Binding="{Binding IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="*" />
+
+                                <DataGridTemplateColumn Header="Color" Width="*">
+                                    <!-- Display Template -->
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <xctk:ColorPicker 
+SelectedColor="{Binding Color, Mode=TwoWay, Converter={StaticResource BrushToColorConverter}, UpdateSourceTrigger=PropertyChanged}" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+
+                                    <!-- Editing Template -->
+                                    <DataGridTemplateColumn.CellEditingTemplate>
+                                        <DataTemplate>
+                                            <xctk:ColorPicker 
+                        SelectedColor="{Binding Color, Mode=TwoWay, Converter={StaticResource BrushToColorConverter}, UpdateSourceTrigger=PropertyChanged}" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellEditingTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Grid>
+                </StackPanel>
             </Grid>
-            <StackPanel Grid.Column="1">
-                <!--<Button x:Name="goBackButton" Content="Vissza" Click="goBackButton_Click" Command="{Binding ShowSelectDataForNewChartViewCommand}" Visibility="Hidden"></Button>
-                <Button x:Name="nextButton" Click="Button_Click" Command="{Binding ShowAddOptionToNewChartViewCommand}" Content="Tovább" Visibility="Hidden"></Button>-->
-                <!--<ComboBox x:Name="optionsCB" ItemsSource="{Binding CheckBoxes}" Grid.Column="1" Width="150" Background="White" SelectedIndex="0" SelectionChanged="ComboBox_SelectionChanged">
-                </ComboBox>-->
-                <Button x:Name="cellSelectionTrue" Click="ChangeCellColor_Click" Content="Kiválaszt"></Button>
-                <Button x:Name="cellSelectionFalse" Click="ChangeCellColor_Click" Content="Töröl"></Button>
-                <Button x:Name="asd" Click="asd_Click" Content="ASD"></Button>
-            </StackPanel>
         </Grid>
     </Border>
 </Window>
