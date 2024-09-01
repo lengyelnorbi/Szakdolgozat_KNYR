@@ -55,7 +55,7 @@
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="120"/>
                     </Grid.RowDefinitions>
-                    <TabControl Grid.Row="0" x:Name="chartsTabControl" ItemsSource="{Binding Tabs,Mode=TwoWay, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}">
+                    <TabControl SelectionChanged="chartsTabControl_SelectionChanged"  Grid.Row="0" x:Name="chartsTabControl" ItemsSource="{Binding Tabs,Mode=TwoWay, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}">
                     </TabControl>
                     <StackPanel Grid.Row="1" Orientation="Vertical">
                         <StackPanel Orientation="Horizontal">
@@ -70,48 +70,88 @@ Visibility="{Binding ElementName=searchBarInput, Path=Text.IsEmpty, Converter={S
                                     </TextBox>
                                 </Grid>
                             </StackPanel>
-                            <ComboBox VerticalAlignment="Top" Margin="10,12,0,0" Width="120" Background="White" SelectedIndex="0" SelectionChanged="ComboBox_SelectionChanged">
-                                <ComboBoxItem x:Name="CB_default_text" IsEnabled="False" Visibility="Collapsed">
+                            <ComboBox Visibility="Visible" x:Name="KoltsegvetesCB" VerticalAlignment="Top" Margin="10,12,0,0" Width="120" Background="White" SelectedIndex="0" SelectionChanged="ComboBox_SelectionChanged">
+                                <ComboBoxItem x:Name="Koltsegvetes_CB_default_text" IsEnabled="False" Visibility="Collapsed">
                                     <TextBlock Text="Keresési opciók"/>
                                 </ComboBoxItem>
                                 <ComboBoxItem IsEnabled="True">
-                                    <CheckBox x:Name="mindCB" IsChecked="True">
+                                    <CheckBox x:Name="koltsegvetes_mindCB" IsChecked="True">
                                         <TextBlock Text="Mind"></TextBlock>
                                     </CheckBox>
                                 </ComboBoxItem>
                                 <ComboBoxItem>
-                                    <CheckBox x:Name="idCB" IsChecked="True">
+                                    <CheckBox x:Name="koltsegvetes_idCB" IsChecked="True">
                                         <TextBlock Text="ID"></TextBlock>
                                     </CheckBox>
                                 </ComboBoxItem>
                                 <ComboBoxItem>
-                                    <CheckBox x:Name="osszegCB" IsChecked="True">
+                                    <CheckBox x:Name="koltsegvetes_osszegCB" IsChecked="True">
                                         <TextBlock Text="Összeg"></TextBlock>
                                     </CheckBox>
                                 </ComboBoxItem>
                                 <ComboBoxItem>
-                                    <CheckBox x:Name="penznemCB" IsChecked="True">
+                                    <CheckBox x:Name="koltsegvetes_penznemCB" IsChecked="True">
                                         <TextBlock Text="Pénznem"></TextBlock>
                                     </CheckBox>
                                 </ComboBoxItem>
                                 <ComboBoxItem>
-                                    <CheckBox x:Name="bekikodCB" IsChecked="True">
+                                    <CheckBox x:Name="koltsegvetes_bekikodCB" IsChecked="True">
                                         <TextBlock Text="Be Ki Kód"></TextBlock>
                                     </CheckBox>
                                 </ComboBoxItem>
                                 <ComboBoxItem>
-                                    <CheckBox x:Name="teljesitesiDatumCB" IsChecked="True">
+                                    <CheckBox x:Name="koltsegvetes_teljesitesiDatumCB" IsChecked="True">
                                         <TextBlock Text="Teljesítési Dátum"></TextBlock>
                                     </CheckBox>
                                 </ComboBoxItem>
                                 <ComboBoxItem>
-                                    <CheckBox x:Name="kotelKovetIDCB" IsChecked="True">
+                                    <CheckBox x:Name="koltsegvetes_kotelKovetIDCB" IsChecked="True">
                                         <TextBlock Text="Kötel Követ ID"></TextBlock>
                                     </CheckBox>
                                 </ComboBoxItem>
                                 <ComboBoxItem>
-                                    <CheckBox x:Name="partnerIDCB" IsChecked="True">
+                                    <CheckBox x:Name="koltsegvetes_partnerIDCB" IsChecked="True">
                                         <TextBlock Text="Partner ID"></TextBlock>
+                                    </CheckBox>
+                                </ComboBoxItem>
+                            </ComboBox>
+                            <ComboBox Visibility="Collapsed" x:Name="KotelKovetCB" VerticalAlignment="Top" Margin="10,12,0,0" Width="120" Background="White" SelectedIndex="0" SelectionChanged="ComboBox_SelectionChanged">
+                                <ComboBoxItem x:Name="KotelKovet_CB_default_text" IsEnabled="False" Visibility="Collapsed">
+                                    <TextBlock Text="Keresési opciók"/>
+                                </ComboBoxItem>
+                                <ComboBoxItem IsEnabled="True">
+                                    <CheckBox x:Name="kotelKovet_mindCB" IsChecked="True">
+                                        <TextBlock Text="Mind"></TextBlock>
+                                    </CheckBox>
+                                </ComboBoxItem>
+                                <ComboBoxItem>
+                                    <CheckBox x:Name="kotelKovet_idCB" IsChecked="True">
+                                        <TextBlock Text="ID"></TextBlock>
+                                    </CheckBox>
+                                </ComboBoxItem>
+                                <ComboBoxItem>
+                                    <CheckBox x:Name="kotelKovet_tipusCB" IsChecked="True">
+                                        <TextBlock Text="Típus"></TextBlock>
+                                    </CheckBox>
+                                </ComboBoxItem>
+                                <ComboBoxItem>
+                                    <CheckBox x:Name="kotelKovet_osszegCB" IsChecked="True">
+                                        <TextBlock Text="Összeg"></TextBlock>
+                                    </CheckBox>
+                                </ComboBoxItem>
+                                <ComboBoxItem>
+                                    <CheckBox x:Name="kotelKovet_penznemCB" IsChecked="True">
+                                        <TextBlock Text="Pénznem"></TextBlock>
+                                    </CheckBox>
+                                </ComboBoxItem>
+                                <ComboBoxItem>
+                                    <CheckBox x:Name="kotelKovet_kifizetesHataridejeCB" IsChecked="True">
+                                        <TextBlock Text="Kifizetés Határideje"></TextBlock>
+                                    </CheckBox>
+                                </ComboBoxItem>
+                                <ComboBoxItem>
+                                    <CheckBox x:Name="kotelKovet_kifizetettCB" IsChecked="True">
+                                        <TextBlock Text="Kifizetett"></TextBlock>
                                     </CheckBox>
                                 </ComboBoxItem>
                             </ComboBox>
@@ -125,13 +165,16 @@ Visibility="{Binding ElementName=searchBarInput, Path=Text.IsEmpty, Converter={S
                                 <CheckBox x:Name="GroupByBeKiKodCB" IsChecked="False" Margin="0,0,0,0">
                                     <TextBlock Text="BeKiKód" Margin="0,0,0,3"/>
                                 </CheckBox>
+                                <CheckBox Visibility="Collapsed" x:Name="GroupByKifizetettCB" IsChecked="False" Margin="0,0,0,0">
+                                    <TextBlock Text="Kifizetett" Margin="0,0,0,3"/>
+                                </CheckBox>
                             </StackPanel>
                         </StackPanel>
                     </StackPanel>
                 </Grid>
                 <StackPanel Grid.Row="1" Grid.Column="1">
-                    <Button x:Name="cellSelectionTrue" Click="ChangeCellColor_Click" Content="Kiválaszt"></Button>
-                    <Button x:Name="cellSelectionFalse" Click="ChangeCellColor_Click" Content="Töröl"></Button>
+                    <Button x:Name="cellSelectionTrue" Click="ChangeSelection_Click" Content="Kiválaszt"></Button>
+                    <Button x:Name="cellSelectionFalse" Click="ChangeSelection_Click" Content="Töröl"></Button>
                     <Button x:Name="asd" Click="asd_Click" Content="ASD"></Button>
                     <Button x:Name="asd2" Content="ASD2" Command="{Binding TesztCommand}"></Button>
                     <Grid>

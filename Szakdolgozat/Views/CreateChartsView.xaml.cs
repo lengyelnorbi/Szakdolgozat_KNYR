@@ -39,27 +39,45 @@ namespace Szakdolgozat.Views
                 viewModel.SeriesType = type;
             }
 
-            mindCB.Checked += CheckBox_Checked;
-            idCB.Checked += CheckBox_Checked;
-            osszegCB.Checked += CheckBox_Checked;
-            penznemCB.Checked += CheckBox_Checked;
-            bekikodCB.Checked += CheckBox_Checked;
-            teljesitesiDatumCB.Checked += CheckBox_Checked;
-            kotelKovetIDCB.Checked += CheckBox_Checked;
-            partnerIDCB.Checked += CheckBox_Checked;
-            mindCB.Unchecked += Checkbox_Unchecked;
-            idCB.Unchecked += Checkbox_Unchecked;
-            osszegCB.Unchecked += Checkbox_Unchecked;
-            penznemCB.Unchecked += Checkbox_Unchecked;
-            bekikodCB.Unchecked += Checkbox_Unchecked;
-            teljesitesiDatumCB.Unchecked += Checkbox_Unchecked;
-            kotelKovetIDCB.Unchecked += Checkbox_Unchecked;
-            partnerIDCB.Unchecked += Checkbox_Unchecked;
+            koltsegvetes_mindCB.Checked += CheckBox_Checked;
+            koltsegvetes_idCB.Checked += CheckBox_Checked;
+            koltsegvetes_osszegCB.Checked += CheckBox_Checked;
+            koltsegvetes_penznemCB.Checked += CheckBox_Checked;
+            koltsegvetes_bekikodCB.Checked += CheckBox_Checked;
+            koltsegvetes_teljesitesiDatumCB.Checked += CheckBox_Checked;
+            koltsegvetes_kotelKovetIDCB.Checked += CheckBox_Checked;
+            koltsegvetes_partnerIDCB.Checked += CheckBox_Checked;
+            koltsegvetes_mindCB.Unchecked += Checkbox_Unchecked;
+            koltsegvetes_idCB.Unchecked += Checkbox_Unchecked;
+            koltsegvetes_osszegCB.Unchecked += Checkbox_Unchecked;
+            koltsegvetes_penznemCB.Unchecked += Checkbox_Unchecked;
+            koltsegvetes_bekikodCB.Unchecked += Checkbox_Unchecked;
+            koltsegvetes_teljesitesiDatumCB.Unchecked += Checkbox_Unchecked;
+            koltsegvetes_kotelKovetIDCB.Unchecked += Checkbox_Unchecked;
+            koltsegvetes_partnerIDCB.Unchecked += Checkbox_Unchecked;
+
+
+            kotelKovet_mindCB.Checked += CheckBox_Checked;
+            kotelKovet_idCB.Checked += CheckBox_Checked;
+            kotelKovet_osszegCB.Checked += CheckBox_Checked;
+            kotelKovet_penznemCB.Checked += CheckBox_Checked;
+            kotelKovet_tipusCB.Checked += CheckBox_Checked;
+            kotelKovet_kifizetesHataridejeCB.Checked += CheckBox_Checked;
+            kotelKovet_kifizetettCB.Checked += CheckBox_Checked;
+            kotelKovet_mindCB.Unchecked += Checkbox_Unchecked;
+            kotelKovet_idCB.Unchecked += Checkbox_Unchecked;
+            kotelKovet_osszegCB.Unchecked += Checkbox_Unchecked;
+            kotelKovet_penznemCB.Unchecked += Checkbox_Unchecked;
+            kotelKovet_tipusCB.Unchecked += Checkbox_Unchecked;
+            kotelKovet_kifizetesHataridejeCB.Unchecked += Checkbox_Unchecked;
+            kotelKovet_kifizetettCB.Unchecked += Checkbox_Unchecked;
 
             GroupByBeKiKodCB.Checked += GroupByCheckBox_Checked;
             GroupByBeKiKodCB.Unchecked += GroupByCheckBox_Unchecked;
             GroupByPenznemCB.Checked += GroupByCheckBox_Checked;
             GroupByPenznemCB.Unchecked += GroupByCheckBox_Unchecked;
+            GroupByKifizetettCB.Checked += GroupByCheckBox_Checked;
+            GroupByKifizetettCB.Unchecked += GroupByCheckBox_Unchecked;
         }
 
         private void GroupByCheckBox_Unchecked(object sender, RoutedEventArgs e)
@@ -75,6 +93,9 @@ namespace Szakdolgozat.Views
                             break;
                         case "GroupByBeKiKodCB":
                             createChartsView.GroupByBeKiKodCheckBoxIsChecked = false;
+                            break;
+                        case "GroupByKifizetettCB":
+                            createChartsView.GroupByKifizetettCheckBoxIsChecked = false;
                             break;
                         default:
                             break;
@@ -96,6 +117,9 @@ namespace Szakdolgozat.Views
                             break;
                         case "GroupByBeKiKodCB":
                             createChartsView.GroupByBeKiKodCheckBoxIsChecked = true;
+                            break;
+                        case "GroupByKifizetettCB":
+                            createChartsView.GroupByKifizetettCheckBoxIsChecked = true;
                             break;
                         default:
                             break;
@@ -119,63 +143,116 @@ namespace Szakdolgozat.Views
         //    goBackButton.Visibility = Visibility.Hidden;
         //}
 
-        private void ChangeCellColor_Click(object sender, RoutedEventArgs e)
+        private void ChangeSelection_Click(object sender, RoutedEventArgs e)
         {
             if (DataContext is CreateChartsViewModel viewModel)
             {
-                SolidColorBrush color = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#90EE90"));
+                //SolidColorBrush color = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#90EE90"));
                 if (chartsTabControl.SelectedContent is System.Windows.Controls.DataGrid dataGrid)
                 {
                     if (dataGrid.Name.Equals("bevetelek_kiadasok"))
                     {
+                        int[] changeableItems = new int[dataGrid.SelectedItems.Count];
+                        int a = 0;
                         foreach (var item in dataGrid.SelectedItems)
                         {
                             BevetelKiadas i = (BevetelKiadas)item;
+                            changeableItems[a] = i.ID;
                             if (sender == cellSelectionTrue)
                             {
-                                viewModel._selectedBevetelekKiadasok.Add(i);
+                                if(viewModel.SelectedBevetelekKiadasok.FirstOrDefault(x => x.ID == i.ID) == null)
+                                {
+                                    viewModel.SelectedBevetelekKiadasok.Add(i);
+                                    viewModel.IsEnabledChangerOnTabItems();
+                                }
                             }
                             else
                             {
-                                viewModel._selectedBevetelekKiadasok.Remove(i);
+                                if (viewModel.SelectedBevetelekKiadasok.FirstOrDefault(x => x.ID == i.ID) != null)
+                                {
+                                    foreach(var b in viewModel.SelectedBevetelekKiadasok)
+                                    {
+                                        if(b.ID == i.ID)
+                                        {
+                                            viewModel.SelectedBevetelekKiadasok.Remove(b);
+                                            viewModel.IsEnabledChangerOnTabItems();
+                                            break;
+                                        }
+                                    }
+                                }
                             }
+                            a++;
+                        }
+                        if (sender == cellSelectionTrue)
+                        {
+                            viewModel.ChangeIsSelectedAndRefreshBevetelKiadas(changeableItems, true);
+                        }
+                        else
+                        {
+                            viewModel.ChangeIsSelectedAndRefreshBevetelKiadas(changeableItems, false);
                         }
                     }
                     else if (dataGrid.Name.Equals("kotelezettsegek_kovetelesek"))
                     {
+                        int[] changeableItems = new int[dataGrid.SelectedItems.Count];
+                        int a = 0;
                         foreach (var item in dataGrid.SelectedItems)
                         {
                             KotelezettsegKoveteles i = (KotelezettsegKoveteles)item;
+                            changeableItems[a] = i.ID;
                             if (sender == cellSelectionTrue)
                             {
-                                viewModel._selectedKotelezettsegekKovetelesek.Add(i);
-
+                                if (viewModel.SelectedKotelezettsegekKovetelesek.FirstOrDefault(x => x.ID == i.ID) == null)
+                                {
+                                    viewModel.SelectedKotelezettsegekKovetelesek.Add(i);
+                                    viewModel.IsEnabledChangerOnTabItems();
+                                }
                             }
                             else
                             {
-                                viewModel._selectedKotelezettsegekKovetelesek.Remove(i);
+                                if (viewModel.SelectedKotelezettsegekKovetelesek.FirstOrDefault(x => x.ID == i.ID) != null)
+                                {
+                                    foreach (var b in viewModel.SelectedKotelezettsegekKovetelesek)
+                                    {
+                                        if (b.ID == i.ID)
+                                        {
+                                            viewModel.SelectedKotelezettsegekKovetelesek.Remove(b);
+                                            viewModel.IsEnabledChangerOnTabItems();
+                                            break;
+                                        }
+                                    }
+                                }
                             }
+                            a++;
                         }
-                    }
-                    foreach (var cellInfo in dataGrid.SelectedCells)
-                    {
-                        var cellContent = cellInfo.Column.GetCellContent(cellInfo.Item);
-                        if (cellContent != null)
+                        if (sender == cellSelectionTrue)
                         {
-                            var cell = cellContent.Parent as System.Windows.Controls.DataGridCell;
-                            if (cell != null)
-                            {
-                                if (sender == cellSelectionTrue)
-                                {
-                                    cell.Style = (Style)this.FindResource("DataGridCellStyle");
-                                }
-                                else
-                                {
-                                    cell.ClearValue(System.Windows.Controls.DataGridCell.StyleProperty);
-                                }
-                            }
+                            viewModel.ChangeIsSelectedAndRefreshKotelKovet(changeableItems, true);
+                        }
+                        else
+                        {
+                            viewModel.ChangeIsSelectedAndRefreshKotelKovet(changeableItems, false);
                         }
                     }
+                    //foreach (var cellInfo in dataGrid.SelectedCells)
+                    //{
+                    //    var cellContent = cellInfo.Column.GetCellContent(cellInfo.Item);
+                    //    if (cellContent != null)
+                    //    {
+                    //        var cell = cellContent.Parent as System.Windows.Controls.DataGridCell;
+                    //        if (cell != null)
+                    //        {
+                    //            if (sender == cellSelectionTrue)
+                    //            {
+                    //                cell.Style = (Style)this.FindResource("DataGridCellStyle");
+                    //            }
+                    //            else
+                    //            {
+                    //                cell.ClearValue(System.Windows.Controls.DataGridCell.StyleProperty);
+                    //            }
+                    //        }
+                    //    }
+                    //}
                 }
             }
         }
@@ -308,9 +385,18 @@ namespace Szakdolgozat.Views
             System.Windows.Controls.ComboBox comboBox = (System.Windows.Controls.ComboBox)sender;
             if (comboBox.SelectedItem != null)
             {
-                string selectedName = ((ComboBoxItem)comboBox.SelectedItem).Name;
-                if (!selectedName.Equals("CB_default_text"))
-                    comboBox.SelectedIndex = 0;
+                if (comboBox.Name.Equals("KoltsegvetesCB"))
+                {
+                    string selectedName = ((ComboBoxItem)comboBox.SelectedItem).Name;
+                    if (!selectedName.Equals("Koltsegvetes_CB_default_text"))
+                        comboBox.SelectedIndex = 0;
+                }
+                else if (comboBox.Name.Equals("KotelKovetCB"))
+                {
+                    string selectedName = ((ComboBoxItem)comboBox.SelectedItem).Name;
+                    if (!selectedName.Equals("KotelKovet_CB_default_text"))
+                        comboBox.SelectedIndex = 0;
+                }
             }
         }
 
@@ -328,55 +414,99 @@ namespace Szakdolgozat.Views
             {
                 if (DataContext is CreateChartsViewModel createChartsView)
                 {
-                    try
+                    if (checkBox.Name.Contains("koltsegvetes"))
+                    {
+                        try
+                        {
+                            switch (checkBox.Name)
+                            {
+                                case "koltsegvetes_mindCB":
+                                    createChartsView.checkboxStatuses["koltsegvetes_mindCB"] = true;
+                                    createChartsView.checkboxStatuses["koltsegvetes_idCB"] = true;
+                                    koltsegvetes_idCB.IsChecked = true;
+                                    createChartsView.checkboxStatuses["koltsegvetes_osszegCB"] = true;
+                                    koltsegvetes_osszegCB.IsChecked = true;
+                                    createChartsView.checkboxStatuses["koltsegvetes_penznemCB"] = true;
+                                    koltsegvetes_penznemCB.IsChecked = true;
+                                    createChartsView.checkboxStatuses["koltsegvetes_bekikodCB"] = true;
+                                    koltsegvetes_bekikodCB.IsChecked = true;
+                                    createChartsView.checkboxStatuses["koltsegvetes_teljesitesiDatumCB"] = true;
+                                    koltsegvetes_teljesitesiDatumCB.IsChecked = true;
+                                    createChartsView.checkboxStatuses["koltsegvetes_kotelKovetIDCB"] = true;
+                                    koltsegvetes_kotelKovetIDCB.IsChecked = true;
+                                    createChartsView.checkboxStatuses["koltsegvetes_partnerIDCB"] = true;
+                                    koltsegvetes_partnerIDCB.IsChecked = true;
+                                    break;
+                                case "koltsegvetes_idCB":
+                                    createChartsView.checkboxStatuses["koltsegvetes_idCB"] = true;
+                                    break;
+                                case "koltsegvetes_osszegCB":
+                                    createChartsView.checkboxStatuses["koltsegvetes_osszegCB"] = true;
+                                    break;
+                                case "koltsegvetes_penznemCB":
+                                    createChartsView.checkboxStatuses["koltsegvetes_penznemCB"] = true;
+                                    break;
+                                case "koltsegvetes_bekikodCB":
+                                    createChartsView.checkboxStatuses["koltsegvetes_bekikodCB"] = true;
+                                    break;
+                                case "koltsegvetes_teljesitesiDatumCB":
+                                    createChartsView.checkboxStatuses["koltsegvetes_teljesitesiDatumCB"] = true;
+                                    break;
+                                case "koltsegvetes_kotelKovetIDCB":
+                                    createChartsView.checkboxStatuses["koltsegvetes_kotelKovetIDCB"] = true;
+                                    break;
+                                case "koltsegvetes_partnerIDCB":
+                                    createChartsView.checkboxStatuses["koltsegvetes_partnerIDCB"] = true;
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+
+                        }
+                    }
+                    else if (checkBox.Name.Contains("kotelKovet"))
                     {
                         switch (checkBox.Name)
                         {
-                            case "mindCB":
-                                createChartsView.checkboxStatuses["mindCB"] = true;
-                                createChartsView.checkboxStatuses["idCB"] = true;
-                                idCB.IsChecked = true;
-                                createChartsView.checkboxStatuses["osszegCB"] = true;
-                                osszegCB.IsChecked = true;
-                                createChartsView.checkboxStatuses["penznemCB"] = true;
-                                penznemCB.IsChecked = true;
-                                createChartsView.checkboxStatuses["bekikodCB"] = true;
-                                bekikodCB.IsChecked = true;
-                                createChartsView.checkboxStatuses["teljesitesiDatumCB"] = true;
-                                teljesitesiDatumCB.IsChecked = true;
-                                createChartsView.checkboxStatuses["kotelKovetIDCB"] = true;
-                                kotelKovetIDCB.IsChecked = true;
-                                createChartsView.checkboxStatuses["partnerIDCB"] = true;
-                                partnerIDCB.IsChecked = true;
+                            case "kotelKovet_mindCB":
+                                createChartsView.checkboxStatuses["koltsegvetes_mindCB"] = true;
+                                createChartsView.checkboxStatuses["kotelKovet_idCB"] = true;
+                                kotelKovet_idCB.IsChecked = true;
+                                createChartsView.checkboxStatuses["kotelKovet_osszegCB"] = true;
+                                kotelKovet_osszegCB.IsChecked = true;
+                                createChartsView.checkboxStatuses["kotelKovet_penznemCB"] = true;
+                                kotelKovet_penznemCB.IsChecked = true;
+                                createChartsView.checkboxStatuses["kotelKovet_tipusCB"] = true;
+                                kotelKovet_tipusCB.IsChecked = true;
+                                createChartsView.checkboxStatuses["kotelKovet_kifizetesHataridejeCB"] = true;
+                                kotelKovet_kifizetesHataridejeCB.IsChecked = true;
+                                createChartsView.checkboxStatuses["kotelKovet_kifizetettCB"] = true;
+                                kotelKovet_kifizetettCB.IsChecked = true;
                                 break;
-                            case "idCB":
-                                createChartsView.checkboxStatuses["idCB"] = true;
+                            case "kotelKovet_idCB":
+                                createChartsView.checkboxStatuses["kotelKovet_idCB"] = true;
                                 break;
-                            case "osszegCB":
-                                createChartsView.checkboxStatuses["osszegCB"] = true;
+                            case "kotelKovet_osszegCB":
+                                createChartsView.checkboxStatuses["kotelKovet_osszegCB"] = true;
                                 break;
-                            case "penznemCB":
-                                createChartsView.checkboxStatuses["penznemCB"] = true;
+                            case "kotelKovet_penznemCB":
+                                createChartsView.checkboxStatuses["kotelKovet_penznemCB"] = true;
                                 break;
-                            case "bekikodCB":
-                                createChartsView.checkboxStatuses["bekikodCB"] = true;
+                            case "kotelKovet_tipusCB":
+                                createChartsView.checkboxStatuses["kotelKovet_tipusCB"] = true;
                                 break;
-                            case "teljesitesiDatumCB":
-                                createChartsView.checkboxStatuses["teljesitesiDatumCB"] = true;
+                            case "kotelKovet_kifizetesHataridejeCB":
+                                createChartsView.checkboxStatuses["kotelKovet_kifizetesHataridejeCB"] = true;
                                 break;
-                            case "kotelKovetIDCB":
-                                createChartsView.checkboxStatuses["kotelKovetIDCB"] = true;
-                                break;
-                            case "partnerIDCB":
-                                createChartsView.checkboxStatuses["partnerIDCB"] = true;
+                            case "kotelKovet_kifizetettCB":
+                                createChartsView.checkboxStatuses["kotelKovet_kifizetettCB"] = true;
                                 break;
                             default:
                                 break;
                         }
-                    }
-                    catch (Exception ex)
-                    {
-
                     }
                     createChartsView.UpdateSearch(createChartsView.SearchQuery);
                 }
@@ -391,36 +521,94 @@ namespace Szakdolgozat.Views
             {
                 if (DataContext is CreateChartsViewModel createChartsView)
                 {
-                    switch (checkBox.Name)
+                    if (checkBox.Name.Contains("koltsegvetes"))
                     {
-                        case "mindCB":
-                            createChartsView.checkboxStatuses["mindCB"] = false;
-                            break;
-                        case "idCB":
-                            createChartsView.checkboxStatuses["idCB"] = false;
-                            break;
-                        case "osszegCB":
-                            createChartsView.checkboxStatuses["osszegCB"] = false;
-                            break;
-                        case "penznemCB":
-                            createChartsView.checkboxStatuses["penznemCB"] = false;
-                            break;
-                        case "bekikodCB":
-                            createChartsView.checkboxStatuses["bekikodCB"] = false;
-                            break;
-                        case "teljesitesiDatumCB":
-                            createChartsView.checkboxStatuses["teljesitesiDatumCB"] = false;
-                            break;
-                        case "kotelKovetIDCB":
-                            createChartsView.checkboxStatuses["kotelKovetIDCB"] = false;
-                            break;
-                        case "partnerIDCB":
-                            createChartsView.checkboxStatuses["partnerIDCB"] = false;
-                            break;
-                        default:
-                            break;
+                        switch (checkBox.Name)
+                        {
+                            case "koltsegvetes_mindCB":
+                                createChartsView.checkboxStatuses["koltsegvetes_mindCB"] = false;
+                                break;
+                            case "koltsegvetes_idCB":
+                                createChartsView.checkboxStatuses["koltsegvetes_idCB"] = false;
+                                break;
+                            case "koltsegvetes_osszegCB":
+                                createChartsView.checkboxStatuses["koltsegvetes_osszegCB"] = false;
+                                break;
+                            case "koltsegvetes_penznemCB":
+                                createChartsView.checkboxStatuses["koltsegvetes_penznemCB"] = false;
+                                break;
+                            case "koltsegvetes_bekikodCB":
+                                createChartsView.checkboxStatuses["koltsegvetes_bekikodCB"] = false;
+                                break;
+                            case "koltsegvetes_teljesitesiDatumCB":
+                                createChartsView.checkboxStatuses["koltsegvetes_teljesitesiDatumCB"] = false;
+                                break;
+                            case "koltsegvetes_kotelKovetIDCB":
+                                createChartsView.checkboxStatuses["koltsegvetes_kotelKovetIDCB"] = false;
+                                break;
+                            case "koltsegvetes_partnerIDCB":
+                                createChartsView.checkboxStatuses["koltsegvetes_partnerIDCB"] = false;
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                    else if (checkBox.Name.Contains("kotelKovet"))
+                    {
+                        switch (checkBox.Name)
+                        {
+                            case "kotelKovet_mindCB":
+                                createChartsView.checkboxStatuses["kotelKovet_mindCB"] = false;
+                                break;
+                            case "kotelKovet_idCB":
+                                createChartsView.checkboxStatuses["kotelKovet_idCB"] = false;
+                                break;
+                            case "kotelKovet_osszegCB":
+                                createChartsView.checkboxStatuses["kotelKovet_osszegCB"] = false;
+                                break;
+                            case "kotelKovet_penznemCB":
+                                createChartsView.checkboxStatuses["kotelKovet_penznemCB"] = false;
+                                break;
+                            case "kotelKovet_tipusCB":
+                                createChartsView.checkboxStatuses["kotelKovet_tipusCB"] = false;
+                                break;
+                            case "kotelKovet_kifizetesHataridejeCB":
+                                createChartsView.checkboxStatuses["kotelKovet_kifizetesHataridejeCB"] = false;
+                                break;
+                            case "kotelKovet_kifizetettCB":
+                                createChartsView.checkboxStatuses["kotelKovet_kifizetettCB"] = false;
+                                break;
+                            default:
+                                break;
+                        }
                     }
                     createChartsView.UpdateSearch(createChartsView.SearchQuery);
+                }
+            }
+        }
+
+        private void chartsTabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if(DataContext is CreateChartsViewModel viewModel)
+            {
+                if (chartsTabControl.SelectedItem is System.Windows.Controls.TabItem tabItem)
+                {
+                    if (tabItem.Name.Contains("Koltsegvetes"))
+                    {
+                        viewModel.IsBevetelekKiadasokTabIsSelected = true;
+                        KoltsegvetesCB.Visibility = Visibility.Visible;
+                        KotelKovetCB.Visibility = Visibility.Collapsed;
+                        GroupByKifizetettCB.Visibility = Visibility.Collapsed;
+                        GroupByBeKiKodCB.Visibility = Visibility.Visible;
+                    }
+                    else if (tabItem.Name.Contains("KotelKovet"))
+                    {
+                        viewModel.IsBevetelekKiadasokTabIsSelected = false;
+                        KoltsegvetesCB.Visibility = Visibility.Collapsed;
+                        KotelKovetCB.Visibility = Visibility.Visible;
+                        GroupByKifizetettCB.Visibility = Visibility.Visible;
+                        GroupByBeKiKodCB.Visibility = Visibility.Collapsed;
+                    }
                 }
             }
         }

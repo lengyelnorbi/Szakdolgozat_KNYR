@@ -86,7 +86,7 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition x:Name="dataGridColumnDef"></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <DataGrid Grid.Column="0" x:Name="dataGrid" CanUserResizeColumns="True" ColumnWidth="*" AutoGenerateColumns="True" ItemsSource="{Binding FilteredBevetelekKiadasok,Mode=TwoWay, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}" IsReadOnly="True" SelectionUnit="FullRow" SelectedItem="{Binding SelectedRow, Mode=TwoWay}" Grid.ColumnSpan="2">
+            <DataGrid Grid.Column="0" x:Name="dataGrid" CanUserResizeColumns="True" ColumnWidth="*" AutoGenerateColumns="True" AutoGeneratingColumn="dataGrid_AutoGeneratingColumn"  ItemsSource="{Binding FilteredBevetelekKiadasok,Mode=TwoWay, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}" IsReadOnly="True" SelectionUnit="FullRow" SelectedItem="{Binding SelectedRow, Mode=TwoWay}" Grid.ColumnSpan="2">
                 <DataGrid.ContextMenu>
                     <ContextMenu>
                         <MenuItem Header="Törlés" Command="{Binding DeleteBevetelKiadasCommand}"/>

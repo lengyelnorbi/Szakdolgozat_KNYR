@@ -15,7 +15,9 @@ namespace Szakdolgozat.Models
         public DateTime KifizetesHatarideje { get; set; }
         public Int16 Kifizetett { get; set; }
 
-        public KotelezettsegKoveteles(int id, string tipus, int osszeg, Penznem penznem, DateTime kifizetesHatarideje, Int16 kifizetett)
+        public bool IsSelected { get; set; }
+
+        public KotelezettsegKoveteles(int id, string tipus, int osszeg, Penznem penznem, DateTime kifizetesHatarideje, Int16 kifizetett, bool isSelected = false)
         {
             ID = id;
             Tipus = tipus;
@@ -23,14 +25,16 @@ namespace Szakdolgozat.Models
             Penznem = penznem;
             KifizetesHatarideje = kifizetesHatarideje;
             Kifizetett = kifizetett;
+            IsSelected = isSelected;
         }
-        public KotelezettsegKoveteles(string tipus, int osszeg, Penznem penznem, DateTime kifizetesHatarideje, Int16 kifizetett)
+        public KotelezettsegKoveteles(string tipus, int osszeg, Penznem penznem, DateTime kifizetesHatarideje, Int16 kifizetett, bool isSelected = false)
         {
             Tipus = tipus;
             Osszeg = osszeg;
             Penznem = penznem;
             KifizetesHatarideje = kifizetesHatarideje;
             Kifizetett = kifizetett;
+            IsSelected = isSelected;
         }
     }
 }

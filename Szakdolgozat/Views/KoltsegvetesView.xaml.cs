@@ -159,5 +159,13 @@ namespace Szakdolgozat.Views
                     comboBox.SelectedIndex = 0;
             }
         }
+
+        private void dataGrid_AutoGeneratingColumn(object sender, DataGridAutoGeneratingColumnEventArgs e)
+        {
+            if (e.PropertyName == "IsSelected")
+            {
+                e.Cancel = true; // Prevents this column from being generated
+            }
+        }
     }
 }

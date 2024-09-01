@@ -15,8 +15,9 @@ namespace Szakdolgozat.Models
         public DateTime TeljesitesiDatum { get; set; }
         public int? KotelKovetID { get; set; }
         public int? PartnerID { get; set; }
+        public bool IsSelected { get; set; }
 
-        public BevetelKiadas(int id, int osszeg, Penznem penznem, BeKiKod beKiKod, DateTime teljesitesiDatum, int kotelKovetID, int partnerID)
+        public BevetelKiadas(int id, int osszeg, Penznem penznem, BeKiKod beKiKod, DateTime teljesitesiDatum, int kotelKovetID, int partnerID, bool isSelected = false)
         {
             ID = id;
             Osszeg = osszeg;
@@ -25,8 +26,9 @@ namespace Szakdolgozat.Models
             TeljesitesiDatum = teljesitesiDatum;
             KotelKovetID = kotelKovetID;
             PartnerID = partnerID;
+            IsSelected = isSelected;
         }
-        public BevetelKiadas(int id, int osszeg, Penznem penznem, BeKiKod beKiKod, DateTime teljesitesiDatum, int? kotelKovetID = null, int? partnerID = null)
+        public BevetelKiadas(int id, int osszeg, Penznem penznem, BeKiKod beKiKod, DateTime teljesitesiDatum, int? kotelKovetID = null, int? partnerID = null, bool isSelected = false)
         {
             ID = id;
             Osszeg = osszeg;
@@ -41,9 +43,10 @@ namespace Szakdolgozat.Models
                 PartnerID = null;
             else
                 PartnerID = partnerID;
+            IsSelected = isSelected;
         }
 
-        public BevetelKiadas(int osszeg, Penznem penznem, BeKiKod beKiKod, DateTime teljesitesiDatum, int kotelKovetID, int partnerID)
+        public BevetelKiadas(int osszeg, Penznem penznem, BeKiKod beKiKod, DateTime teljesitesiDatum, int kotelKovetID, int partnerID, bool isSelected = false)
         {
             Osszeg = osszeg;
             Penznem = penznem;
@@ -51,8 +54,9 @@ namespace Szakdolgozat.Models
             TeljesitesiDatum = teljesitesiDatum;
             KotelKovetID = kotelKovetID;
             PartnerID = partnerID;
+            IsSelected = isSelected;
         }
-        public BevetelKiadas(int osszeg, Penznem penznem, BeKiKod beKiKod, DateTime teljesitesiDatum, int? kotelKovetID = null, int? partnerID = null)
+        public BevetelKiadas(int osszeg, Penznem penznem, BeKiKod beKiKod, DateTime teljesitesiDatum, int? kotelKovetID = null, int? partnerID = null, bool isSelected = false)
         {
             Osszeg = osszeg;
             Penznem = penznem;
@@ -66,6 +70,7 @@ namespace Szakdolgozat.Models
                 PartnerID = null;
             else
                 PartnerID = partnerID;
+            IsSelected = isSelected;
         }
     }
 }

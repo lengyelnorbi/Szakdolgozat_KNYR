@@ -19,6 +19,8 @@ using Google.Protobuf.WellKnownTypes;
 using System.Windows.Forms;
 using System.Diagnostics;
 using System.Windows.Data;
+using Szakdolgozat.Views;
+using System.Xml.Linq;
 
 namespace Szakdolgozat.ViewModels
 {
@@ -28,6 +30,8 @@ namespace Szakdolgozat.ViewModels
     {
         public bool GroupByPenznemCheckBoxIsChecked = false;
         public bool GroupByBeKiKodCheckBoxIsChecked = false;
+        public bool GroupByKifizetettCheckBoxIsChecked = false;
+        public bool IsBevetelekKiadasokTabIsSelected = true;
         SolidColorBrush[] baseColors = new SolidColorBrush[] { Brushes.Blue, Brushes.Red, Brushes.Green, Brushes.Magenta };
         public SeriesCollection Series { get; set; }
         public Func<ChartPoint, string> LabelFormatter { get; set; }
@@ -40,8 +44,92 @@ namespace Szakdolgozat.ViewModels
 
         public List<System.Windows.Controls.DataGridCell> selectedDataGridCells = new List<System.Windows.Controls.DataGridCell>();
 
-        public ObservableCollection<BevetelKiadas> _selectedBevetelekKiadasok = new ObservableCollection<BevetelKiadas>();
         public ObservableCollection<KotelezettsegKoveteles> _selectedKotelezettsegekKovetelesek = new ObservableCollection<KotelezettsegKoveteles>();
+        public ObservableCollection<KotelezettsegKoveteles> SelectedKotelezettsegekKovetelesek
+        {
+            get
+            {
+                return _selectedKotelezettsegekKovetelesek;
+            }
+            set
+            {
+                _selectedKotelezettsegekKovetelesek = value;
+                OnPropertyChanged(nameof(SelectedKotelezettsegekKovetelesek));
+
+            }
+        }
+
+        public ObservableCollection<BevetelKiadas> _selectedBevetelekKiadasok = new ObservableCollection<BevetelKiadas>();
+        public ObservableCollection<BevetelKiadas> SelectedBevetelekKiadasok
+        {
+            get
+            {
+                return _selectedBevetelekKiadasok;
+            }
+            set
+            {
+                _selectedBevetelekKiadasok = value;
+                OnPropertyChanged(nameof(SelectedBevetelekKiadasok));
+                
+            }
+        }
+
+        public void IsEnabledChangerOnTabItems()
+        {
+            if (SelectedBevetelekKiadasok.Count > 0 || SelectedKotelezettsegekKovetelesek.Count > 0)
+            {
+                System.Windows.Controls.TabControl tabControl = Mediator.NotifyGetTabControl();
+                if (SelectedBevetelekKiadasok.Count > 0)
+                {
+                    foreach (TabItem tItem in tabControl.Items)
+                    {
+                        if (tItem.Name.Contains("KotelKovet"))
+                        {
+                            tItem.IsEnabled = false;
+                            break;
+                        }
+                    }
+                }
+                else if (SelectedKotelezettsegekKovetelesek.Count > 0)
+                {
+                    foreach (TabItem tItem in tabControl.Items)
+                    {
+                        if (tItem.Name.Contains("Koltsegvetes"))
+                        {
+                            tItem.IsEnabled = false;
+                            break;
+                        }
+                    }
+                }
+            }
+            else if (SelectedBevetelekKiadasok.Count == 0 || SelectedKotelezettsegekKovetelesek.Count == 0)
+            {
+                System.Windows.Controls.TabControl tabControl = Mediator.NotifyGetTabControl();
+                if (SelectedBevetelekKiadasok.Count == 0)
+                {
+                    foreach (TabItem tItem in tabControl.Items)
+                    {
+                        if (tItem.Name.Contains("KotelKovet"))
+                        {
+                            tItem.IsEnabled = true;
+                            break;
+                        }
+                    }
+                }
+                else if (SelectedKotelezettsegekKovetelesek.Count == 0)
+                {
+                    foreach (TabItem tItem in tabControl.Items)
+                    {
+                        if (tItem.Name.Contains("Koltsegvetes"))
+                        {
+                            tItem.IsEnabled = true;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
 
         private ObservableCollection<System.Windows.Controls.TabItem> _tabs = new ObservableCollection<System.Windows.Controls.TabItem>();
         public ObservableCollection<System.Windows.Controls.TabItem> Tabs
@@ -201,14 +289,22 @@ namespace Szakdolgozat.ViewModels
 
         public CreateChartsViewModel()
         {
-            checkboxStatuses.Add("mindCB", true);
-            checkboxStatuses.Add("idCB", true);
-            checkboxStatuses.Add("osszegCB", true);
-            checkboxStatuses.Add("penznemCB", true);
-            checkboxStatuses.Add("bekikodCB", true);
-            checkboxStatuses.Add("teljesitesiDatumCB", true);
-            checkboxStatuses.Add("kotelKovetIDCB", true);
-            checkboxStatuses.Add("partnerIDCB", true);
+            checkboxStatuses.Add("koltsegvetes_mindCB", true);
+            checkboxStatuses.Add("koltsegvetes_idCB", true);
+            checkboxStatuses.Add("koltsegvetes_osszegCB", true);
+            checkboxStatuses.Add("koltsegvetes_penznemCB", true);
+            checkboxStatuses.Add("koltsegvetes_bekikodCB", true);
+            checkboxStatuses.Add("koltsegvetes_teljesitesiDatumCB", true);
+            checkboxStatuses.Add("koltsegvetes_kotelKovetIDCB", true);
+            checkboxStatuses.Add("koltsegvetes_partnerIDCB", true);
+
+            checkboxStatuses.Add("kotelKovet_mindCB", true);
+            checkboxStatuses.Add("kotelKovet_idCB", true);
+            checkboxStatuses.Add("kotelKovet_osszegCB", true);
+            checkboxStatuses.Add("kotelKovet_penznemCB", true);
+            checkboxStatuses.Add("kotelKovet_tipusCB", true);
+            checkboxStatuses.Add("kotelKovet_kifizetesHataridejeCB", true);
+            checkboxStatuses.Add("kotelKovet_kifizetettCB", true);
 
             //nem biztos hogy kell innen
             Mediator.SelectedRowsChangedOnChildView += UpdateSelectedRows;
@@ -315,7 +411,7 @@ namespace Szakdolgozat.ViewModels
                         FilteredBevetelekKiadasok.Clear();
                         foreach (var d in BevetelekKiadasok)
                         {
-                            if (checkboxStatuses["idCB"] == true)
+                            if (checkboxStatuses["koltsegvetes_idCB"] == true)
                             {
                                 if (d.ID.ToString().Contains(searchQuery))
                                 {
@@ -323,7 +419,7 @@ namespace Szakdolgozat.ViewModels
                                     continue;
                                 }
                             }
-                            if (checkboxStatuses["osszegCB"] == true)
+                            if (checkboxStatuses["koltsegvetes_osszegCB"] == true)
                             {
                                 if (d.Osszeg.ToString().Contains(searchQuery))
                                 {
@@ -331,7 +427,7 @@ namespace Szakdolgozat.ViewModels
                                     continue;
                                 }
                             }
-                            if (checkboxStatuses["penznemCB"] == true)
+                            if (checkboxStatuses["koltsegvetes_penznemCB"] == true)
                             {
                                 if (d.Penznem.ToString().Contains(searchQuery))
                                 {
@@ -339,7 +435,7 @@ namespace Szakdolgozat.ViewModels
                                     continue;
                                 }
                             }
-                            if (checkboxStatuses["bekikodCB"] == true)
+                            if (checkboxStatuses["koltsegvetes_bekikodCB"] == true)
                             {
                                 if (d.BeKiKod.ToString().Contains(searchQuery))
                                 {
@@ -347,7 +443,7 @@ namespace Szakdolgozat.ViewModels
                                     continue;
                                 }
                             }
-                            if (checkboxStatuses["teljesitesiDatumCB"] == true)
+                            if (checkboxStatuses["koltsegvetes_teljesitesiDatumCB"] == true)
                             {
                                 if (d.TeljesitesiDatum.ToString().Contains(searchQuery))
                                 {
@@ -355,7 +451,7 @@ namespace Szakdolgozat.ViewModels
                                     continue;
                                 }
                             }
-                            if (checkboxStatuses["kotelKovetIDCB"] == true)
+                            if (checkboxStatuses["koltsegvetes_kotelKovetIDCB"] == true)
                             {
                                 if (d.KotelKovetID.ToString().Contains(searchQuery))
                                 {
@@ -363,7 +459,7 @@ namespace Szakdolgozat.ViewModels
                                     continue;
                                 }
                             }
-                            if (checkboxStatuses["partnerIDCB"] == true)
+                            if (checkboxStatuses["koltsegvetes_partnerIDCB"] == true)
                             {
                                 if (d.PartnerID.ToString().Contains(searchQuery))
                                 {
@@ -380,10 +476,104 @@ namespace Szakdolgozat.ViewModels
                         OnPropertyChanged(nameof(Tabs));
                     }
                 }
+                if (tabItem.Name.Contains("KotelKovet"))
+                {
+                    if (!string.IsNullOrWhiteSpace(searchQuery) && !string.IsNullOrEmpty(searchQuery))
+                    {
+                        FilteredKotelKovetelesek.Clear();
+                        foreach (var d in KotelKovetelesek)
+                        {
+                            if (checkboxStatuses["kotelKovet_mindCB"] == true)
+                            {
+                                if (d.ID.ToString().Contains(searchQuery))
+                                {
+                                    FilteredKotelKovetelesek.Add(d);
+                                    continue;
+                                }
+                            }
+                            if (checkboxStatuses["kotelKovet_osszegCB"] == true)
+                            {
+                                if (d.Osszeg.ToString().Contains(searchQuery))
+                                {
+                                    FilteredKotelKovetelesek.Add(d);
+                                    continue;
+                                }
+                            }
+                            if (checkboxStatuses["kotelKovet_penznemCB"] == true)
+                            {
+                                if (d.Penznem.ToString().Contains(searchQuery))
+                                {
+                                    FilteredKotelKovetelesek.Add(d);
+                                    continue;
+                                }
+                            }
+                            if (checkboxStatuses["kotelKovet_tipusCB"] == true)
+                            {
+                                if (d.Tipus.ToString().Contains(searchQuery))
+                                {
+                                    FilteredKotelKovetelesek.Add(d);
+                                    continue;
+                                }
+                            }
+                            if (checkboxStatuses["kotelKovet_kifizetesHataridejeCB"] == true)
+                            {
+                                if (d.KifizetesHatarideje.ToString().Contains(searchQuery))
+                                {
+                                    FilteredKotelKovetelesek.Add(d);
+                                    continue;
+                                }
+                            }
+                            if (checkboxStatuses["kotelKovet_kifizetettCB"] == true)
+                            {
+                                if (d.Kifizetett.ToString().Contains(searchQuery))
+                                {
+                                    FilteredKotelKovetelesek.Add(d);
+                                    continue;
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // If the search query is empty, reset to the original data
+                        FilteredKotelKovetelesek = new ObservableCollection<KotelezettsegKoveteles>(KotelKovetelesek);
+                        OnPropertyChanged(nameof(Tabs));
+                    }
+                }
             }
         }
 
+        public void ChangeIsSelectedAndRefreshBevetelKiadas(int[] ids, bool selectOrDeselect)
+        {
+            foreach (int id in ids)
+            {
+                for (int i = 0; i < BevetelekKiadasok.Count; i++)
+                {
+                    if (BevetelekKiadasok.ElementAt(i).ID == id)
+                    {
+                        BevetelekKiadasok.ElementAt(i).IsSelected = selectOrDeselect;
+                        break;
+                    }
+                }
+            }
+            UpdateSearch(SearchQuery);
+        }
 
+        public void ChangeIsSelectedAndRefreshKotelKovet(int[] ids, bool selectOrDeselect)
+        {
+            foreach (int id in ids)
+            {
+                for (int i = 0; i < KotelKovetelesek.Count; i++)
+                {
+                    if (KotelKovetelesek.ElementAt(i).ID == id)
+                    {
+                        KotelKovetelesek.ElementAt(i).IsSelected = selectOrDeselect;
+                        break;
+                    }
+                }
+            }
+            UpdateSearch(SearchQuery);
+        }
         // Call this method when the search query changes
         public void UpdateSearch(string searchQuery)
         {
@@ -498,125 +688,217 @@ namespace Szakdolgozat.ViewModels
             LineSeries = new SeriesCollection();
             GroupBySelections.Clear();
 
-            if (GroupByBeKiKodCheckBoxIsChecked && GroupByPenznemCheckBoxIsChecked)
+            if(IsBevetelekKiadasokTabIsSelected)
             {
-                var groupedByPenznem = _selectedBevetelekKiadasok.GroupBy(p => new { p.Penznem, p.BeKiKod });
-
-                // Create a dictionary to hold the HashSet for each group
-                var hashSetsByPenznem = new Dictionary<(Penznem Penznem, BeKiKod BeKiKod), HashSet<BevetelKiadas>>();
-
-                foreach (var group in groupedByPenznem)
+                if (GroupByBeKiKodCheckBoxIsChecked && GroupByPenznemCheckBoxIsChecked)
                 {
-                    // Create a HashSet for each group
-                    var hashSet = new HashSet<BevetelKiadas>(group);
-                    hashSetsByPenznem[(group.Key.Penznem, group.Key.BeKiKod)] = hashSet;
-                }
+                    var groupedByPenznemAndBeKiKod = _selectedBevetelekKiadasok.GroupBy(p => new { p.Penznem, p.BeKiKod });
 
-                int a = 0;
-                // Display the results
-                foreach (var kvp in hashSetsByPenznem)
+                    // Create a dictionary to hold the HashSet for each group
+                    var hashSetsByPenznemAndBeKiKod = new Dictionary<(Penznem Penznem, BeKiKod BeKiKod), HashSet<BevetelKiadas>>();
+
+                    foreach (var group in groupedByPenznemAndBeKiKod)
+                    {
+                        // Create a HashSet for each group
+                        var hashSet = new HashSet<BevetelKiadas>(group);
+                        hashSetsByPenznemAndBeKiKod[(group.Key.Penznem, group.Key.BeKiKod)] = hashSet;
+                    }
+
+                    int a = 0;
+                    // Display the results
+                    foreach (var kvp in hashSetsByPenznemAndBeKiKod)
+                    {
+                        var bevetelekKiadasokAdatsor = new ChartValues<double>();
+                        foreach (var bevetelKiadas in kvp.Value)
+                        {
+                            bevetelekKiadasokAdatsor.Add(Convert.ToDouble(bevetelKiadas.Osszeg));
+                        }
+                        AddLineSeries(bevetelekKiadasokAdatsor, $"Bevételek és Kiadások - {kvp.Key.Penznem} + {kvp.Key.BeKiKod}", $"{kvp.Key.Penznem}_{kvp.Key.BeKiKod}", baseColors[a]);
+                        AddGroupByDataToCollection($"{kvp.Key.Penznem}_{kvp.Key.BeKiKod}", a);
+                        if (a + 1 > 3)
+                            a = 0;
+                        else a += 1;
+                    }
+                }
+                else if (GroupByBeKiKodCheckBoxIsChecked)
+                {
+                    var groupedByBeKiKod = _selectedBevetelekKiadasok.GroupBy(p => new { p.BeKiKod });
+
+                    // Create a dictionary to hold the HashSet for each group
+                    var hashSetsByBeKiKod = new Dictionary<BeKiKod, HashSet<BevetelKiadas>>();
+
+                    foreach (var group in groupedByBeKiKod)
+                    {
+                        // Create a HashSet for each group
+                        var hashSet = new HashSet<BevetelKiadas>(group);
+                        hashSetsByBeKiKod[group.Key.BeKiKod] = hashSet;
+                    }
+
+                    int a = 0;
+                    // Display the results
+                    foreach (var kvp in hashSetsByBeKiKod)
+                    {
+                        var bevetelekKiadasokAdatsor = new ChartValues<double>();
+                        foreach (var bevetelKiadas in kvp.Value)
+                        {
+                            bevetelekKiadasokAdatsor.Add(Convert.ToDouble(bevetelKiadas.Osszeg));
+                        }
+                        AddLineSeries(bevetelekKiadasokAdatsor, $"Bevételek és Kiadások - {kvp.Key}", kvp.Key.ToString(), baseColors[a]);
+                        AddGroupByDataToCollection(kvp.Key.ToString(), a);
+                        if (a + 1 > 3)
+                            a = 0;
+                        else a += 1;
+                    }
+                }
+                else if (GroupByPenznemCheckBoxIsChecked)
+                {
+                    var groupedByPenznem = _selectedBevetelekKiadasok.GroupBy(p => new { p.Penznem });
+
+                    // Create a dictionary to hold the HashSet for each group
+                    var hashSetsByPenznem = new Dictionary<Penznem, HashSet<BevetelKiadas>>();
+
+                    foreach (var group in groupedByPenznem)
+                    {
+                        // Create a HashSet for each group
+                        var hashSet = new HashSet<BevetelKiadas>(group);
+                        hashSetsByPenznem[group.Key.Penznem] = hashSet;
+                    }
+
+                    int a = 0;
+                    // Display the results
+                    foreach (var kvp in hashSetsByPenznem)
+                    {
+                        var bevetelekKiadasokAdatsor = new ChartValues<double>();
+                        foreach (var bevetelKiadas in kvp.Value)
+                        {
+                            bevetelekKiadasokAdatsor.Add(Convert.ToDouble(bevetelKiadas.Osszeg));
+                        }
+                        var totalBevetelekKiadasokAdatsor = bevetelekKiadasokAdatsor.Sum(x => x);
+                        AddLineSeries(bevetelekKiadasokAdatsor, $"Bevételek és Kiadások - {kvp.Key}", kvp.Key.ToString(), baseColors[a]);
+                        AddGroupByDataToCollection(kvp.Key.ToString(), a);
+                        if (a + 1 > 3)
+                            a = 0;
+                        else a += 1;
+                    }
+                }
+                else
                 {
                     var bevetelekKiadasokAdatsor = new ChartValues<double>();
-                    foreach (var bevetelKiadas in kvp.Value)
+
+                    foreach (var a in _selectedBevetelekKiadasok)
                     {
-                        bevetelekKiadasokAdatsor.Add(Convert.ToDouble(bevetelKiadas.Osszeg));
+                        bevetelekKiadasokAdatsor.Add(Convert.ToDouble(a.Osszeg));
                     }
-                    var totalBevetelekKiadasokAdatsor = bevetelekKiadasokAdatsor.Sum(x => x);
-                    AddLineSeries(bevetelekKiadasokAdatsor, totalBevetelekKiadasokAdatsor, totalBevetelekKiadasokAdatsor, $"Bevételek és Kiadások - {kvp.Key.Penznem} + {kvp.Key.BeKiKod}", $"{kvp.Key.Penznem}_{kvp.Key.BeKiKod}", baseColors[a]);
-                    AddGroupByDataToCollection($"{kvp.Key.Penznem}_{kvp.Key.BeKiKod}", a);
-                    if (a + 1 > 3)
-                        a = 0;
-                    else a += 1;
-                }
-            }
-            else if(GroupByBeKiKodCheckBoxIsChecked)
-            {
-                var groupedByPenznem = _selectedBevetelekKiadasok.GroupBy(p => new { p.BeKiKod });
 
-                // Create a dictionary to hold the HashSet for each group
-                var hashSetsByPenznem = new Dictionary<BeKiKod, HashSet<BevetelKiadas>>();
-
-                foreach (var group in groupedByPenznem)
-                {
-                    // Create a HashSet for each group
-                    var hashSet = new HashSet<BevetelKiadas>(group);
-                    hashSetsByPenznem[group.Key.BeKiKod] = hashSet;
-                }
-
-                int a = 0;
-                // Display the results
-                foreach (var kvp in hashSetsByPenznem)
-                {
-                    var bevetelekKiadasokAdatsor = new ChartValues<double>();
-                    foreach (var bevetelKiadas in kvp.Value)
-                    {
-                        bevetelekKiadasokAdatsor.Add(Convert.ToDouble(bevetelKiadas.Osszeg));
-                    }
-                    var totalBevetelekKiadasokAdatsor = bevetelekKiadasokAdatsor.Sum(x => x);
-                    AddLineSeries(bevetelekKiadasokAdatsor, totalBevetelekKiadasokAdatsor, totalBevetelekKiadasokAdatsor, $"Bevételek és Kiadások - {kvp.Key}", kvp.Key.ToString(), baseColors[a]);
-                    AddGroupByDataToCollection(kvp.Key.ToString(), a);
-                    if (a + 1 > 3)
-                        a = 0;
-                    else a += 1;
-                }
-            }
-            else if (GroupByPenznemCheckBoxIsChecked)
-            {
-                var groupedByPenznem = _selectedBevetelekKiadasok.GroupBy(p => new { p.Penznem });
-
-                // Create a dictionary to hold the HashSet for each group
-                var hashSetsByPenznem = new Dictionary<Penznem, HashSet<BevetelKiadas>>();
-
-                foreach (var group in groupedByPenznem)
-                {
-                    // Create a HashSet for each group
-                    var hashSet = new HashSet<BevetelKiadas>(group);
-                    hashSetsByPenznem[group.Key.Penznem] = hashSet;
-                }
-
-                int a = 0;
-                // Display the results
-                foreach (var kvp in hashSetsByPenznem)
-                {
-                    var bevetelekKiadasokAdatsor = new ChartValues<double>();
-                    foreach (var bevetelKiadas in kvp.Value)
-                    {
-                        bevetelekKiadasokAdatsor.Add(Convert.ToDouble(bevetelKiadas.Osszeg));
-                    }
-                    var totalBevetelekKiadasokAdatsor = bevetelekKiadasokAdatsor.Sum(x => x);
-                    AddLineSeries(bevetelekKiadasokAdatsor, totalBevetelekKiadasokAdatsor, totalBevetelekKiadasokAdatsor, $"Bevételek és Kiadások - {kvp.Key}", kvp.Key.ToString(), baseColors[a]);
-                    AddGroupByDataToCollection(kvp.Key.ToString(), a);
-                    if (a + 1 > 3)
-                        a = 0;
-                    else a += 1;
+                    AddLineSeries(bevetelekKiadasokAdatsor, "Bevételek és Kiadások", "bevetelekKiadasok", baseColors[0]);
+                    AddGroupByDataToCollection("bevetelekKiadasok", 0);
                 }
             }
             else
             {
-                var bevetelekKiadasokAdatsor = new ChartValues<double>();
-                var kotelezetsegekKovetelesekAdatsor = new ChartValues<double>();
-
-                foreach (var a in _selectedBevetelekKiadasok)
+                if (GroupByKifizetettCheckBoxIsChecked && GroupByPenznemCheckBoxIsChecked)
                 {
-                    bevetelekKiadasokAdatsor.Add(Convert.ToDouble(a.Osszeg));
-                }
+                    var groupedByPenznemAndKifizetett = _selectedKotelezettsegekKovetelesek.GroupBy(p => new { p.Penznem, p.Kifizetett });
 
-                foreach (var a in _selectedKotelezettsegekKovetelesek)
+                    // Create a dictionary to hold the HashSet for each group
+                    var hashSetsByPenznemAndKifizetett = new Dictionary<(Penznem Penznem, Int16 Kifizetett), HashSet<KotelezettsegKoveteles>>();
+
+                    foreach (var group in groupedByPenznemAndKifizetett)
+                    {
+                        // Create a HashSet for each group
+                        var hashSet = new HashSet<KotelezettsegKoveteles>(group);
+                        hashSetsByPenznemAndKifizetett[(group.Key.Penznem, group.Key.Kifizetett)] = hashSet;
+                    }
+
+                    int a = 0;
+                    // Display the results
+                    foreach (var kvp in hashSetsByPenznemAndKifizetett)
+                    {
+                        var kotelezettsegekKovetelesekAdatsor = new ChartValues<double>();
+                        foreach (var kotelezettsegKoveteles in kvp.Value)
+                        {
+                            kotelezettsegekKovetelesekAdatsor.Add(Convert.ToDouble(kotelezettsegKoveteles.Osszeg));
+                        }
+                        AddLineSeries(kotelezettsegekKovetelesekAdatsor, $"Kotelezettségek és Követelések - {kvp.Key.Penznem} + {kvp.Key.Kifizetett}", $"{kvp.Key.Penznem}_{kvp.Key.Kifizetett}", baseColors[a]);
+                        AddGroupByDataToCollection($"{kvp.Key.Penznem}_{kvp.Key.Kifizetett}", a);
+                        if (a + 1 > 3)
+                            a = 0;
+                        else a += 1;
+                    }
+                }
+                else if (GroupByKifizetettCheckBoxIsChecked)
                 {
-                    kotelezetsegekKovetelesekAdatsor.Add(Convert.ToDouble(a.Osszeg));
+                    var groupedByKifizetett = _selectedKotelezettsegekKovetelesek.GroupBy(p => new { p.Kifizetett });
+
+                    // Create a dictionary to hold the HashSet for each group
+                    var hashSetsByKifizetett = new Dictionary<Int16, HashSet<KotelezettsegKoveteles>>();
+
+                    foreach (var group in groupedByKifizetett)
+                    {
+                        // Create a HashSet for each group
+                        var hashSet = new HashSet<KotelezettsegKoveteles>(group);
+                        hashSetsByKifizetett[group.Key.Kifizetett] = hashSet;
+                    }
+
+                    int a = 0;
+                    // Display the results
+                    foreach (var kvp in hashSetsByKifizetett)
+                    {
+                        var kotelezettsegekKovetelesekAdatsor = new ChartValues<double>();
+                        foreach (var kotelezettsegKoveteles in kvp.Value)
+                        {
+                            kotelezettsegekKovetelesekAdatsor.Add(Convert.ToDouble(kotelezettsegKoveteles.Osszeg));
+                        }
+                        AddLineSeries(kotelezettsegekKovetelesekAdatsor, $"Kotelezettségek és Követelések - {kvp.Key}", "Kifizetett_" + kvp.Key.ToString(), baseColors[a]);
+                        AddGroupByDataToCollection("Kifizetett_" + kvp.Key.ToString(), a);
+                        if (a + 1 > 3)
+                            a = 0;
+                        else a += 1;
+                    }
                 }
+                else if (GroupByPenznemCheckBoxIsChecked)
+                {
+                    var groupedByPenznem = _selectedKotelezettsegekKovetelesek.GroupBy(p => new { p.Penznem });
 
-                var totalBevetelekKiadasokAdatsor = bevetelekKiadasokAdatsor.Sum(x => x);
-                var totalKotelezetsegekKovetelesekAdatsor = kotelezetsegekKovetelesekAdatsor.Sum(x => x);
-                var totalSum = totalBevetelekKiadasokAdatsor + totalKotelezetsegekKovetelesekAdatsor;
+                    // Create a dictionary to hold the HashSet for each group
+                    var hashSetsByPenznem = new Dictionary<Penznem, HashSet<KotelezettsegKoveteles>>();
 
+                    foreach (var group in groupedByPenznem)
+                    {
+                        // Create a HashSet for each group
+                        var hashSet = new HashSet<KotelezettsegKoveteles>(group);
+                        hashSetsByPenznem[group.Key.Penznem] = hashSet;
+                    }
 
-                AddLineSeries(bevetelekKiadasokAdatsor, totalBevetelekKiadasokAdatsor, totalSum, "Bevételek és Kiadások", "bevetelekKiadasok", baseColors[0]);
-                AddGroupByDataToCollection("bevetelekKiadasok", 0);
-                AddLineSeries(kotelezetsegekKovetelesekAdatsor, totalKotelezetsegekKovetelesekAdatsor, totalSum, "Kötelezettségek és Követelések", "kotKov", baseColors[1]);
-                AddGroupByDataToCollection("kotKov", 1);
+                    int a = 0;
+                    // Display the results
+                    foreach (var kvp in hashSetsByPenznem)
+                    {
+                        var kotelezettsegekKovetelesekAdatsor = new ChartValues<double>();
+                        foreach (var kotelezettsegKoveteles in kvp.Value)
+                        {
+                            kotelezettsegekKovetelesekAdatsor.Add(Convert.ToDouble(kotelezettsegKoveteles.Osszeg));
+                        }
+                        AddLineSeries(kotelezettsegekKovetelesekAdatsor, $"Kotelezettségek és Követelések - {kvp.Key}", kvp.Key.ToString(), baseColors[a]);
+                        AddGroupByDataToCollection(kvp.Key.ToString(), a);
+                        if (a + 1 > 3)
+                            a = 0;
+                        else a += 1;
+                    }
+                }
+                else
+                {
+                    var kotelezetsegekKovetelesekAdatsor = new ChartValues<double>();
+
+                    foreach (var a in _selectedKotelezettsegekKovetelesek)
+                    {
+                        kotelezetsegekKovetelesekAdatsor.Add(Convert.ToDouble(a.Osszeg));
+                    }
+
+                    AddLineSeries(kotelezetsegekKovetelesekAdatsor, "Kötelezettségek és Követelések", "kotKov", baseColors[1]);
+                    AddGroupByDataToCollection("kotKov", 1);
+                }
             }
-
             OnPropertyChanged(nameof(Series));
             OnPropertyChanged(nameof(GroupBySelections));
         }
@@ -995,7 +1277,6 @@ namespace Szakdolgozat.ViewModels
                 dataGrid = new System.Windows.Controls.DataGrid
                 {
                     Name = table,
-                    ItemsSource = FilteredKotelKovetelesek,
                     CanUserSortColumns = false,
                     AutoGenerateColumns = true,
                     SelectionUnit = DataGridSelectionUnit.FullRow,
@@ -1005,7 +1286,16 @@ namespace Szakdolgozat.ViewModels
                     HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled,
                     VerticalScrollBarVisibility = ScrollBarVisibility.Hidden,
                 };
-            }
+                var itemsSourceBinding = new System.Windows.Data.Binding("FilteredKotelKovetelesek")
+                {
+                    Source = this,  // your ViewModel instance
+                    Mode = BindingMode.TwoWay, // or OneWay if needed
+                    UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
+                };
+
+                // Set the binding to the ItemsSource property
+                dataGrid.SetBinding(System.Windows.Controls.DataGrid.ItemsSourceProperty, itemsSourceBinding);
+        }
             
 
             //dataGrid.AutoGeneratedColumns += (sender, e) =>
@@ -1166,7 +1456,7 @@ namespace Szakdolgozat.ViewModels
             OnPropertyChanged(nameof(LabelFormatter));
         }
 
-        private void AddLineSeries(ChartValues<double> asd, double categoryTotal, double totalSum, string title, string name, SolidColorBrush baseColor)
+        private void AddLineSeries(ChartValues<double> asd, string title, string name, SolidColorBrush baseColor)
         {
 
             LineSeries.Add(new LineSeries
