@@ -78,6 +78,8 @@ namespace Szakdolgozat.Views
             GroupByPenznemCB.Unchecked += GroupByCheckBox_Unchecked;
             GroupByKifizetettCB.Checked += GroupByCheckBox_Checked;
             GroupByKifizetettCB.Unchecked += GroupByCheckBox_Unchecked;
+            GroupByDateCB.Checked += GroupByCheckBox_Checked;
+            GroupByDateCB.Unchecked += GroupByCheckBox_Unchecked;
         }
 
         private void GroupByCheckBox_Unchecked(object sender, RoutedEventArgs e)
@@ -96,6 +98,9 @@ namespace Szakdolgozat.Views
                             break;
                         case "GroupByKifizetettCB":
                             createChartsView.GroupByKifizetettCheckBoxIsChecked = false;
+                            break;
+                        case "GroupByDateCB":
+                            createChartsView.GroupByDateCheckBoxIsChecked = false;
                             break;
                         default:
                             break;
@@ -120,6 +125,9 @@ namespace Szakdolgozat.Views
                             break;
                         case "GroupByKifizetettCB":
                             createChartsView.GroupByKifizetettCheckBoxIsChecked = true;
+                            break;
+                        case "GroupByDateCB":
+                            createChartsView.GroupByDateCheckBoxIsChecked = true;
                             break;
                         default:
                             break;
@@ -234,25 +242,6 @@ namespace Szakdolgozat.Views
                             viewModel.ChangeIsSelectedAndRefreshKotelKovet(changeableItems, false);
                         }
                     }
-                    //foreach (var cellInfo in dataGrid.SelectedCells)
-                    //{
-                    //    var cellContent = cellInfo.Column.GetCellContent(cellInfo.Item);
-                    //    if (cellContent != null)
-                    //    {
-                    //        var cell = cellContent.Parent as System.Windows.Controls.DataGridCell;
-                    //        if (cell != null)
-                    //        {
-                    //            if (sender == cellSelectionTrue)
-                    //            {
-                    //                cell.Style = (Style)this.FindResource("DataGridCellStyle");
-                    //            }
-                    //            else
-                    //            {
-                    //                cell.ClearValue(System.Windows.Controls.DataGridCell.StyleProperty);
-                    //            }
-                    //        }
-                    //    }
-                    //}
                 }
             }
         }
@@ -276,107 +265,6 @@ namespace Szakdolgozat.Views
                     break;
             }
         }
-        
-        //private void basicColumnNamesButton_Click(object sender, RoutedEventArgs e)
-        //{
-        //    if (uniqueColumnNamesButton.Visibility is Visibility.Hidden)
-        //    {
-        //        uniqueColumnNamesButton.Visibility = Visibility.Visible;
-        //        basicColumnNameOptions.Visibility = Visibility.Hidden;
-        //    }
-        //    else
-        //    {
-        //        uniqueColumnNamesButton.Visibility = Visibility.Hidden;
-        //        basicColumnNameOptions.Visibility = Visibility.Visible;
-        //    }
-        //}
-
-        //private void uniqueColumnNamesButton_Click(object sender, RoutedEventArgs e)
-        //{
-        //    if (basicColumnNamesButton.Visibility is Visibility.Hidden)
-        //    {
-        //        basicColumnNamesButton.Visibility = Visibility.Visible;
-        //    }
-        //    else
-        //    {
-        //        basicColumnNamesButton.Visibility = Visibility.Hidden;
-        //    }
-        //}
-        //private CheckBox FindCheckBoxByName(string checkBoxName)
-        //{
-        //    foreach (ComboBoxItem comboBoxItem in monthsCombobox.Items)
-        //    {
-        //        if (comboBoxItem.Content is CheckBox checkBox)
-        //        {
-        //            if (checkBox.Name == checkBoxName)
-        //            {
-        //                return checkBox;
-        //            }
-        //        }
-        //    }
-        //    return null;
-        //}
-
-        //private void CheckAllMonthBoxes()
-        //{
-        //    if (DataContext is CreateChartsViewModel createChartsViewModel)
-        //    {
-        //        foreach(var kvp in createChartsViewModel.monthCheckboxStatuses)
-        //        {
-        //            if(kvp.Key != "mindCB")
-        //            {
-        //                IsCheckedTrueSingleCheckBox(kvp.Key);
-        //            }
-        //        }
-        //    }
-        //}
-
-        //private void IsCheckedTrueSingleCheckBox(string name)
-        //{
-        //    CheckBox tmp = FindCheckBoxByName(name);
-        //    tmp.IsChecked = true;
-        //}
-        //private void IsCheckedFalseSingleCheckBox(string name)
-        //{
-        //    CheckBox tmp = FindCheckBoxByName(name);
-        //    tmp.IsChecked = false;
-        //}
-        //private void Month_CheckBox_Checked(object sender, RoutedEventArgs e)
-        //{
-        //    if (sender is CheckBox checkBox)
-        //    {
-        //        if (DataContext is CreateChartsViewModel createChartsViewModel)
-        //        {
-        //            try
-        //            {
-        //                if(checkBox.Name == "mindCB")
-        //                {
-        //                    CheckAllMonthBoxes();
-        //                    IsCheckedTrueSingleCheckBox(checkBox.Name);
-        //                }
-        //                else
-        //                {
-        //                    IsCheckedTrueSingleCheckBox(checkBox.Name);
-        //                }
-        //            }
-        //            catch (Exception ex)
-        //            {
-
-        //            }
-        //        }
-        //    }
-        //}
-
-        //private void Month_Checkbox_Unchecked(object sender, RoutedEventArgs e)
-        //{
-        //    if (sender is CheckBox checkBox)
-        //    {
-        //        if (DataContext is CreateChartsViewModel createChartsViewModel)
-        //        {
-        //            IsCheckedFalseSingleCheckBox(checkBox.Name);
-        //        }
-        //    }
-        //}
 
         //Ha combobox-on belüli elemen kattintás történik, akkor ez megakadájozza, hogy a placeholder szöveg ne legyen lecserélve
         //If a click occurs on a comboboxitem, then this method prevents any changes to the combobox placeholder text
@@ -400,7 +288,7 @@ namespace Szakdolgozat.Views
             }
         }
 
-        private void asd_Click(object sender, RoutedEventArgs e)
+        private void AddDataToChart_Click(object sender, RoutedEventArgs e)
         {
             if(DataContext is CreateChartsViewModel viewModel)
             {
@@ -511,7 +399,6 @@ namespace Szakdolgozat.Views
                     createChartsView.UpdateSearch(createChartsView.SearchQuery);
                 }
             }
-
         }
         
 
@@ -613,6 +500,13 @@ namespace Szakdolgozat.Views
             }
         }
 
+        private void deleteAllDataSelection_Click(object sender, RoutedEventArgs e)
+        {
+            if(DataContext is CreateChartsViewModel createChartsViewModel)
+            {
+                createChartsViewModel.UnCheckAllSelections();
+            }
+        }
         //private void Button_Click_1(object sender, RoutedEventArgs e)
         //{
         //    GetSelectedCells();

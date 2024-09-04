@@ -91,21 +91,21 @@ namespace Szakdolgozat.ViewModels
         }
         private void ExecuteLoginCommand(object obj)
         {
-            //DESING TESZTELÉSIG KIKAPCSOLVA
             Thread.CurrentPrincipal = new GenericPrincipal(
                 new GenericIdentity(Username), null);
+            //DESING TESZTELÉSIG false-ra állítva
             IsViewVisible = false;
-            //var isValidUser = _userRepository.AuthenticateUser(new NetworkCredential(Username, Password));
-            //if (isValidUser)
-            //{
-            //    Thread.CurrentPrincipal = new GenericPrincipal(
-            //        new GenericIdentity(Username), null);
-            //    IsViewVisible = false;
-            //}
-            //else
-            //{
-            //    ErrorMessage = "* Invalid username or password";
-            //}
+            var isValidUser = _userRepository.AuthenticateUser(new NetworkCredential(Username, Password));
+            if (isValidUser)
+            {
+                Thread.CurrentPrincipal = new GenericPrincipal(
+                    new GenericIdentity(Username), null);
+                IsViewVisible = false;
+            }
+            else
+            {
+                ErrorMessage = "* Invalid username or password";
+            }
         }
         private void ExecuteRecoverPassCommand(string username, string email)
         {

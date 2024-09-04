@@ -150,6 +150,20 @@ namespace Szakdolgozat.Views
             {
                 e.Cancel = true; // Prevents this column from being generated
             }
+            if (e.PropertyType == typeof(DateTime))
+            {
+                // Get the column and cast to DataGridTextColumn
+                var textColumn = e.Column as DataGridTextColumn;
+
+                if (textColumn != null)
+                {
+                    // Set the StringFormat for date formatting
+                    textColumn.Binding = new Binding(e.PropertyName)
+                    {
+                        StringFormat = "yyyy.MM.dd" // Format the date as desired
+                    };
+                }
+            }
         }
     }
 }

@@ -21,6 +21,8 @@ using System.Diagnostics;
 using System.Windows.Data;
 using Szakdolgozat.Views;
 using System.Xml.Linq;
+using Szakdolgozat.Specials;
+using System.Runtime.InteropServices.ComTypes;
 
 namespace Szakdolgozat.ViewModels
 {
@@ -32,6 +34,71 @@ namespace Szakdolgozat.ViewModels
         public bool GroupByBeKiKodCheckBoxIsChecked = false;
         public bool GroupByKifizetettCheckBoxIsChecked = false;
         public bool IsBevetelekKiadasokTabIsSelected = true;
+        public bool GroupByDateCheckBoxIsChecked = false;
+        public bool _isValidStartDateExists = false;
+        public bool _isValidEndDateExists = false;
+        public bool IsValidStartDateExists
+        {
+            get 
+            {
+                return _isValidStartDateExists; 
+            }
+            set 
+            {
+                _isValidStartDateExists = value;
+                UpdateSearch(SearchQuery);
+                OnPropertyChanged(nameof(IsValidStartDateExists));
+            }
+        }
+        public bool IsValidEndDateExists
+        {
+            get
+            {
+                return _isValidEndDateExists;
+            }
+            set
+            {
+                _isValidEndDateExists = value;
+                UpdateSearch(SearchQuery);
+                OnPropertyChanged(nameof(IsValidEndDateExists));
+            }
+        }
+
+        public string _startingDate;
+        public string StartingDate
+        {
+            get
+            {
+                return _startingDate;
+            }
+            set 
+            {
+                if(!value.Any(char.IsLetter) && value != _startingDate)
+                {
+                    _startingDate = value;
+                    IsValidStartDateExists = IsValidDate(value, true);
+                }
+                OnPropertyChanged(nameof(StartingDate));
+            }
+        }
+        public string _endDate;
+        public string EndDate
+        {
+            get
+            {
+                return _endDate;
+            }
+            set
+            {
+                if (!value.Any(char.IsLetter) && value != _endDate)
+                {
+                    _endDate = value;
+                    IsValidEndDateExists = IsValidDate(value, false);
+                }
+                OnPropertyChanged(nameof(EndDate));
+            }
+        }
+
         SolidColorBrush[] baseColors = new SolidColorBrush[] { Brushes.Blue, Brushes.Red, Brushes.Green, Brushes.Magenta };
         public SeriesCollection Series { get; set; }
         public Func<ChartPoint, string> LabelFormatter { get; set; }
@@ -71,6 +138,28 @@ namespace Szakdolgozat.ViewModels
                 _selectedBevetelekKiadasok = value;
                 OnPropertyChanged(nameof(SelectedBevetelekKiadasok));
                 
+            }
+        }
+
+        private bool IsValidDate(string date, bool IsStartDate)
+        {
+            DateTime? parsedDate = DateTimeParser.ParseDateTime(date);
+
+            if (parsedDate.HasValue)
+            {
+                if(IsStartDate)
+                {
+                    StartingDate = parsedDate.Value.Date.ToString("yyyy.MM.dd");
+                }
+                else
+                {
+                    EndDate = parsedDate.Value.Date.ToString("yyyy.MM.dd");
+                }
+                return true;
+            }
+            else
+            {
+                return false;
             }
         }
 
@@ -285,7 +374,6 @@ namespace Szakdolgozat.ViewModels
 
         public ICommand ShowSelectDataForNewChartViewCommand { get; }
         public ICommand ShowAddOptionToNewChartViewCommand { get; }
-        public ICommand TesztCommand{ get; }
 
         public CreateChartsViewModel()
         {
@@ -333,70 +421,6 @@ namespace Szakdolgozat.ViewModels
             Tabs.Add(CreateTabItem("KotelKovetelesek", false, "kotelezettsegek_kovetelesek"));
 
             UserRepository userRepository = new UserRepository();
-
-            //Adat szűrő feltöltése (comboboxitem-ekkel)
-            //Update the Data filter combobox with comboboxitems - START
-            //foreach (var table in _dbTableNames)
-            //{
-            //    //sortedSelectedCells.Add(table, new Dictionary<string, ObservableCollection<object>>
-            //    //{
-            //    //    { "Strings", new ObservableCollection<object>() },
-            //    //    { "Ints", new ObservableCollection<object>() },
-            //    //    { "Doubles", new ObservableCollection<object>() },
-            //    //    { "Bools", new ObservableCollection<object>() },
-            //    //    { "Dates", new ObservableCollection<object>() }
-            //    //});
-
-            //    //Combobox title
-            //    ComboBoxItem cbitem2 = new ComboBoxItem();
-            //    cbitem2.Name = "datafilter";
-            //    cbitem2.Content = "Adat szűrő";
-            //    cbitem2.IsEnabled = false;
-            //    cbitem2.Visibility = Visibility.Collapsed;
-            //    _checkBoxes.Add(cbitem2);
-
-            //    //A comboboxitem that shows which table's checkboxes are under it
-            //    ComboBoxItem cbitem3 = new ComboBoxItem();
-            //    cbitem3.Name = table.ToString() + "_CBI";
-            //    cbitem3.Content = table.ToString();
-            //    cbitem3.IsEnabled = false;
-            //    _checkBoxes.Add(cbitem3);
-
-            //    //A checkbox that later sets all the corresponding checkboxes to checked
-            //    TextBlock textBlock2 = new TextBlock();
-            //    textBlock2.Text = "Mind";
-            //    System.Windows.Controls.CheckBox checkBox2 = new System.Windows.Controls.CheckBox();
-            //    checkBox2.Name = table + "_All";
-            //    checkBox2.Content = textBlock2;
-            //    checkBox2.Checked += OptionsCheckBoxAllChecked;
-            //    checkBox2.Unchecked += OptionsCheckBoxAllUnchecked;
-
-            //    ComboBoxItem cbitem4 = new ComboBoxItem();
-            //    cbitem4.Name = table.ToString() + "_CBI_All";
-            //    cbitem4.Content = checkBox2;
-            //    _checkBoxes.Add(cbitem4);
-
-            //    _dbTablesWithColumnNames.Add(table, userRepository.GetColumnNamesForTables(table));
-            //    foreach(var s in userRepository.GetColumnNamesForTables(table))
-            //    {
-            //        //Pl: Name = dolgozok_id_ChB
-            //        //A checkbox to all the column name for each table
-            //        TextBlock textBlock = new TextBlock();
-            //        textBlock.Text = s;
-            //        System.Windows.Controls.CheckBox checkBox = new System.Windows.Controls.CheckBox();
-            //        checkBox.Name = table + "_ChB" + s;
-            //        checkBox.Content = textBlock;
-            //        checkBox.Checked += OptionsCheckboxCheckedChange;
-            //        checkBox.Unchecked += OptionsCheckboxCheckedChange;
-
-            //        //Pl: Name = id_CB
-            //        ComboBoxItem cbitem = new ComboBoxItem();
-            //        cbitem.Name = s + "_CB";
-            //        cbitem.Content = checkBox;
-            //        _checkBoxes.Add(cbitem);
-            //    }
-            //}
-            //FINISH
         }
 
         private void FilterData(string searchQuery)
@@ -413,7 +437,7 @@ namespace Szakdolgozat.ViewModels
                         {
                             if (checkboxStatuses["koltsegvetes_idCB"] == true)
                             {
-                                if (d.ID.ToString().Contains(searchQuery))
+                                if (d.ID.ToString().ToLower().Contains(searchQuery.ToLower()))
                                 {
                                     FilteredBevetelekKiadasok.Add(d);
                                     continue;
@@ -421,7 +445,7 @@ namespace Szakdolgozat.ViewModels
                             }
                             if (checkboxStatuses["koltsegvetes_osszegCB"] == true)
                             {
-                                if (d.Osszeg.ToString().Contains(searchQuery))
+                                if (d.Osszeg.ToString().ToLower().Contains(searchQuery.ToLower()))
                                 {
                                     FilteredBevetelekKiadasok.Add(d);
                                     continue;
@@ -429,7 +453,7 @@ namespace Szakdolgozat.ViewModels
                             }
                             if (checkboxStatuses["koltsegvetes_penznemCB"] == true)
                             {
-                                if (d.Penznem.ToString().Contains(searchQuery))
+                                if (d.Penznem.ToString().ToLower().Contains(searchQuery.ToLower()))
                                 {
                                     FilteredBevetelekKiadasok.Add(d);
                                     continue;
@@ -437,7 +461,7 @@ namespace Szakdolgozat.ViewModels
                             }
                             if (checkboxStatuses["koltsegvetes_bekikodCB"] == true)
                             {
-                                if (d.BeKiKod.ToString().Contains(searchQuery))
+                                if (d.BeKiKod.ToString().ToLower().Contains(searchQuery.ToLower()))
                                 {
                                     FilteredBevetelekKiadasok.Add(d);
                                     continue;
@@ -445,7 +469,7 @@ namespace Szakdolgozat.ViewModels
                             }
                             if (checkboxStatuses["koltsegvetes_teljesitesiDatumCB"] == true)
                             {
-                                if (d.TeljesitesiDatum.ToString().Contains(searchQuery))
+                                if (d.TeljesitesiDatum.ToString().ToLower().Contains(searchQuery.ToLower()))
                                 {
                                     FilteredBevetelekKiadasok.Add(d);
                                     continue;
@@ -453,7 +477,7 @@ namespace Szakdolgozat.ViewModels
                             }
                             if (checkboxStatuses["koltsegvetes_kotelKovetIDCB"] == true)
                             {
-                                if (d.KotelKovetID.ToString().Contains(searchQuery))
+                                if (d.KotelKovetID.ToString().ToLower().Contains(searchQuery.ToLower()))
                                 {
                                     FilteredBevetelekKiadasok.Add(d);
                                     continue;
@@ -461,10 +485,43 @@ namespace Szakdolgozat.ViewModels
                             }
                             if (checkboxStatuses["koltsegvetes_partnerIDCB"] == true)
                             {
-                                if (d.PartnerID.ToString().Contains(searchQuery))
+                                if (d.PartnerID.ToString().ToLower().Contains(searchQuery.ToLower()))
                                 {
                                     FilteredBevetelekKiadasok.Add(d);
                                     continue;
+                                }
+                            }
+                        }
+                        if(IsValidStartDateExists && IsValidEndDateExists)
+                        {
+                            for (int i = FilteredBevetelekKiadasok.Count - 1; i >= 0; i--)
+                            {
+                                var item = FilteredBevetelekKiadasok[i];
+                                if (!(item.TeljesitesiDatum.Date >= DateTimeParser.ParseDateTime(StartingDate) && item.TeljesitesiDatum.Date <= DateTimeParser.ParseDateTime(EndDate)))
+                                {
+                                    FilteredBevetelekKiadasok.Remove(item);
+                                }
+                            }
+                        }
+                        else if (IsValidStartDateExists)
+                        {
+                            for (int i = FilteredBevetelekKiadasok.Count - 1; i >= 0; i--)
+                            {
+                                var item = FilteredBevetelekKiadasok[i];
+                                if (!(item.TeljesitesiDatum.Date >= DateTimeParser.ParseDateTime(StartingDate)))
+                                {
+                                    FilteredBevetelekKiadasok.Remove(item);
+                                }
+                            }
+                        }
+                        else if (IsValidEndDateExists)
+                        {
+                            for (int i = FilteredBevetelekKiadasok.Count - 1; i >= 0; i--)
+                            {
+                                var item = FilteredBevetelekKiadasok[i];
+                                if (!(item.TeljesitesiDatum.Date <= DateTimeParser.ParseDateTime(EndDate)))
+                                {
+                                    FilteredBevetelekKiadasok.Remove(item);
                                 }
                             }
                         }
@@ -473,6 +530,39 @@ namespace Szakdolgozat.ViewModels
                     {
                         // If the search query is empty, reset to the original data
                         FilteredBevetelekKiadasok = new ObservableCollection<BevetelKiadas>(BevetelekKiadasok);
+                        if (IsValidStartDateExists && IsValidEndDateExists)
+                        {
+                            for (int i = FilteredBevetelekKiadasok.Count - 1; i >= 0; i--)
+                            {
+                                var item = FilteredBevetelekKiadasok[i];
+                                if (!(item.TeljesitesiDatum.Date >= DateTimeParser.ParseDateTime(StartingDate) && item.TeljesitesiDatum.Date <= DateTimeParser.ParseDateTime(EndDate)))
+                                {
+                                    FilteredBevetelekKiadasok.Remove(item);
+                                }
+                            }
+                        }
+                        else if (IsValidStartDateExists)
+                        {
+                            for (int i = FilteredBevetelekKiadasok.Count - 1; i >= 0; i--)
+                            {
+                                var item = FilteredBevetelekKiadasok[i];
+                                if (!(item.TeljesitesiDatum.Date >= DateTimeParser.ParseDateTime(StartingDate)))
+                                {
+                                    FilteredBevetelekKiadasok.Remove(item);
+                                }
+                            }
+                        }
+                        else if (IsValidEndDateExists)
+                        {
+                            for (int i = FilteredBevetelekKiadasok.Count - 1; i >= 0; i--)
+                            {
+                                var item = FilteredBevetelekKiadasok[i];
+                                if (!(item.TeljesitesiDatum.Date <= DateTimeParser.ParseDateTime(EndDate)))
+                                {
+                                    FilteredBevetelekKiadasok.Remove(item);
+                                }
+                            }
+                        }
                         OnPropertyChanged(nameof(Tabs));
                     }
                 }
@@ -485,7 +575,7 @@ namespace Szakdolgozat.ViewModels
                         {
                             if (checkboxStatuses["kotelKovet_mindCB"] == true)
                             {
-                                if (d.ID.ToString().Contains(searchQuery))
+                                if (d.ID.ToString().ToLower().Contains(searchQuery.ToLower()))
                                 {
                                     FilteredKotelKovetelesek.Add(d);
                                     continue;
@@ -493,7 +583,7 @@ namespace Szakdolgozat.ViewModels
                             }
                             if (checkboxStatuses["kotelKovet_osszegCB"] == true)
                             {
-                                if (d.Osszeg.ToString().Contains(searchQuery))
+                                if (d.Osszeg.ToString().ToLower().Contains(searchQuery.ToLower()))
                                 {
                                     FilteredKotelKovetelesek.Add(d);
                                     continue;
@@ -501,7 +591,7 @@ namespace Szakdolgozat.ViewModels
                             }
                             if (checkboxStatuses["kotelKovet_penznemCB"] == true)
                             {
-                                if (d.Penznem.ToString().Contains(searchQuery))
+                                if (d.Penznem.ToString().ToLower().Contains(searchQuery.ToLower()))
                                 {
                                     FilteredKotelKovetelesek.Add(d);
                                     continue;
@@ -509,7 +599,7 @@ namespace Szakdolgozat.ViewModels
                             }
                             if (checkboxStatuses["kotelKovet_tipusCB"] == true)
                             {
-                                if (d.Tipus.ToString().Contains(searchQuery))
+                                if (d.Tipus.ToLower().ToString().Contains(searchQuery.ToLower()))
                                 {
                                     FilteredKotelKovetelesek.Add(d);
                                     continue;
@@ -517,7 +607,7 @@ namespace Szakdolgozat.ViewModels
                             }
                             if (checkboxStatuses["kotelKovet_kifizetesHataridejeCB"] == true)
                             {
-                                if (d.KifizetesHatarideje.ToString().Contains(searchQuery))
+                                if (d.KifizetesHatarideje.ToString().ToLower().Contains(searchQuery.ToLower()))
                                 {
                                     FilteredKotelKovetelesek.Add(d);
                                     continue;
@@ -525,10 +615,43 @@ namespace Szakdolgozat.ViewModels
                             }
                             if (checkboxStatuses["kotelKovet_kifizetettCB"] == true)
                             {
-                                if (d.Kifizetett.ToString().Contains(searchQuery))
+                                if (d.Kifizetett.ToString().ToLower().Contains(searchQuery.ToLower()))
                                 {
                                     FilteredKotelKovetelesek.Add(d);
                                     continue;
+                                }
+                            }
+                        }
+                        if (IsValidStartDateExists && IsValidEndDateExists)
+                        {
+                            for (int i = FilteredKotelKovetelesek.Count - 1; i >= 0; i--)
+                            {
+                                var item = FilteredKotelKovetelesek[i];
+                                if (!(item.KifizetesHatarideje.Date >= DateTimeParser.ParseDateTime(StartingDate) && item.KifizetesHatarideje.Date <= DateTimeParser.ParseDateTime(EndDate)))
+                                {
+                                    FilteredKotelKovetelesek.Remove(item);
+                                }
+                            }
+                        }
+                        else if (IsValidStartDateExists)
+                        {
+                            for (int i = FilteredKotelKovetelesek.Count - 1; i >= 0; i--)
+                            {
+                                var item = FilteredKotelKovetelesek[i];
+                                if (!(item.KifizetesHatarideje.Date >= DateTimeParser.ParseDateTime(StartingDate)))
+                                {
+                                    FilteredKotelKovetelesek.Remove(item);
+                                }
+                            }
+                        }
+                        else if (IsValidEndDateExists)
+                        {
+                            for (int i = FilteredKotelKovetelesek.Count - 1; i >= 0; i--)
+                            {
+                                var item = FilteredKotelKovetelesek[i];
+                                if (!(item.KifizetesHatarideje.Date <= DateTimeParser.ParseDateTime(EndDate)))
+                                {
+                                    FilteredKotelKovetelesek.Remove(item);
                                 }
                             }
                         }
@@ -537,6 +660,39 @@ namespace Szakdolgozat.ViewModels
                     {
                         // If the search query is empty, reset to the original data
                         FilteredKotelKovetelesek = new ObservableCollection<KotelezettsegKoveteles>(KotelKovetelesek);
+                        if (IsValidStartDateExists && IsValidEndDateExists)
+                        {
+                            for (int i = FilteredKotelKovetelesek.Count - 1; i >= 0; i--)
+                            {
+                                var item = FilteredKotelKovetelesek[i];
+                                if (!(item.KifizetesHatarideje.Date >= DateTimeParser.ParseDateTime(StartingDate) && item.KifizetesHatarideje.Date <= DateTimeParser.ParseDateTime(EndDate)))
+                                {
+                                    FilteredKotelKovetelesek.Remove(item);
+                                }
+                            }
+                        }
+                        else if (IsValidStartDateExists)
+                        {
+                            for (int i = FilteredKotelKovetelesek.Count - 1; i >= 0; i--)
+                            {
+                                var item = FilteredKotelKovetelesek[i];
+                                if (!(item.KifizetesHatarideje.Date >= DateTimeParser.ParseDateTime(StartingDate)))
+                                {
+                                    FilteredKotelKovetelesek.Remove(item);
+                                }
+                            }
+                        }
+                        else if (IsValidEndDateExists)
+                        {
+                            for (int i = FilteredKotelKovetelesek.Count - 1; i >= 0; i--)
+                            {
+                                var item = FilteredKotelKovetelesek[i];
+                                if (!(item.KifizetesHatarideje.Date <= DateTimeParser.ParseDateTime(EndDate)))
+                                {
+                                    FilteredKotelKovetelesek.Remove(item);
+                                }
+                            }
+                        }
                         OnPropertyChanged(nameof(Tabs));
                     }
                 }
@@ -684,13 +840,150 @@ namespace Szakdolgozat.ViewModels
 
         public void SetLineSeries()
         {
-
             LineSeries = new SeriesCollection();
             GroupBySelections.Clear();
 
             if(IsBevetelekKiadasokTabIsSelected)
             {
-                if (GroupByBeKiKodCheckBoxIsChecked && GroupByPenznemCheckBoxIsChecked)
+                if (GroupByBeKiKodCheckBoxIsChecked && GroupByPenznemCheckBoxIsChecked && GroupByDateCheckBoxIsChecked)
+                {
+                    var groupedByYearAndPenznem = _selectedBevetelekKiadasok
+                    .GroupBy(p => new { p.TeljesitesiDatum.Year, p.BeKiKod, p.Penznem })
+                    .ToDictionary(
+                        g => g.Key,
+                        g =>
+                        {
+                            // Create a dictionary to store sums by month
+                            var monthlySums = g.GroupBy(p => p.TeljesitesiDatum.Month)
+                                               .ToDictionary(
+                                                   monthGroup => monthGroup.Key,
+                                                   monthGroup => monthGroup.Sum(x => Convert.ToDouble(x.Osszeg))
+                                               );
+
+                            // Ensure all months (1-12) are accounted for
+                            for (int month = 1; month <= 12; month++)
+                            {
+                                if (!monthlySums.ContainsKey(month))
+                                {
+                                    monthlySums[month] = 0; // Add a month with a sum of 0 if it's missing
+                                }
+                            }
+                            // Return the values as a HashSet
+                            return monthlySums.OrderBy(m => m.Key)
+                           .Select(m => m.Value)
+                           .ToList();
+                        }
+                    );
+
+                    int a = 0;
+                    // Display the results
+                    foreach (var kvp in groupedByYearAndPenznem)
+                    {
+                        var bevetelekKiadasokAdatsor = new ChartValues<double>();
+                        foreach (var bevetelKiadas in kvp.Value)
+                        {
+                            bevetelekKiadasokAdatsor.Add(Convert.ToDouble(bevetelKiadas));
+                        }
+                        AddLineSeries(bevetelekKiadasokAdatsor, $"Bevételek és Kiadások - {kvp.Key.Penznem} + {kvp.Key.BeKiKod} + {kvp.Key.Year}", $"{kvp.Key.Penznem}_{kvp.Key.BeKiKod}_{kvp.Key.Year}", baseColors[a]);
+                        AddGroupByDataToCollection($"{kvp.Key.Penznem}_{kvp.Key.BeKiKod}_{kvp.Key.Year}", a);
+                        if (a + 1 > 3)
+                            a = 0;
+                        else a += 1;
+                    }
+                }
+                else if(GroupByBeKiKodCheckBoxIsChecked && GroupByDateCheckBoxIsChecked)
+                {
+                    var groupedByYearAndPenznem = _selectedBevetelekKiadasok
+                    .GroupBy(p => new { p.TeljesitesiDatum.Year, p.BeKiKod })
+                    .ToDictionary(
+                        g => g.Key,
+                        g =>
+                        {
+                            // Create a dictionary to store sums by month
+                            var monthlySums = g.GroupBy(p => p.TeljesitesiDatum.Month)
+                                               .ToDictionary(
+                                                   monthGroup => monthGroup.Key,
+                                                   monthGroup => monthGroup.Sum(x => Convert.ToDouble(x.Osszeg))
+                                               );
+
+                            // Ensure all months (1-12) are accounted for
+                            for (int month = 1; month <= 12; month++)
+                            {
+                                if (!monthlySums.ContainsKey(month))
+                                {
+                                    monthlySums[month] = 0; // Add a month with a sum of 0 if it's missing
+                                }
+                            }
+                            // Return the values as a HashSet
+                            return monthlySums.OrderBy(m => m.Key)
+                           .Select(m => m.Value)
+                           .ToList();
+                        }
+                    );
+
+                    int a = 0;
+                    // Display the results
+                    foreach (var kvp in groupedByYearAndPenznem)
+                    {
+                        var bevetelekKiadasokAdatsor = new ChartValues<double>();
+                        foreach (var bevetelKiadas in kvp.Value)
+                        {
+                            bevetelekKiadasokAdatsor.Add(Convert.ToDouble(bevetelKiadas));
+                        }
+                        AddLineSeries(bevetelekKiadasokAdatsor, $"Bevételek és Kiadások - {kvp.Key.BeKiKod} + {kvp.Key.Year}", $"{kvp.Key.BeKiKod}_{kvp.Key.Year}", baseColors[a]);
+                        AddGroupByDataToCollection($"{kvp.Key.BeKiKod}_{kvp.Key.Year}", a);
+                        if (a + 1 > 3)
+                            a = 0;
+                        else a += 1;
+                    }
+                }
+                else if (GroupByDateCheckBoxIsChecked && GroupByPenznemCheckBoxIsChecked)
+                {
+                    var groupedByYearAndPenznem = _selectedBevetelekKiadasok
+                        .GroupBy(p => new { p.TeljesitesiDatum.Year, p.Penznem })
+                        .ToDictionary(
+                            g => g.Key,
+                            g =>
+                            {
+                                // Create a dictionary to store sums by month
+                                var monthlySums = g.GroupBy(p => p.TeljesitesiDatum.Month)
+                                                   .ToDictionary(
+                                                       monthGroup => monthGroup.Key,
+                                                       monthGroup => monthGroup.Sum(x => Convert.ToDouble(x.Osszeg))
+                                                   );
+
+                                // Ensure all months (1-12) are accounted for
+                                for (int month = 1; month <= 12; month++)
+                                {
+                                    if (!monthlySums.ContainsKey(month))
+                                    {
+                                        monthlySums[month] = 0; // Add a month with a sum of 0 if it's missing
+                                    }
+                                }
+                                // Return the values as a HashSet
+                                return monthlySums.OrderBy(m => m.Key)
+                               .Select(m => m.Value)
+                               .ToList();
+                            }
+                        );
+
+                    int a = 0;
+                    // Display the results
+                    foreach (var kvp in groupedByYearAndPenznem)
+                    {
+                        var bevetelekKiadasokAdatsor = new ChartValues<double>();
+                        foreach (var bevetelKiadas in kvp.Value)
+                        {
+                            bevetelekKiadasokAdatsor.Add(Convert.ToDouble(bevetelKiadas));
+                        }
+                        AddLineSeries(bevetelekKiadasokAdatsor, $"Bevételek és Kiadások - {kvp.Key.Penznem} + {kvp.Key.Year}", $"{kvp.Key.Penznem}_{kvp.Key.Year}", baseColors[a]);
+                        AddGroupByDataToCollection($"{kvp.Key.Penznem}_{kvp.Key.Year}", a);
+                        if (a + 1 > 3)
+                            a = 0;
+                        else a += 1;
+                    }
+                }
+                else if(GroupByBeKiKodCheckBoxIsChecked && GroupByPenznemCheckBoxIsChecked)
                 {
                     var groupedByPenznemAndBeKiKod = _selectedBevetelekKiadasok.GroupBy(p => new { p.Penznem, p.BeKiKod });
 
@@ -781,6 +1074,52 @@ namespace Szakdolgozat.ViewModels
                         else a += 1;
                     }
                 }
+                else if (GroupByDateCheckBoxIsChecked)
+                {
+                    var groupedByYear = _selectedBevetelekKiadasok
+                    .GroupBy(p => p.TeljesitesiDatum.Year)
+                    .ToDictionary(
+                        g => g.Key,
+                        g =>
+                        {
+                            // Create a dictionary to store sums by month
+                            var monthlySums = g.GroupBy(p => p.TeljesitesiDatum.Month)
+                                               .ToDictionary(
+                                                   monthGroup => monthGroup.Key,
+                                                   monthGroup => monthGroup.Sum(x => Convert.ToDouble(x.Osszeg))
+                                               );
+
+                            // Ensure all months (1-12) are accounted for
+                            for (int month = 1; month <= 12; month++)
+                            {
+                                if (!monthlySums.ContainsKey(month))
+                                {
+                                    monthlySums[month] = 0; // Add a month with a sum of 0 if it's missing
+                                }
+                            }
+                            // Return the values as a HashSet
+                            return monthlySums.OrderBy(m => m.Key)
+                           .Select(m => m.Value)
+                           .ToList();
+                        }
+                    );
+
+                    int b = 0;
+                    foreach (var kvp in groupedByYear)
+                    {
+                        var bevetelekKiadasokAdatsor2 = new ChartValues<double>();
+                        foreach (var bevetelKiadas in kvp.Value)
+                        {
+                            bevetelekKiadasokAdatsor2.Add(Convert.ToDouble(bevetelKiadas));
+                        }
+                        var totalBevetelekKiadasokAdatsor2 = bevetelekKiadasokAdatsor2.Sum(x => x);
+                        AddLineSeries(bevetelekKiadasokAdatsor2, $"Bevételek és Kiadások - {kvp.Key}", "Datum_" + kvp.Key.ToString(), baseColors[b]);
+                        AddGroupByDataToCollection("Datum_" + kvp.Key.ToString(), b);
+                        if (b + 1 > 3)
+                            b = 0;
+                        else b += 1;
+                    }
+                }
                 else
                 {
                     var bevetelekKiadasokAdatsor = new ChartValues<double>();
@@ -790,13 +1129,154 @@ namespace Szakdolgozat.ViewModels
                         bevetelekKiadasokAdatsor.Add(Convert.ToDouble(a.Osszeg));
                     }
 
-                    AddLineSeries(bevetelekKiadasokAdatsor, "Bevételek és Kiadások", "bevetelekKiadasok", baseColors[0]);
-                    AddGroupByDataToCollection("bevetelekKiadasok", 0);
+                    if(bevetelekKiadasokAdatsor.Count != 0)
+                    {
+                        AddLineSeries(bevetelekKiadasokAdatsor, "Bevételek és Kiadások", "bevetelekKiadasok", baseColors[0]);
+                        AddGroupByDataToCollection("bevetelekKiadasok", 0);
+                    }
                 }
             }
             else
             {
-                if (GroupByKifizetettCheckBoxIsChecked && GroupByPenznemCheckBoxIsChecked)
+                if (GroupByKifizetettCheckBoxIsChecked && GroupByPenznemCheckBoxIsChecked && GroupByDateCheckBoxIsChecked)
+                {
+                    var groupedByYearAndPenznem = _selectedKotelezettsegekKovetelesek
+                    .GroupBy(p => new { p.KifizetesHatarideje.Year, p.Kifizetett, p.Penznem })
+                    .ToDictionary(
+                        g => g.Key,
+                        g =>
+                        {
+                            // Create a dictionary to store sums by month
+                            var monthlySums = g.GroupBy(p => p.KifizetesHatarideje.Month)
+                                               .ToDictionary(
+                                                   monthGroup => monthGroup.Key,
+                                                   monthGroup => monthGroup.Sum(x => Convert.ToDouble(x.Osszeg))
+                                               );
+
+                            // Ensure all months (1-12) are accounted for
+                            for (int month = 1; month <= 12; month++)
+                            {
+                                if (!monthlySums.ContainsKey(month))
+                                {
+                                    monthlySums[month] = 0; // Add a month with a sum of 0 if it's missing
+                                }
+                            }
+                            // Return the values as a HashSet
+                            return monthlySums.OrderBy(m => m.Key)
+                           .Select(m => m.Value)
+                           .ToList();
+                        }
+                    );
+
+                    int a = 0;
+                    // Display the results
+                    foreach (var kvp in groupedByYearAndPenznem)
+                    {
+                        var bevetelekKiadasokAdatsor = new ChartValues<double>();
+                        foreach (var bevetelKiadas in kvp.Value)
+                        {
+                            bevetelekKiadasokAdatsor.Add(Convert.ToDouble(bevetelKiadas));
+                        }
+                        AddLineSeries(bevetelekKiadasokAdatsor, $"Kötelezettségek és Követelések - {kvp.Key.Penznem} + {kvp.Key.Kifizetett} + {kvp.Key.Year}", $"{kvp.Key.Penznem}_{kvp.Key.Kifizetett}_{kvp.Key.Year}", baseColors[a]);
+                        AddGroupByDataToCollection($"{kvp.Key.Penznem}_{kvp.Key.Kifizetett}_{kvp.Key.Year}", a);
+                        if (a + 1 > 3)
+                            a = 0;
+                        else a += 1;
+                    }
+                }
+                else if (GroupByKifizetettCheckBoxIsChecked && GroupByDateCheckBoxIsChecked)
+                {
+                    var groupedByYearAndPenznem = _selectedKotelezettsegekKovetelesek
+                    .GroupBy(p => new { p.KifizetesHatarideje.Year, p.Kifizetett })
+                    .ToDictionary(
+                        g => g.Key,
+                        g =>
+                        {
+                            // Create a dictionary to store sums by month
+                            var monthlySums = g.GroupBy(p => p.KifizetesHatarideje.Month)
+                                               .ToDictionary(
+                                                   monthGroup => monthGroup.Key,
+                                                   monthGroup => monthGroup.Sum(x => Convert.ToDouble(x.Osszeg))
+                                               );
+
+                            // Ensure all months (1-12) are accounted for
+                            for (int month = 1; month <= 12; month++)
+                            {
+                                if (!monthlySums.ContainsKey(month))
+                                {
+                                    monthlySums[month] = 0; // Add a month with a sum of 0 if it's missing
+                                }
+                            }
+                            // Return the values as a HashSet
+                            return monthlySums.OrderBy(m => m.Key)
+                           .Select(m => m.Value)
+                           .ToList();
+                        }
+                    );
+
+                    int a = 0;
+                    // Display the results
+                    foreach (var kvp in groupedByYearAndPenznem)
+                    {
+                        var bevetelekKiadasokAdatsor = new ChartValues<double>();
+                        foreach (var bevetelKiadas in kvp.Value)
+                        {
+                            bevetelekKiadasokAdatsor.Add(Convert.ToDouble(bevetelKiadas));
+                        }
+                        AddLineSeries(bevetelekKiadasokAdatsor, $"Kötelezettségek és Követelések - {kvp.Key.Kifizetett} + {kvp.Key.Year}", "Kifizetett_" + $"{kvp.Key.Kifizetett}_{kvp.Key.Year}", baseColors[a]);
+                        AddGroupByDataToCollection("Kifizetett_" + $"{kvp.Key.Kifizetett}_{kvp.Key.Year}", a);
+                        if (a + 1 > 3)
+                            a = 0;
+                        else a += 1;
+                    }
+                }
+                else if (GroupByDateCheckBoxIsChecked && GroupByPenznemCheckBoxIsChecked)
+                {
+                    var groupedByYearAndPenznem = _selectedKotelezettsegekKovetelesek
+                        .GroupBy(p => new { p.KifizetesHatarideje.Year, p.Penznem })
+                        .ToDictionary(
+                            g => g.Key,
+                            g =>
+                            {
+                                // Create a dictionary to store sums by month
+                                var monthlySums = g.GroupBy(p => p.KifizetesHatarideje.Month)
+                                                   .ToDictionary(
+                                                       monthGroup => monthGroup.Key,
+                                                       monthGroup => monthGroup.Sum(x => Convert.ToDouble(x.Osszeg))
+                                                   );
+
+                                // Ensure all months (1-12) are accounted for
+                                for (int month = 1; month <= 12; month++)
+                                {
+                                    if (!monthlySums.ContainsKey(month))
+                                    {
+                                        monthlySums[month] = 0; // Add a month with a sum of 0 if it's missing
+                                    }
+                                }
+                                // Return the values as a HashSet
+                                return monthlySums.OrderBy(m => m.Key)
+                               .Select(m => m.Value)
+                               .ToList();
+                            }
+                        );
+
+                    int a = 0;
+                    // Display the results
+                    foreach (var kvp in groupedByYearAndPenznem)
+                    {
+                        var bevetelekKiadasokAdatsor = new ChartValues<double>();
+                        foreach (var bevetelKiadas in kvp.Value)
+                        {
+                            bevetelekKiadasokAdatsor.Add(Convert.ToDouble(bevetelKiadas));
+                        }
+                        AddLineSeries(bevetelekKiadasokAdatsor, $"Kötelezettségek és Követelések - {kvp.Key.Penznem} + {kvp.Key.Year}", $"{kvp.Key.Penznem}_{kvp.Key.Year}", baseColors[a]);
+                        AddGroupByDataToCollection($"{kvp.Key.Penznem}_{kvp.Key.Year}", a);
+                        if (a + 1 > 3)
+                            a = 0;
+                        else a += 1;
+                    }
+                }
+                else if (GroupByKifizetettCheckBoxIsChecked && GroupByPenznemCheckBoxIsChecked)
                 {
                     var groupedByPenznemAndKifizetett = _selectedKotelezettsegekKovetelesek.GroupBy(p => new { p.Penznem, p.Kifizetett });
 
@@ -886,6 +1366,52 @@ namespace Szakdolgozat.ViewModels
                         else a += 1;
                     }
                 }
+                else if (GroupByDateCheckBoxIsChecked)
+                {
+                    var groupedByYear = _selectedKotelezettsegekKovetelesek
+                    .GroupBy(p => p.KifizetesHatarideje.Year)
+                    .ToDictionary(
+                        g => g.Key,
+                        g =>
+                        {
+                            // Create a dictionary to store sums by month
+                            var monthlySums = g.GroupBy(p => p.KifizetesHatarideje.Month)
+                                               .ToDictionary(
+                                                   monthGroup => monthGroup.Key,
+                                                   monthGroup => monthGroup.Sum(x => Convert.ToDouble(x.Osszeg))
+                                               );
+
+                            // Ensure all months (1-12) are accounted for
+                            for (int month = 1; month <= 12; month++)
+                            {
+                                if (!monthlySums.ContainsKey(month))
+                                {
+                                    monthlySums[month] = 0; // Add a month with a sum of 0 if it's missing
+                                }
+                            }
+                            // Return the values as a HashSet
+                            return monthlySums.OrderBy(m => m.Key)
+                           .Select(m => m.Value)
+                           .ToList();
+                        }
+                    );
+
+                    int b = 0;
+                    foreach (var kvp in groupedByYear)
+                    {
+                        var bevetelekKiadasokAdatsor2 = new ChartValues<double>();
+                        foreach (var bevetelKiadas in kvp.Value)
+                        {
+                            bevetelekKiadasokAdatsor2.Add(Convert.ToDouble(bevetelKiadas));
+                        }
+                        var totalBevetelekKiadasokAdatsor2 = bevetelekKiadasokAdatsor2.Sum(x => x);
+                        AddLineSeries(bevetelekKiadasokAdatsor2, $"Kötelezettségek és Követelések - {kvp.Key}", "Datum_" + kvp.Key.ToString(), baseColors[b]);
+                        AddGroupByDataToCollection("Datum_" + kvp.Key.ToString(), b);
+                        if (b + 1 > 3)
+                            b = 0;
+                        else b += 1;
+                    }
+                }
                 else
                 {
                     var kotelezetsegekKovetelesekAdatsor = new ChartValues<double>();
@@ -894,12 +1420,19 @@ namespace Szakdolgozat.ViewModels
                     {
                         kotelezetsegekKovetelesekAdatsor.Add(Convert.ToDouble(a.Osszeg));
                     }
-
-                    AddLineSeries(kotelezetsegekKovetelesekAdatsor, "Kötelezettségek és Követelések", "kotKov", baseColors[1]);
-                    AddGroupByDataToCollection("kotKov", 1);
+                    
+                    if(GroupBySelections.Count != 0)
+                    {
+                        AddLineSeries(kotelezetsegekKovetelesekAdatsor, "Kötelezettségek és Követelések", "kotKov", baseColors[1]);
+                        AddGroupByDataToCollection("kotKov", 1);
+                    }
                 }
             }
-            OnPropertyChanged(nameof(Series));
+            if(GroupBySelections.Count == 0)
+            {
+                LineSeries.Clear();
+            }
+            OnPropertyChanged(nameof(LineSeries));
             OnPropertyChanged(nameof(GroupBySelections));
         }
 
@@ -1038,200 +1571,44 @@ namespace Szakdolgozat.ViewModels
             OnPropertyChanged(nameof(Series));
         }
 
-        //Egy checkbox névből előállítja a hozzá tartozó oszlop nevét
-        //It gives back the tablename that can be taken from the checkbox's name
-        //private string GetTableName(string chName)
-        //{
-        //    string[] t = chName.Split('_');
-            
-        //    string tableName = t[0];
-        //    if (!t[1].Contains("ChB"))
-        //        tableName += "_" + t[1];
-        //    return tableName;
-        //}
 
-        //Ha egy checkbox meglett nyomva, ami tartalmazza az All résszöveget, akkor annak a checkbox-nak a nevéből kinyert táblanevet tartalmazó többi checkboxot is ki pipálja
-        //If a checkbox that was clicked contains the All substring then it sets all the checkboxes state to checked that holds the substring that we get from the checkbox's name
-        //private void OptionsCheckBoxAllChecked(object sender, RoutedEventArgs e)
-        //{
-        //    if (sender is System.Windows.Controls.CheckBox checkBox)
-        //    {
-        //        //chartDataFilterCHB 
-        //        if (checkBox.Name.Contains("All"))
-        //        {
-        //            AllCheckBoxChecked = true;
-        //            foreach (var ch in CheckBoxes)
-        //            {
-        //                if (ch.Content is System.Windows.Controls.CheckBox checkbox2)
-        //                {
-        //                    if (checkBox.Name.Contains(checkbox2.Name.Split('_')[0]))
-        //                    {
-        //                        checkbox2.IsChecked = true;
-        //                    }
-        //                }
-        //            }
-        //        }
-        //    }
-        //}
+        private void dataGrid_AutoGeneratingColumn(object sender, DataGridAutoGeneratingColumnEventArgs e)
+        {
+            if (e.PropertyName == "IsSelected")
+            {
+                e.Column.Header = "Kiválasztva";
+            }
+            if (e.PropertyType == typeof(DateTime))
+            {
+                // Get the column and cast to DataGridTextColumn
+                var textColumn = e.Column as DataGridTextColumn;
 
-        //Ha a checkbox, ami meglett nyomva tartalmazza az All résszöveget, akkor az AllCheckBoxChecked értékét false-re állítja
-        //If the checkbox that was clicked contains the All substring then the AllCheckBoxChecked variable is set to false
-        //private void OptionsCheckBoxAllUnchecked(object sender, RoutedEventArgs e)
-        //{
-        //    if (sender is System.Windows.Controls.CheckBox checkBox)
-        //    {
-        //        if (checkBox.Name.Contains("All"))
-        //        {
-        //            AllCheckBoxChecked = false;
-        //        }
-        //    }
-        //}
+                if (textColumn != null)
+                {
+                    // Set the StringFormat for date formatting
+                    textColumn.Binding = new System.Windows.Data.Binding(e.PropertyName)
+                    {
+                        StringFormat = "yyyy.MM.dd" // Format the date as desired
+                    };
+                }
+            }
+            e.Column.Width = new DataGridLength(1, DataGridLengthUnitType.Star);
+        }
 
-        //private void DataGrid_AutoGeneratingColumn(object sender, DataGridAutoGeneratingColumnEventArgs e)
-        //{
-        //    var dataGrid = sender as System.Windows.Controls.DataGrid;
-        //    var column = e.Column;
-        //    var columnName = e.PropertyName;
-
-        //    var template = new DataTemplate();
-
-        //    var factory = new FrameworkElementFactory(typeof(StackPanel));
-        //    factory.SetValue(StackPanel.OrientationProperty, System.Windows.Controls.Orientation.Horizontal);
-
-        //    var checkBoxFactory = new FrameworkElementFactory(typeof(System.Windows.Controls.CheckBox));
-        //    checkBoxFactory.SetBinding(System.Windows.Controls.CheckBox.IsCheckedProperty, new Binding($"IsSelected{columnName}"));
-
-        //    var textBlockFactory = new FrameworkElementFactory(typeof(TextBlock));
-        //    textBlockFactory.SetBinding(TextBlock.TextProperty, new Binding(columnName));
-        //    textBlockFactory.SetValue(TextBlock.MarginProperty, new Thickness(5, 0, 0, 0));
-
-        //    factory.AppendChild(checkBoxFactory);
-        //    factory.AppendChild(textBlockFactory);
-
-        //    template.VisualTree = factory;
-
-        //    var templateColumn = new DataGridTemplateColumn
-        //    {
-        //        Header = column.Header,
-        //        CellTemplate = template
-        //    };
-
-        //    e.Column = templateColumn;
-        //}
-
-        //Megváltoztatja a bool értéket a chartDataFilterCHB szótárban, annak megfelelően, hogy ki vagy be lett pipálva a checkbox
-        //Changes the bool value in the chartDataFilterCHB dictionary depending on the chechbox changes (Checked/Unchecked)
-        //private void OptionsCheckboxCheckedChange(object sender, RoutedEventArgs e)
-        //{
-        //    if (sender is System.Windows.Controls.CheckBox checkBox)
-        //    {
-        //        string tableName = GetTableName(checkBox.Name);
-
-        //        if ((bool)checkBox.IsChecked)
-        //        {
-        //            System.Windows.Controls.TabItem tabItem = null;
-        //            switch (tableName)
-        //            {
-                        //case "dolgozok":
-                        //    tabItem = CreateTabItem("Dolgozok", new ObservableCollection<object>(dolgozoRepository.GetDolgozok().Cast<object>().ToList()), tableName, checkBox.Name);
-                        //    if (tabItem != null)
-                        //    {
-                        //        Tabs.Add(tabItem);
-                        //    }
-                        //    else
-                        //    {
-                        //        SetColumnByCheckBox(tableName, checkBox.Name, true);
-                        //    }
-                        //    break;
-                        //case "gazdalkodo_szervezetek":
-                        //    tabItem = CreateTabItem("GazdalkodoSzervezetek", new ObservableCollection<object>(gazdalkodoSzervezetRepository.GetGazdalkodoSzervezetek().Cast<object>().ToList()), tableName, checkBox.Name);
-                        //    if (tabItem != null)
-                        //    {
-                        //        Tabs.Add(tabItem);
-                        //    }
-                        //    else
-                        //    {
-                        //        SetColumnByCheckBox(tableName, checkBox.Name, true);
-                        //    }
-                        //    break;
-                        //case "bevetelek_kiadasok":
-                        //    tabItem = CreateTabItem("Koltsegvetes", new ObservableCollection<object>(koltsegvetesRepository.GetKoltsegvetesek().Cast<object>().ToList()), tableName, checkBox.Name);
-                        //    if (tabItem != null)
-                        //    {
-                        //        Tabs.Add(tabItem);
-                        //    }
-                        //    else
-                        //    {
-                        //        SetColumnByCheckBox(tableName, checkBox.Name, true);
-                        //    }
-                        //    break;
-                        //case "kotelezettsegek_kovetelesek":
-                        //    tabItem = CreateTabItem("KotelKovetelesek", new ObservableCollection<object>(kotelezettsegKovetelesRepository.GetKotelezettsegekKovetelesek().Cast<object>().ToList()), tableName, checkBox.Name);
-                        //    if (tabItem != null)
-                        //    {
-                        //        Tabs.Add(tabItem);
-                        //    }
-                        //    else
-                        //    {
-                        //        SetColumnByCheckBox(tableName, checkBox.Name, true);
-                        //    }
-                        //    break;
-                        //case "magan_szemelyek":
-                        //    tabItem = CreateTabItem("MaganSzemelyek", new ObservableCollection<object>(maganSzemelyRepository.GetMaganSzemelyek().Cast<object>().ToList()), tableName, checkBox.Name);
-                        //    if (tabItem != null)
-                        //    {
-                        //        Tabs.Add(tabItem);
-                        //    }
-                        //    else
-                        //    {
-                        //        SetColumnByCheckBox(tableName, checkBox.Name, true);
-                        //    }
-                        //    break;
-        //                default: break;
-        //            }
-        //            OnPropertyChanged(nameof(Tabs));
-        //        }
-        //        else
-        //        {
-        //            SetColumnByCheckBox(tableName, checkBox.Name, false);
-        //        }
-        //    }
-        //}
-
-        //Miután a datagrid létre lett hozva, attól függően, hogy melyik checkbox hatására jött lére beállítja az elrejteni kívánt oszlopokat
-        //After the datagrid is created, depending on the click checkbox the columns that shouldn't be seen are hidden
-        //private void HideColumnsAfterCreatingTabItem(System.Windows.Controls.DataGrid dataGrid, string chName)
-        //{
-        //    if (!AllCheckBoxChecked)
-        //    {
-        //        foreach (var c in dataGrid.Columns)
-        //        {
-        //            if (c.Header.ToString().ToLower() != GetCheckBoxColumnName(chName))
-        //            {
-        //                c.Visibility = Visibility.Collapsed;
-        //            }
-        //        }
-        //    }
-        //    AllCheckBoxChecked = false;
-        //}
-
-        //Beállítja annak a checkbox állapotát nem kijelölt-re, amelyik _All-ra végződik és a chName-ből szerzett tábla nevet is tartalmazza
-        //Sets the checkbox to unchecked if the checkbox's name contains the _All substring and the tablename substring that is coming from the chName
-        //private void UncheckAllTypeCheckBox(string chName)
-        //{
-        //    string tableName = GetTableName(chName);
-        //    foreach(var a in CheckBoxes)
-        //    {
-        //        if(a.Content is System.Windows.Controls.CheckBox checkBox)
-        //        {
-        //            if(checkBox.Name == tableName + "_All")
-        //            {
-        //                checkBox.IsChecked = false; 
-        //                break;
-        //            }
-        //        }
-        //    }
-        //}
+        public void UnCheckAllSelections()
+        {
+            SelectedBevetelekKiadasok.Clear();
+            for (int i = 0; i < BevetelekKiadasok.Count; i++)
+            {
+                BevetelekKiadasok.ElementAt(i).IsSelected = false;
+            }
+            for (int i = 0; i < KotelKovetelesek.Count; i++)
+            {
+                BevetelekKiadasok.ElementAt(i).IsSelected = false;
+            }
+            UpdateSearch(SearchQuery);
+            SelectedKotelezettsegekKovetelesek.Clear();
+        }
 
         //Létrehoz egy TabItem-et, aminek a tartalma egy datagrid lesz, ez lesz megjelenítve a felhasználónak
         //Created a TabItem that contains a datagrid, this will be shown to the user on the UI
@@ -1253,12 +1630,11 @@ namespace Szakdolgozat.ViewModels
                 dataGrid = new System.Windows.Controls.DataGrid
                 {
                     Name = table,
-                    CanUserSortColumns = false,
+                    CanUserSortColumns = true,
                     AutoGenerateColumns = true,
                     SelectionUnit = DataGridSelectionUnit.FullRow,
                     IsReadOnly = true,
-                    CanUserResizeColumns = false,
-                    ColumnWidth = DataGridLength.Auto,
+                    CanUserResizeColumns = true,
                     HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled,
                     VerticalScrollBarVisibility = ScrollBarVisibility.Hidden,
                 };
@@ -1268,7 +1644,7 @@ namespace Szakdolgozat.ViewModels
                     Mode = BindingMode.TwoWay, // or OneWay if needed
                     UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
                 };
-
+                dataGrid.AutoGeneratingColumn += dataGrid_AutoGeneratingColumn;
                 // Set the binding to the ItemsSource property
                 dataGrid.SetBinding(System.Windows.Controls.DataGrid.ItemsSourceProperty, itemsSourceBinding);
             }
@@ -1282,7 +1658,6 @@ namespace Szakdolgozat.ViewModels
                     SelectionUnit = DataGridSelectionUnit.FullRow,
                     IsReadOnly = true,
                     CanUserResizeColumns = false,
-                    ColumnWidth = DataGridLength.Auto,
                     HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled,
                     VerticalScrollBarVisibility = ScrollBarVisibility.Hidden,
                 };
@@ -1293,6 +1668,7 @@ namespace Szakdolgozat.ViewModels
                     UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
                 };
 
+                dataGrid.AutoGeneratingColumn += dataGrid_AutoGeneratingColumn;
                 // Set the binding to the ItemsSource property
                 dataGrid.SetBinding(System.Windows.Controls.DataGrid.ItemsSourceProperty, itemsSourceBinding);
         }
@@ -1329,90 +1705,6 @@ namespace Szakdolgozat.ViewModels
             }
             return grid;
         }
-
-        //Beállítja az adott oszlop láthatóságát a hozzá tartozó checkbox állapota szerint
-        //Sets the column visibility by the corresponding checkbox's state
-        //private void SetColumnByCheckBox(string dataGridName, string chName, bool isChecked)
-        //{
-        //    System.Windows.Controls.DataGrid dataGrid = GetDataGrid(dataGridName); 
-        //    if(dataGrid != null)
-        //    {
-        //        foreach (var column in dataGrid.Columns)
-        //        {
-        //            if (column.Header != null)
-        //            {
-        //                if (column.Header.ToString().ToLower() == GetCheckBoxColumnName(chName))
-        //                {
-        //                    if (!isChecked)
-        //                    {
-        //                        column.Visibility = Visibility.Collapsed;
-        //                        UncheckAllTypeCheckBox(chName);
-        //                    }
-        //                    else
-        //                    {
-        //                        column.Visibility = Visibility.Visible;
-        //                    }
-        //                    break;
-        //                }
-        //            }
-        //        }
-        //        if (GetCollapsedColumnNumberInDataGrid(dataGrid) == 0 && !isChecked)
-        //        {
-        //            DeleteDataGrid(dataGridName);
-        //            OnPropertyChanged(nameof(Tabs));
-        //        }
-        //    }
-        //}
-
-        //Visszaadja, hogy mennyi oszlop van elrejtve az adott datagrid-ben
-        //Give back how many collapsed columns are in the given datagrid
-        //private int GetCollapsedColumnNumberInDataGrid(System.Windows.Controls.DataGrid dataGrid)
-        //{
-        //    int counter = 0;
-        //    foreach (var column in dataGrid.Columns)
-        //    {
-        //        if (column.Visibility != Visibility.Collapsed)
-        //            counter++;
-        //    }
-        //    return counter;
-        //}
-
-        //Visszaadja az addot checkbox név-ből az oszlop nevet
-        //Gives back the column name from the given checkbox name
-        //private string GetCheckBoxColumnName(string chName)
-        //{
-        //    string tmp;
-        //    string tmp2;
-        //    string tmp3 = "";
-        //    if (chName.Contains(GetTableName(chName)))
-        //    {
-        //        tmp = chName.Replace(GetTableName(chName) + "_", "");
-        //        if (tmp.Contains("ChB"))
-        //        {
-        //            tmp2 = tmp.Replace("ChB", "");
-        //            tmp3 = tmp2.Replace("_", "");
-        //        }
-        //    }
-        //    return tmp3.ToLower();
-        //}
-
-
-        //Törli a megadott nevű datagrid-et
-        //Deletes the datagrid that's name is the given in the parameter
-        //private void DeleteDataGrid(string dataGridName)
-        //{
-        //    foreach (var o in Tabs)
-        //    {
-        //        if (o.Content is System.Windows.Controls.DataGrid dataGrid)
-        //            if (dataGrid.Name == dataGridName)
-        //            {
-        //                Tabs.Remove(o);
-        //                if(Tabs.Count == 0)
-        //                    Tabs.Clear();
-        //                break;
-        //            }
-        //    }
-        //}
 
         private void GetSelectedCells()
         {
@@ -1469,7 +1761,14 @@ namespace Szakdolgozat.ViewModels
                 Stroke = baseColor
             });
 
-            LineSeriesLabels = new[] { "Jan", "Feb", "Mar", "Apr", "May" };
+            if (GroupByDateCheckBoxIsChecked)
+            {
+                LineSeriesLabels = new[] { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
+            }
+            else
+            {
+                LineSeriesLabels = new[] {""};
+            }
             LineSeriesYFormatter = value => value.ToString("C");
 
             OnPropertyChanged(nameof(LineSeries));
@@ -1484,23 +1783,5 @@ namespace Szakdolgozat.ViewModels
         {
             CurrentChildView = new AddOptionsToNewChartViewModel(SelectedRows);
         }
-
-
-        //lekérni az adattábla oszlop neveit PIPA
-        //típusonkénti kezelés:
-        //string
-        //bevetelek_kiadasok: id, be_ki_kod, kotel_kovet_id, partner_id
-        //double
-        //bevetelek_kiadasok: osszeg
-        //boolean
-        //bevetelek_kiadasok: penznem (kinda)
-        //date
-        //bevetelek_kiadasok: teljesitesi_datum
-        //lehetőségek az értékekkel:
-        //szűrés - számok szűrése
-        //adatsorok létrehozása(csoportosítása oszlopok szerint) - ez esetben pl dátum, az előforduló dátumok megadása, felhasználó kiválasztja az általa kívántakat és azok alapján adatsorok kreálása
-        //boolean értékkel szűrni és csoportosítani is lehetne(akár double és string alapján is)
-        //kisablak annak a gecis módosításnak és hozzáadásnak PIPA
-
     }
 }

@@ -181,6 +181,7 @@
     <Compile Include="Repositories\MaganSzemelyRepository.cs" />
     <Compile Include="Repositories\RepositoryBase.cs" />
     <Compile Include="Repositories\UserRepository.cs" />
+    <Compile Include="Specials\DateTimeParser.cs" />
     <Compile Include="Specials\EnumBindingSourceExtension.cs" />
     <Compile Include="Specials\WindowHelper.cs" />
     <Compile Include="ViewModels\AddOptionsToNewChartViewModel.cs" />
