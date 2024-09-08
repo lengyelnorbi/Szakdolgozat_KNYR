@@ -150,7 +150,7 @@ namespace Szakdolgozat.ViewModels
                 new PieSeries
                 {
                     Title = "Chrome",
-                    Values = new ChartValues<ObservableValue> { new ObservableValue(8), new ObservableValue(2), new ObservableValue(5) },
+                    Values = new ChartValues<ObservableValue> { new ObservableValue(8) },
                     DataLabels = true
                 },
                 new PieSeries

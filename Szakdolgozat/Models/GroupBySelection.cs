@@ -10,7 +10,7 @@ using Szakdolgozat.ViewModels;
 
 namespace Szakdolgozat.Models
 {
-    public class GroupBySelection : INotifyPropertyChanged
+    public class GroupBySelection : ViewModelBase
     {
         private string name;
         private SolidColorBrush color;
@@ -24,7 +24,7 @@ namespace Szakdolgozat.Models
                 if (name != value)
                 {
                     name = value;
-                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(Name));
                 }
             }
         }
@@ -37,7 +37,7 @@ namespace Szakdolgozat.Models
                 if (color != value)
                 {
                     color = value;
-                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(Color));
                     Mediator.NotifySetLineSeriesNewColor(Name, Color);
                 }
             }
@@ -51,19 +51,18 @@ namespace Szakdolgozat.Models
                 if (isSelected != value)
                 {
                     isSelected = value;
-                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(IsSelected));
                 }
                 Mediator.NotifyHideOrShowLineSeries(Name,IsSelected);
-
             }
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        //public event PropertyChangedEventHandler PropertyChanged;
 
-        protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
+        //protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        //{
+        //    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        //}
 
         public GroupBySelection(string name, bool isSelected, SolidColorBrush color)
         {

@@ -6,12 +6,14 @@
         xmlns:views="clr-namespace:Szakdolgozat.Views"
         xmlns:viewModels="clr-namespace:Szakdolgozat.ViewModels"
         xmlns:converters="clr-namespace:Szakdolgozat.Converters"
+        xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp"
         mc:Ignorable="d"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf" xmlns:xctk1="http://materialdesigninxaml.net/winfx/xaml/themes"
         Title="CreateChartsView" Height="1000" Width="1200"
         HorizontalAlignment="Center"
         VerticalAlignment="Center"
+        WindowStyle="None"
         WindowStartupLocation="CenterScreen">
 
     <Window.DataContext>
@@ -27,10 +29,43 @@
     <Border>
         <Grid>
             <Grid.RowDefinitions>
+                <RowDefinition Height="30"></RowDefinition>
                 <RowDefinition Height="350"></RowDefinition>
                 <RowDefinition Height="*"></RowDefinition>
             </Grid.RowDefinitions>
             <Grid Grid.Row="0">
+                <StackPanel x:Name="pnlControlBar"
+                                Grid.Row="0"
+                                Orientation="Horizontal"
+                                FlowDirection="RightToLeft"
+                                Background="Transparent"
+                                Margin="0,0,5,0"
+                                MouseLeftButtonDown="pnlControlBar_MouseLeftButtonDown"
+                                MouseEnter="pnlControlBar_MouseEnter">
+                    <Button x:Name="btnClose"
+                                Style="{StaticResource controlButton}"
+                                Tag="#FB539B"
+                                Click="btnClose_Click"
+                                Grid.Column="1">
+                        <fa:IconImage Icon="Xmark" Style="{StaticResource controlButtonIcon}"/>
+                    </Button>
+                    <Button x:Name="btnMaximize"
+                                Style="{StaticResource controlButton}"
+                                Tag="#FFC047"
+                                Click="btnMaximize_Click"
+                                Grid.Column="2">
+                        <fa:IconImage Icon="Square" Style="{StaticResource controlButtonIcon}"/>
+                    </Button>
+                    <Button x:Name="btnMinimize"
+                                Style="{StaticResource controlButton}"
+                                Tag="#78A3FC"
+                                Click="btnMinimize_Click"
+                                Grid.Column="3">
+                        <fa:IconImage Icon="WindowMinimize" Width="12" Style="{StaticResource controlButtonIcon}"/>
+                    </Button>
+                </StackPanel>
+            </Grid>
+            <Grid Grid.Row="1">
                 <lvc:CartesianChart Zoom="X" ZoomingSpeed="0.5" x:Name="lineSeries" Series="{Binding LineSeries}" LegendLocation="Bottom" Visibility="Hidden">
                     <lvc:CartesianChart.AxisY>
                         <lvc:Axis Title="Sales" LabelFormatter="{Binding LineSeriesYFormatter}"></lvc:Axis>
@@ -39,13 +74,13 @@
                         <lvc:Axis Title="Month" Labels="{Binding LineSeriesLabels}"></lvc:Axis>
                     </lvc:CartesianChart.AxisX>
                 </lvc:CartesianChart>
-                <lvc:PieChart x:Name="pieSeries" Series="{Binding Series}" LegendLocation="Right" Visibility="Hidden">
+                <lvc:PieChart x:Name="pieSeries" Series="{Binding PieSeries}" LegendLocation="Right" Visibility="Hidden">
                     <lvc:PieChart.DataTooltip>
                         <lvc:DefaultTooltip SelectionMode="OnlySender"/>
                     </lvc:PieChart.DataTooltip>
                 </lvc:PieChart>
             </Grid>
-            <Grid Grid.Row="1">
+            <Grid Grid.Row="2">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"></ColumnDefinition>
                     <ColumnDefinition Width="350"></ColumnDefinition>

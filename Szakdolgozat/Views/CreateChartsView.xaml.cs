@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Dynamic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -13,6 +14,7 @@ using System.Windows.Documents;
 using System.Windows.Documents.DocumentStructures;
 using System.Windows.Forms;
 using System.Windows.Input;
+using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
@@ -37,6 +39,7 @@ namespace Szakdolgozat.Views
                 Mediator.GetTabControl += () => chartsTabControl;
                 Mediator.SetSeriesVisibility += SetDiagramsVisibility;
                 viewModel.SeriesType = type;
+                this.Closed += viewModel.CloseWindow;
             }
 
             koltsegvetes_mindCB.Checked += CheckBox_Checked;
@@ -82,6 +85,39 @@ namespace Szakdolgozat.Views
             GroupByDateCB.Unchecked += GroupByCheckBox_Unchecked;
         }
 
+        [DllImport("user32.dll")]
+        public static extern IntPtr SendMessage(IntPtr hWnd, int wMsg, int wParam, int lParam);
+        private void pnlControlBar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            WindowInteropHelper helper = new WindowInteropHelper(this);
+            SendMessage(helper.Handle, 161, 2, 0);
+        }
+        private void pnlControlBar_MouseEnter(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+        }
+        private void btnMinimize_Click(object sender, RoutedEventArgs e)
+        {
+            WindowState = WindowState.Minimized;
+        }
+        private void btnMaximize_Click(object sender, RoutedEventArgs e)
+        {
+            if (this.WindowState == WindowState.Normal)
+            {
+
+                WindowState = WindowState.Maximized;
+            }
+            else
+            {
+                WindowState = WindowState.Normal;
+            }
+        }
+
+        private void btnClose_Click(object sender, RoutedEventArgs e)
+        {
+            Mediator.GetTabControl -= () => chartsTabControl;
+            Mediator.SetSeriesVisibility -= SetDiagramsVisibility;
+            this.Close();
+        }
         private void GroupByCheckBox_Unchecked(object sender, RoutedEventArgs e)
         {
             if (sender is System.Windows.Controls.CheckBox checkBox)
@@ -504,12 +540,15 @@ namespace Szakdolgozat.Views
         {
             if(DataContext is CreateChartsViewModel createChartsViewModel)
             {
+                Mediator.GetTabControl -= () => chartsTabControl;
+                Mediator.SetSeriesVisibility -= SetDiagramsVisibility;
                 createChartsViewModel.UnCheckAllSelections();
             }
         }
-        //private void Button_Click_1(object sender, RoutedEventArgs e)
-        //{
-        //    GetSelectedCells();
-        //}
+
+        private void pnlControlBar_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            this.MaxHeight = SystemParameters.MaximizedPrimaryScreenHeight;
+        }
     }
 }
