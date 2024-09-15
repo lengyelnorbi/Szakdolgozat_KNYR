@@ -1,4 +1,5 @@
-﻿using Org.BouncyCastle.Utilities;
+﻿using Org.BouncyCastle.Bcpg;
+using Org.BouncyCastle.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -83,6 +84,10 @@ namespace Szakdolgozat.Views
             GroupByKifizetettCB.Unchecked += GroupByCheckBox_Unchecked;
             GroupByDateCB.Checked += GroupByCheckBox_Checked;
             GroupByDateCB.Unchecked += GroupByCheckBox_Unchecked;
+            GroupByYearCB.Checked += GroupByCheckBox_Checked;
+            GroupByYearCB.Unchecked += GroupByCheckBox_Unchecked;
+            GroupByMonthCB.Checked += GroupByCheckBox_Checked;
+            GroupByMonthCB.Unchecked += GroupByCheckBox_Unchecked;
         }
 
         [DllImport("user32.dll")]
@@ -138,6 +143,12 @@ namespace Szakdolgozat.Views
                         case "GroupByDateCB":
                             createChartsView.GroupByDateCheckBoxIsChecked = false;
                             break;
+                        case "GroupByYearCB":
+                            createChartsView.GroupByYearCheckBoxIsChecked = false;
+                            break;
+                        case "GroupByMonthCB":
+                            createChartsView.GroupByMonthCheckBoxIsChecked = false;
+                            break;
                         default:
                             break;
                     }
@@ -164,6 +175,21 @@ namespace Szakdolgozat.Views
                             break;
                         case "GroupByDateCB":
                             createChartsView.GroupByDateCheckBoxIsChecked = true;
+                            break;
+                        case "GroupByYearCB":
+                            createChartsView.GroupByYearCheckBoxIsChecked = true;
+                            break;
+                        case "GroupByMonthCB":
+                            createChartsView.GroupByMonthCheckBoxIsChecked = true;
+                            if(createChartsView.SelectedBevetelekKiadasok.Count > 0)
+                            {
+                                createChartsView.Years = new ObservableCollection<int>(
+                                    createChartsView._selectedBevetelekKiadasok
+                                    .Select(x => x.TeljesitesiDatum.Year)
+                                    .Distinct()
+                                    .OrderBy(year => year)
+                                );
+                            }
                             break;
                         default:
                             break;
@@ -234,6 +260,15 @@ namespace Szakdolgozat.Views
                         else
                         {
                             viewModel.ChangeIsSelectedAndRefreshBevetelKiadas(changeableItems, false);
+                        }
+                        if (viewModel.GroupByMonthCheckBoxIsChecked)
+                        {
+                            viewModel.Years = new ObservableCollection<int>(
+                                viewModel._selectedBevetelekKiadasok
+                                .Select(x => x.TeljesitesiDatum.Year)
+                                .Distinct()
+                                .OrderBy(year => year)
+                            );
                         }
                     }
                     else if (dataGrid.Name.Equals("kotelezettsegek_kovetelesek"))
@@ -516,22 +551,50 @@ namespace Szakdolgozat.Views
             {
                 if (chartsTabControl.SelectedItem is System.Windows.Controls.TabItem tabItem)
                 {
-                    if (tabItem.Name.Contains("Koltsegvetes"))
+                    if(viewModel.SeriesType == "DoghnutSeries")
                     {
-                        viewModel.IsBevetelekKiadasokTabIsSelected = true;
-                        KoltsegvetesCB.Visibility = Visibility.Visible;
-                        KotelKovetCB.Visibility = Visibility.Collapsed;
-                        GroupByKifizetettCB.Visibility = Visibility.Collapsed;
-                        GroupByBeKiKodCB.Visibility = Visibility.Visible;
+                        if (tabItem.Name.Contains("Koltsegvetes"))
+                        {
+                            viewModel.IsBevetelekKiadasokTabIsSelected = true;
+                            KoltsegvetesCB.Visibility = Visibility.Visible;
+                            KotelKovetCB.Visibility = Visibility.Collapsed;
+                            GroupByKifizetettCB.Visibility = Visibility.Collapsed;
+                            GroupByBeKiKodCB.Visibility = Visibility.Visible;
+                        }
+                        else if (tabItem.Name.Contains("KotelKovet"))
+                        {
+                            viewModel.IsBevetelekKiadasokTabIsSelected = false;
+                            KoltsegvetesCB.Visibility = Visibility.Collapsed;
+                            KotelKovetCB.Visibility = Visibility.Visible;
+                            GroupByKifizetettCB.Visibility = Visibility.Visible;
+                            GroupByBeKiKodCB.Visibility = Visibility.Collapsed;
+                        }
+                        GroupByYearCB.Visibility = Visibility.Visible;
+                        GroupByMonthCB.Visibility = Visibility.Visible;
+                        GroupByDateCB.Visibility = Visibility.Collapsed;
                     }
-                    else if (tabItem.Name.Contains("KotelKovet"))
+                    else if(viewModel.SeriesType == "LineSeries")
                     {
-                        viewModel.IsBevetelekKiadasokTabIsSelected = false;
-                        KoltsegvetesCB.Visibility = Visibility.Collapsed;
-                        KotelKovetCB.Visibility = Visibility.Visible;
-                        GroupByKifizetettCB.Visibility = Visibility.Visible;
-                        GroupByBeKiKodCB.Visibility = Visibility.Collapsed;
+                        if (tabItem.Name.Contains("Koltsegvetes"))
+                        {
+                            viewModel.IsBevetelekKiadasokTabIsSelected = true;
+                            KoltsegvetesCB.Visibility = Visibility.Visible;
+                            KotelKovetCB.Visibility = Visibility.Collapsed;
+                            GroupByKifizetettCB.Visibility = Visibility.Collapsed;
+                            GroupByBeKiKodCB.Visibility = Visibility.Visible;
+                        }
+                        else if (tabItem.Name.Contains("KotelKovet"))
+                        {
+                            viewModel.IsBevetelekKiadasokTabIsSelected = false;
+                            KoltsegvetesCB.Visibility = Visibility.Collapsed;
+                            KotelKovetCB.Visibility = Visibility.Visible;
+                            GroupByKifizetettCB.Visibility = Visibility.Visible;
+                            GroupByBeKiKodCB.Visibility = Visibility.Collapsed;
+                        }
+                        GroupByYearCB.Visibility = Visibility.Collapsed;
+                        GroupByMonthCB.Visibility = Visibility.Collapsed;
                     }
+                    
                 }
             }
         }
