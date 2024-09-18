@@ -39,6 +39,21 @@ namespace Szakdolgozat.ViewModels
         public bool GroupByDateCheckBoxIsChecked = false;
         public bool _isValidStartDateExists = false;
         public bool _isValidEndDateExists = false;
+
+        private double _innerRadius;
+
+        // Property to control the inner radius of PieSeries
+        public double InnerRadius
+        {
+            get => _innerRadius;
+            set
+            {
+                _innerRadius = value;
+                OnPropertyChanged(nameof(InnerRadius));
+            }
+        }
+
+
         private ObservableCollection<int> _years = new ObservableCollection<int>();
         public ObservableCollection<int> Years
         {
@@ -1558,7 +1573,6 @@ namespace Szakdolgozat.ViewModels
 
         public void SetRowSeries()
         {
-
             var bevetelekKiadasokAdatsor = new ChartValues<ObservableValue>();
             var kotelezetsegekKovetelesekAdatsor = new ChartValues<ObservableValue>();
 
@@ -1595,60 +1609,187 @@ namespace Szakdolgozat.ViewModels
 
             if (IsBevetelekKiadasokTabIsSelected)
             {
-                if(GroupByYearCheckBoxIsChecked)
+                if (GroupByPenznemCheckBoxIsChecked && GroupByBeKiKodCheckBoxIsChecked && GroupByYearCheckBoxIsChecked)
                 {
-                    var bevetelekKiadasokGroupedByDatum = _selectedBevetelekKiadasok.GroupBy(x => x.TeljesitesiDatum.Year);
+                    var bevetelekKiadasokGroupedByYearAndPenznemAndBeKiKod = _selectedBevetelekKiadasok.GroupBy(x => new { x.TeljesitesiDatum.Year, x.Penznem, x.BeKiKod });
                     var totalBevetelekKiadasokAdatsor = _selectedBevetelekKiadasok.Sum(x => x.Osszeg);
-                    var hashSetsByDatum = new Dictionary<int, HashSet<BevetelKiadas>>();
+                    var hashSetsByYearAndPenznemAndBeKiKod = new Dictionary<(int Datum, Penznem Penznem, BeKiKod BeKiKod), HashSet<BevetelKiadas>>();
 
-                    foreach (var group in bevetelekKiadasokGroupedByDatum)
+                    foreach (var group in bevetelekKiadasokGroupedByYearAndPenznemAndBeKiKod)
                     {
                         // Create a HashSet for each group
                         var hashSet = new HashSet<BevetelKiadas>(group);
-                        hashSetsByDatum[group.Key] = hashSet;
+                        hashSetsByYearAndPenznemAndBeKiKod[(group.Key.Year, group.Key.Penznem, group.Key.BeKiKod)] = hashSet;
                     }
                     int a = 0;
-                    foreach (var kvp in hashSetsByDatum)
+                    foreach (var kvp in hashSetsByYearAndPenznemAndBeKiKod)
                     {
                         var bevetelekKiadasokAdatsor = new ChartValues<ObservableValue>();
                         foreach (var bevetelKiadas in kvp.Value)
                         {
                             bevetelekKiadasokAdatsor.Add(new ObservableValue(bevetelKiadas.Osszeg));
                         }
-                        AddPieSeries(bevetelekKiadasokAdatsor, totalBevetelekKiadasokAdatsor, totalBevetelekKiadasokAdatsor, $"Bevételek és Kiadások - {kvp.Key}", $"Év_{kvp.Key}", baseColors[a]);
-                        AddGroupByDataToCollection($"Év_{kvp.Key}", a);
+                        AddPieSeries(bevetelekKiadasokAdatsor, totalBevetelekKiadasokAdatsor, totalBevetelekKiadasokAdatsor, $"Bevételek és Kiadások - {kvp.Key.Penznem}_{kvp.Key.BeKiKod}_{kvp.Key.Datum}", $"{kvp.Key.Penznem}_{kvp.Key.BeKiKod}_{kvp.Key.Datum}", baseColors[a]);
+                        AddGroupByDataToCollection($"{kvp.Key.Penznem}_{kvp.Key.BeKiKod}_{kvp.Key.Datum}", a);
                         if (a + 1 > 3)
                             a = 0;
                         a++;
                     }
                 }
-                else if (GroupByMonthCheckBoxIsChecked && SelectedYear != 0)
+                else if (GroupByPenznemCheckBoxIsChecked && GroupByBeKiKodCheckBoxIsChecked && GroupByMonthCheckBoxIsChecked)
                 {
-                    var bevetelekKiadasokGroupedByDatum = _selectedBevetelekKiadasok.Where(x => x.TeljesitesiDatum.Year == SelectedYear).GroupBy(x => x.TeljesitesiDatum.Month);
-                    var totalBevetelekKiadasokAdatsor = _selectedBevetelekKiadasok.Sum(x => x.Osszeg);
-                    var hashSetsByDatum = new Dictionary<int, HashSet<BevetelKiadas>>();
+                    if (SelectedYear != 0)
+                    {
+                        var bevetelekKiadasokGroupedByMonthAndPenznemAndBeKiKod = _selectedBevetelekKiadasok.Where(x => x.TeljesitesiDatum.Year == SelectedYear).GroupBy(x => new { x.TeljesitesiDatum.Month, x.Penznem, x.BeKiKod });
+                        var totalBevetelekKiadasokAdatsor = _selectedBevetelekKiadasok.Where(x => x.TeljesitesiDatum.Year == SelectedYear).Sum(x => x.Osszeg);
+                        var hashSetsByMonthAndPenznemAndBeKiKod = new Dictionary<(int Datum, Penznem Penznem, BeKiKod BeKiKod), HashSet<BevetelKiadas>>();
 
-                    foreach (var group in bevetelekKiadasokGroupedByDatum)
+                        foreach (var group in bevetelekKiadasokGroupedByMonthAndPenznemAndBeKiKod)
+                        {
+                            // Create a HashSet for each group
+                            var hashSet = new HashSet<BevetelKiadas>(group);
+                            hashSetsByMonthAndPenznemAndBeKiKod[(group.Key.Month, group.Key.Penznem, group.Key.BeKiKod)] = hashSet;
+                        }
+                        int a = 0;
+                        foreach (var kvp in hashSetsByMonthAndPenznemAndBeKiKod)
+                        {
+                            var bevetelekKiadasokAdatsor = new ChartValues<ObservableValue>();
+                            foreach (var bevetelKiadas in kvp.Value)
+                            {
+                                bevetelekKiadasokAdatsor.Add(new ObservableValue(bevetelKiadas.Osszeg));
+                            }
+                            AddPieSeries(bevetelekKiadasokAdatsor, totalBevetelekKiadasokAdatsor, totalBevetelekKiadasokAdatsor, $"Bevételek és Kiadások - {kvp.Key.Penznem}_{kvp.Key.BeKiKod}_{kvp.Key.Datum}", $"{kvp.Key.Penznem}_{kvp.Key.BeKiKod}_{kvp.Key.Datum}", baseColors[a]);
+                            AddGroupByDataToCollection($"{kvp.Key.Penznem}_{kvp.Key.BeKiKod}_{kvp.Key.Datum}", a);
+                            if (a + 1 > 3)
+                                a = 0;
+                            a++;
+                        }
+                    }
+                    else
+                    {
+                        throw new Exception("Must select a year!");
+                    }
+                }
+                else if (GroupByPenznemCheckBoxIsChecked && GroupByMonthCheckBoxIsChecked)
+                {
+                    if (SelectedYear != 0)
+                    {
+                        var bevetelekKiadasokGroupedByMonthAndPenznem = _selectedBevetelekKiadasok.Where(x => x.TeljesitesiDatum.Year == SelectedYear).GroupBy(x => new { x.TeljesitesiDatum.Month, x.Penznem });
+                        var totalBevetelekKiadasokAdatsor = _selectedBevetelekKiadasok.Where(x => x.TeljesitesiDatum.Year == SelectedYear).Sum(x => x.Osszeg);
+                        var hashSetsByMonthAndPenznem = new Dictionary<(int Datum, Penznem Penznem), HashSet<BevetelKiadas>>();
+
+                        foreach (var group in bevetelekKiadasokGroupedByMonthAndPenznem)
+                        {
+                            // Create a HashSet for each group
+                            var hashSet = new HashSet<BevetelKiadas>(group);
+                            hashSetsByMonthAndPenznem[(group.Key.Month, group.Key.Penznem)] = hashSet;
+                        }
+                        int a = 0;
+                        foreach (var kvp in hashSetsByMonthAndPenznem)
+                        {
+                            var bevetelekKiadasokAdatsor = new ChartValues<ObservableValue>();
+                            foreach (var bevetelKiadas in kvp.Value)
+                            {
+                                bevetelekKiadasokAdatsor.Add(new ObservableValue(bevetelKiadas.Osszeg));
+                            }
+                            AddPieSeries(bevetelekKiadasokAdatsor, totalBevetelekKiadasokAdatsor, totalBevetelekKiadasokAdatsor, $"Bevételek és Kiadások - {kvp.Key.Penznem}_{kvp.Key.Datum}", $"{kvp.Key.Penznem}_{kvp.Key.Datum}", baseColors[a]);
+                            AddGroupByDataToCollection($"{kvp.Key.Penznem}_{kvp.Key.Datum}", a);
+                            if (a + 1 > 3)
+                                a = 0;
+                            a++;
+                        }
+                    }
+                    else 
+                    {
+                    }
+                }
+                else if (GroupByBeKiKodCheckBoxIsChecked && GroupByMonthCheckBoxIsChecked)
+                {
+                    if (SelectedYear != 0)
+                    {
+                        var bevetelekKiadasokGroupedByMonthAndBeKiKod = _selectedBevetelekKiadasok.Where(x => x.TeljesitesiDatum.Year == SelectedYear).GroupBy(x => new { x.TeljesitesiDatum.Month, x.BeKiKod });
+                        var totalBevetelekKiadasokAdatsor = _selectedBevetelekKiadasok.Where(x => x.TeljesitesiDatum.Year == SelectedYear).Sum(x => x.Osszeg);
+                        var hashSetsByMonthAndBeKiKod = new Dictionary<(int Datum, BeKiKod BeKiKod), HashSet<BevetelKiadas>>();
+
+                        foreach (var group in bevetelekKiadasokGroupedByMonthAndBeKiKod)
+                        {
+                            // Create a HashSet for each group
+                            var hashSet = new HashSet<BevetelKiadas>(group);
+                            hashSetsByMonthAndBeKiKod[(group.Key.Month, group.Key.BeKiKod)] = hashSet;
+                        }
+                        int a = 0;
+                        foreach (var kvp in hashSetsByMonthAndBeKiKod)
+                        {
+                            var bevetelekKiadasokAdatsor = new ChartValues<ObservableValue>();
+                            foreach (var bevetelKiadas in kvp.Value)
+                            {
+                                bevetelekKiadasokAdatsor.Add(new ObservableValue(bevetelKiadas.Osszeg));
+                            }
+                            AddPieSeries(bevetelekKiadasokAdatsor, totalBevetelekKiadasokAdatsor, totalBevetelekKiadasokAdatsor, $"Bevételek és Kiadások - {kvp.Key.BeKiKod}_{kvp.Key.Datum}", $"{kvp.Key.BeKiKod}_{kvp.Key.Datum}", baseColors[a]);
+                            AddGroupByDataToCollection($"{kvp.Key.BeKiKod}_{kvp.Key.Datum}", a);
+                            if (a + 1 > 3)
+                                a = 0;
+                            a++;
+                        }
+                    }
+                    else
+                    {
+
+                    }
+                }
+                else if (GroupByPenznemCheckBoxIsChecked && GroupByYearCheckBoxIsChecked)
+                {
+                    var bevetelekKiadasokGroupedByYearAndPenznem = _selectedBevetelekKiadasok.GroupBy(x => new { x.TeljesitesiDatum.Year, x.Penznem });
+                    var totalBevetelekKiadasokAdatsor = _selectedBevetelekKiadasok.Sum(x => x.Osszeg);
+                    var hashSetsByYearAndPenznem = new Dictionary<(int Datum, Penznem Penznem), HashSet<BevetelKiadas>>();
+
+                    foreach (var group in bevetelekKiadasokGroupedByYearAndPenznem)
                     {
                         // Create a HashSet for each group
                         var hashSet = new HashSet<BevetelKiadas>(group);
-                        hashSetsByDatum[group.Key] = hashSet;
+                        hashSetsByYearAndPenznem[(group.Key.Year, group.Key.Penznem)] = hashSet;
                     }
                     int a = 0;
-                    foreach (var kvp in hashSetsByDatum)
+                    foreach (var kvp in hashSetsByYearAndPenznem)
                     {
                         var bevetelekKiadasokAdatsor = new ChartValues<ObservableValue>();
                         foreach (var bevetelKiadas in kvp.Value)
                         {
                             bevetelekKiadasokAdatsor.Add(new ObservableValue(bevetelKiadas.Osszeg));
                         }
-                        AddPieSeries(bevetelekKiadasokAdatsor, totalBevetelekKiadasokAdatsor, totalBevetelekKiadasokAdatsor, $"Bevételek és Kiadások - {kvp.Key}", $"Hónap_{kvp.Key}", baseColors[a]);
-                        AddGroupByDataToCollection($"Hónap_{kvp.Key}", a);
+                        AddPieSeries(bevetelekKiadasokAdatsor, totalBevetelekKiadasokAdatsor, totalBevetelekKiadasokAdatsor, $"Bevételek és Kiadások - {kvp.Key.Penznem}_{kvp.Key.Datum}", $"{kvp.Key.Penznem}_{kvp.Key.Datum}", baseColors[a]);
+                        AddGroupByDataToCollection($"{kvp.Key.Penznem}_{kvp.Key.Datum}", a);
                         if (a + 1 > 3)
                             a = 0;
                         a++;
                     }
+                }
+                else if (GroupByYearCheckBoxIsChecked && GroupByBeKiKodCheckBoxIsChecked)
+                {
+                    var bevetelekKiadasokGroupedByYearAndBeKiKod = _selectedBevetelekKiadasok.GroupBy(x => new { x.TeljesitesiDatum.Year, x.BeKiKod });
+                    var totalBevetelekKiadasokAdatsor = _selectedBevetelekKiadasok.Sum(x => x.Osszeg);
+                    var hashSetsByYearAndBeKiKod = new Dictionary<(int Datum, BeKiKod BeKiKod), HashSet<BevetelKiadas>>();
 
+                    foreach (var group in bevetelekKiadasokGroupedByYearAndBeKiKod)
+                    {
+                        // Create a HashSet for each group
+                        var hashSet = new HashSet<BevetelKiadas>(group);
+                        hashSetsByYearAndBeKiKod[(group.Key.Year, group.Key.BeKiKod)] = hashSet;
+                    }
+                    int a = 0;
+                    foreach (var kvp in hashSetsByYearAndBeKiKod)
+                    {
+                        var bevetelekKiadasokAdatsor = new ChartValues<ObservableValue>();
+                        foreach (var bevetelKiadas in kvp.Value)
+                        {
+                            bevetelekKiadasokAdatsor.Add(new ObservableValue(bevetelKiadas.Osszeg));
+                        }
+                        AddPieSeries(bevetelekKiadasokAdatsor, totalBevetelekKiadasokAdatsor, totalBevetelekKiadasokAdatsor, $"Bevételek és Kiadások - {kvp.Key.BeKiKod}_{kvp.Key.Datum}", $"{kvp.Key.BeKiKod}_{kvp.Key.Datum}", baseColors[a]);
+                        AddGroupByDataToCollection($"{kvp.Key.BeKiKod}_{kvp.Key.Datum}", a);
+                        if (a + 1 > 3)
+                            a = 0;
+                        a++;
+                    }
                 }
                 else if (GroupByPenznemCheckBoxIsChecked && GroupByBeKiKodCheckBoxIsChecked)
                 {
@@ -1731,6 +1872,67 @@ namespace Szakdolgozat.ViewModels
                         a++;
                     }
                 }
+                else if (GroupByYearCheckBoxIsChecked)
+                {
+                    var bevetelekKiadasokGroupedByDatum = _selectedBevetelekKiadasok.GroupBy(x => x.TeljesitesiDatum.Year);
+                    var totalBevetelekKiadasokAdatsor = _selectedBevetelekKiadasok.Sum(x => x.Osszeg);
+                    var hashSetsByDatum = new Dictionary<int, HashSet<BevetelKiadas>>();
+
+                    foreach (var group in bevetelekKiadasokGroupedByDatum)
+                    {
+                        // Create a HashSet for each group
+                        var hashSet = new HashSet<BevetelKiadas>(group);
+                        hashSetsByDatum[group.Key] = hashSet;
+                    }
+                    int a = 0;
+                    foreach (var kvp in hashSetsByDatum)
+                    {
+                        var bevetelekKiadasokAdatsor = new ChartValues<ObservableValue>();
+                        foreach (var bevetelKiadas in kvp.Value)
+                        {
+                            bevetelekKiadasokAdatsor.Add(new ObservableValue(bevetelKiadas.Osszeg));
+                        }
+                        AddPieSeries(bevetelekKiadasokAdatsor, totalBevetelekKiadasokAdatsor, totalBevetelekKiadasokAdatsor, $"Bevételek és Kiadások - {kvp.Key}", $"Év_{kvp.Key}", baseColors[a]);
+                        AddGroupByDataToCollection($"Év_{kvp.Key}", a);
+                        if (a + 1 > 3)
+                            a = 0;
+                        a++;
+                    }
+                }
+                else if (GroupByMonthCheckBoxIsChecked)
+                {
+                    if (SelectedYear != 0)
+                    {
+                        var bevetelekKiadasokGroupedByDatum = _selectedBevetelekKiadasok.Where(x => x.TeljesitesiDatum.Year == SelectedYear).GroupBy(x => x.TeljesitesiDatum.Month);
+                        var totalBevetelekKiadasokAdatsor = _selectedBevetelekKiadasok.Where(x => x.TeljesitesiDatum.Year == SelectedYear).Sum(x => x.Osszeg);
+                        var hashSetsByDatum = new Dictionary<int, HashSet<BevetelKiadas>>();
+
+                        foreach (var group in bevetelekKiadasokGroupedByDatum)
+                        {
+                            // Create a HashSet for each group
+                            var hashSet = new HashSet<BevetelKiadas>(group);
+                            hashSetsByDatum[group.Key] = hashSet;
+                        }
+                        int a = 0;
+                        foreach (var kvp in hashSetsByDatum)
+                        {
+                            var bevetelekKiadasokAdatsor = new ChartValues<ObservableValue>();
+                            foreach (var bevetelKiadas in kvp.Value)
+                            {
+                                bevetelekKiadasokAdatsor.Add(new ObservableValue(bevetelKiadas.Osszeg));
+                            }
+                            AddPieSeries(bevetelekKiadasokAdatsor, totalBevetelekKiadasokAdatsor, totalBevetelekKiadasokAdatsor, $"Bevételek és Kiadások - {kvp.Key}", $"Hónap_{kvp.Key}", baseColors[a]);
+                            AddGroupByDataToCollection($"Hónap_{kvp.Key}", a);
+                            if (a + 1 > 3)
+                                a = 0;
+                            a++;
+                        }
+                    }
+                    else
+                    {
+                        throw new Exception("Must select a year!");
+                    }
+                }
                 else
                 {
                     var bevetelekKiadasokAdatsor = new ChartValues<ObservableValue>();
@@ -1745,7 +1947,190 @@ namespace Szakdolgozat.ViewModels
             }
             else
             {
-                if (GroupByPenznemCheckBoxIsChecked && GroupByKifizetettCheckBoxIsChecked)
+                if (GroupByPenznemCheckBoxIsChecked && GroupByKifizetettCheckBoxIsChecked && GroupByYearCheckBoxIsChecked)
+                {
+                    var kotelezetsegekKovetelesekGroupedByYearAndPenznemAndKifizetett = _selectedKotelezettsegekKovetelesek.GroupBy(x => new { x.KifizetesHatarideje.Year, x.Penznem, x.Kifizetett });
+                    var totalkotelezetsegekKovetelesekAdatsor = _selectedKotelezettsegekKovetelesek.Sum(x => x.Osszeg);
+                    var hashSetsByYearAndPenznemAndKifizetett = new Dictionary<(int Datum, Penznem Penznem, Int16 Kifizetett), HashSet<KotelezettsegKoveteles>>();
+
+                    foreach (var group in kotelezetsegekKovetelesekGroupedByYearAndPenznemAndKifizetett)
+                    {
+                        // Create a HashSet for each group
+                        var hashSet = new HashSet<KotelezettsegKoveteles>(group);
+                        hashSetsByYearAndPenznemAndKifizetett[(group.Key.Year, group.Key.Penznem, group.Key.Kifizetett)] = hashSet;
+                    }
+                    int a = 0;
+                    foreach (var kvp in hashSetsByYearAndPenznemAndKifizetett)
+                    {
+                        var bevetelekKiadasokAdatsor = new ChartValues<ObservableValue>();
+                        foreach (var bevetelKiadas in kvp.Value)
+                        {
+                            bevetelekKiadasokAdatsor.Add(new ObservableValue(bevetelKiadas.Osszeg));
+                        }
+                        AddPieSeries(bevetelekKiadasokAdatsor, totalkotelezetsegekKovetelesekAdatsor, totalkotelezetsegekKovetelesekAdatsor, $"Kötelezettségek és Követelések - {kvp.Key.Penznem}_{kvp.Key.Kifizetett}_{kvp.Key.Datum}", $"{kvp.Key.Penznem}_{kvp.Key.Kifizetett}_{kvp.Key.Datum}", baseColors[a]);
+                        AddGroupByDataToCollection($"{kvp.Key.Penznem}_{kvp.Key.Kifizetett}_{kvp.Key.Datum}", a);
+                        if (a + 1 > 3)
+                            a = 0;
+                        a++;
+                    }
+                }
+                else if (GroupByPenznemCheckBoxIsChecked && GroupByKifizetettCheckBoxIsChecked && GroupByMonthCheckBoxIsChecked)
+                {
+                    if(SelectedYear != 0)
+                    {
+                        var kotelezetsegekKovetelesekGroupedByMonthAndPenznemAndKifizetett = _selectedKotelezettsegekKovetelesek.GroupBy(x => new { x.KifizetesHatarideje.Month, x.Penznem, x.Kifizetett });
+                        var totalkotelezetsegekKovetelesekAdatsor = _selectedKotelezettsegekKovetelesek.Where(x => x.KifizetesHatarideje.Year == SelectedYear).Sum(x => x.Osszeg);
+                        var hashSetsByMonthAndPenznemAndKifizetett = new Dictionary<(int Datum, Penznem Penznem, Int16 Kifizetett), HashSet<KotelezettsegKoveteles>>();
+
+                        foreach (var group in kotelezetsegekKovetelesekGroupedByMonthAndPenznemAndKifizetett)
+                        {
+                            // Create a HashSet for each group
+                            var hashSet = new HashSet<KotelezettsegKoveteles>(group);
+                            hashSetsByMonthAndPenznemAndKifizetett[(group.Key.Month, group.Key.Penznem, group.Key.Kifizetett)] = hashSet;
+                        }
+                        int a = 0;
+                        foreach (var kvp in hashSetsByMonthAndPenznemAndKifizetett)
+                        {
+                            var bevetelekKiadasokAdatsor = new ChartValues<ObservableValue>();
+                            foreach (var bevetelKiadas in kvp.Value)
+                            {
+                                bevetelekKiadasokAdatsor.Add(new ObservableValue(bevetelKiadas.Osszeg));
+                            }
+                            AddPieSeries(bevetelekKiadasokAdatsor, totalkotelezetsegekKovetelesekAdatsor, totalkotelezetsegekKovetelesekAdatsor, $"Kötelezettségek és Követelések - {kvp.Key.Penznem}_{kvp.Key.Kifizetett}_{kvp.Key.Datum}", $"{kvp.Key.Penznem}_{kvp.Key.Kifizetett}_{kvp.Key.Datum}", baseColors[a]);
+                            AddGroupByDataToCollection($"{kvp.Key.Penznem}_{kvp.Key.Kifizetett}_{kvp.Key.Datum}", a);
+                            if (a + 1 > 3)
+                                a = 0;
+                            a++;
+                        }
+                    }
+                    else
+                    {
+
+                    }
+                }
+                else if (GroupByPenznemCheckBoxIsChecked && GroupByMonthCheckBoxIsChecked)
+                {
+                    if (SelectedYear != 0)
+                    {
+                        var kotelezetsegekKovetelesekGroupedByMonthAndPenznem = _selectedKotelezettsegekKovetelesek.GroupBy(x => new { x.KifizetesHatarideje.Month, x.Penznem });
+                        var totalkotelezetsegekKovetelesekAdatsor = _selectedKotelezettsegekKovetelesek.Where(x => x.KifizetesHatarideje.Year == SelectedYear).Sum(x => x.Osszeg);
+                        var hashSetsByMonthAndPenznem = new Dictionary<(int Datum, Penznem Penznem), HashSet<KotelezettsegKoveteles>>();
+
+                        foreach (var group in kotelezetsegekKovetelesekGroupedByMonthAndPenznem)
+                        {
+                            // Create a HashSet for each group
+                            var hashSet = new HashSet<KotelezettsegKoveteles>(group);
+                            hashSetsByMonthAndPenznem[(group.Key.Month, group.Key.Penznem)] = hashSet;
+                        }
+                        int a = 0;
+                        foreach (var kvp in hashSetsByMonthAndPenznem)
+                        {
+                            var bevetelekKiadasokAdatsor = new ChartValues<ObservableValue>();
+                            foreach (var bevetelKiadas in kvp.Value)
+                            {
+                                bevetelekKiadasokAdatsor.Add(new ObservableValue(bevetelKiadas.Osszeg));
+                            }
+                            AddPieSeries(bevetelekKiadasokAdatsor, totalkotelezetsegekKovetelesekAdatsor, totalkotelezetsegekKovetelesekAdatsor, $"Kötelezettségek és Követelések - {kvp.Key.Penznem}_{kvp.Key.Datum}", $"{kvp.Key.Penznem}_{kvp.Key.Datum}", baseColors[a]);
+                            AddGroupByDataToCollection($"{kvp.Key.Penznem}_{kvp.Key.Datum}", a);
+                            if (a + 1 > 3)
+                                a = 0;
+                            a++;
+                        }
+                    }
+                    else
+                    {
+
+                    }
+                }
+                else if (GroupByKifizetettCheckBoxIsChecked && GroupByMonthCheckBoxIsChecked)
+                {
+                    if (SelectedYear != 0)
+                    {
+                        var kotelezetsegekKovetelesekGroupedByMonthAndKifizetett = _selectedKotelezettsegekKovetelesek.GroupBy(x => new { x.KifizetesHatarideje.Month, x.Kifizetett });
+                        var totalkotelezetsegekKovetelesekAdatsor = _selectedKotelezettsegekKovetelesek.Where(x => x.KifizetesHatarideje.Year == SelectedYear).Sum(x => x.Osszeg);
+                        var hashSetsByMonthAndPenznem = new Dictionary<(int Datum, Int16 Kifizetett), HashSet<KotelezettsegKoveteles>>();
+
+                        foreach (var group in kotelezetsegekKovetelesekGroupedByMonthAndKifizetett)
+                        {
+                            // Create a HashSet for each group
+                            var hashSet = new HashSet<KotelezettsegKoveteles>(group);
+                            hashSetsByMonthAndPenznem[(group.Key.Month, group.Key.Kifizetett)] = hashSet;
+                        }
+                        int a = 0;
+                        foreach (var kvp in hashSetsByMonthAndPenznem)
+                        {
+                            var bevetelekKiadasokAdatsor = new ChartValues<ObservableValue>();
+                            foreach (var bevetelKiadas in kvp.Value)
+                            {
+                                bevetelekKiadasokAdatsor.Add(new ObservableValue(bevetelKiadas.Osszeg));
+                            }
+                            AddPieSeries(bevetelekKiadasokAdatsor, totalkotelezetsegekKovetelesekAdatsor, totalkotelezetsegekKovetelesekAdatsor, $"Kötelezettségek és Követelések - {kvp.Key.Kifizetett}_{kvp.Key.Datum}", $"Kifizetett_{kvp.Key.Kifizetett}_{kvp.Key.Datum}", baseColors[a]);
+                            AddGroupByDataToCollection($"Kifizetett_{kvp.Key.Kifizetett}_{kvp.Key.Datum}", a);
+                            if (a + 1 > 3)
+                                a = 0;
+                            a++;
+                        }
+                    }
+                    else
+                    {
+
+                    }
+                }
+                else if (GroupByPenznemCheckBoxIsChecked && GroupByYearCheckBoxIsChecked)
+                {
+                    var kotelezetsegekKovetelesekGroupedByYearAndPenznem = _selectedKotelezettsegekKovetelesek.GroupBy(x => new { x.KifizetesHatarideje.Year, x.Penznem });
+                    var totalkotelezetsegekKovetelesekAdatsor = _selectedKotelezettsegekKovetelesek.Sum(x => x.Osszeg);
+                    var hashSetsByYearAndPenznem = new Dictionary<(int Datum, Penznem Penznem), HashSet<KotelezettsegKoveteles>>();
+
+                    foreach (var group in kotelezetsegekKovetelesekGroupedByYearAndPenznem)
+                    {
+                        // Create a HashSet for each group
+                        var hashSet = new HashSet<KotelezettsegKoveteles>(group);
+                        hashSetsByYearAndPenznem[(group.Key.Year, group.Key.Penznem)] = hashSet;
+                    }
+                    int a = 0;
+                    foreach (var kvp in hashSetsByYearAndPenznem)
+                    {
+                        var bevetelekKiadasokAdatsor = new ChartValues<ObservableValue>();
+                        foreach (var bevetelKiadas in kvp.Value)
+                        {
+                            bevetelekKiadasokAdatsor.Add(new ObservableValue(bevetelKiadas.Osszeg));
+                        }
+                        AddPieSeries(bevetelekKiadasokAdatsor, totalkotelezetsegekKovetelesekAdatsor, totalkotelezetsegekKovetelesekAdatsor, $"Kötelezettségek és Követelések - {kvp.Key.Penznem}_{kvp.Key.Datum}", $"{kvp.Key.Penznem}_{kvp.Key.Datum}", baseColors[a]);
+                        AddGroupByDataToCollection($"{kvp.Key.Penznem}_{kvp.Key.Datum}", a);
+                        if (a + 1 > 3)
+                            a = 0;
+                        a++;
+                    }
+                }
+                else if (GroupByYearCheckBoxIsChecked && GroupByKifizetettCheckBoxIsChecked)
+                {
+                    var kotelezetsegekKovetelesekGroupedByYearAndKifizetett = _selectedKotelezettsegekKovetelesek.GroupBy(x => new { x.KifizetesHatarideje.Year, x.Kifizetett });
+                    var totalkotelezetsegekKovetelesekAdatsor = _selectedKotelezettsegekKovetelesek.Sum(x => x.Osszeg);
+                    var hashSetsByYearAndBeKiKod = new Dictionary<(int Datum, Int16 Kifizetett), HashSet<KotelezettsegKoveteles>>();
+
+                    foreach (var group in kotelezetsegekKovetelesekGroupedByYearAndKifizetett)
+                    {
+                        // Create a HashSet for each group
+                        var hashSet = new HashSet<KotelezettsegKoveteles>(group);
+                        hashSetsByYearAndBeKiKod[(group.Key.Year, group.Key.Kifizetett)] = hashSet;
+                    }
+                    int a = 0;
+                    foreach (var kvp in hashSetsByYearAndBeKiKod)
+                    {
+                        var bevetelekKiadasokAdatsor = new ChartValues<ObservableValue>();
+                        foreach (var bevetelKiadas in kvp.Value)
+                        {
+                            bevetelekKiadasokAdatsor.Add(new ObservableValue(bevetelKiadas.Osszeg));
+                        }
+                        AddPieSeries(bevetelekKiadasokAdatsor, totalkotelezetsegekKovetelesekAdatsor, totalkotelezetsegekKovetelesekAdatsor, $"Kötelezettségek és Követelések - {kvp.Key.Kifizetett}_{kvp.Key.Datum}", $"Kifizetett_{kvp.Key.Kifizetett}_{kvp.Key.Datum}", baseColors[a]);
+                        AddGroupByDataToCollection($"Kifizetett_{kvp.Key.Kifizetett}_{kvp.Key.Datum}", a);
+                        if (a + 1 > 3)
+                            a = 0;
+                        a++;
+                    }
+                }
+                else if (GroupByPenznemCheckBoxIsChecked && GroupByKifizetettCheckBoxIsChecked)
                 {
                     var kotelezetsegekKovetelesekGroupedByPenznemAndKifizetett = _selectedKotelezettsegekKovetelesek.GroupBy(x => new { x.Penznem, x.Kifizetett });
                     var totalkotelezetsegekKovetelesekAdatsor = _selectedKotelezettsegekKovetelesek.Sum(x => x.Osszeg);
@@ -1824,6 +2209,67 @@ namespace Szakdolgozat.ViewModels
                         if (a + 1 > 3)
                             a = 0;
                         a++;
+                    }
+                }
+                else if (GroupByYearCheckBoxIsChecked)
+                {
+                    var kotelezetsegekKovetelesekGroupedByDatum = _selectedKotelezettsegekKovetelesek.GroupBy(x => x.KifizetesHatarideje.Year);
+                    var totalkotelezetsegekKovetelesekAdatsor = _selectedKotelezettsegekKovetelesek.Sum(x => x.Osszeg);
+                    var hashSetsByDatum = new Dictionary<int, HashSet<KotelezettsegKoveteles>>();
+
+                    foreach (var group in kotelezetsegekKovetelesekGroupedByDatum)
+                    {
+                        // Create a HashSet for each group
+                        var hashSet = new HashSet<KotelezettsegKoveteles>(group);
+                        hashSetsByDatum[group.Key] = hashSet;
+                    }
+                    int a = 0;
+                    foreach (var kvp in hashSetsByDatum)
+                    {
+                        var bevetelekKiadasokAdatsor = new ChartValues<ObservableValue>();
+                        foreach (var bevetelKiadas in kvp.Value)
+                        {
+                            bevetelekKiadasokAdatsor.Add(new ObservableValue(bevetelKiadas.Osszeg));
+                        }
+                        AddPieSeries(bevetelekKiadasokAdatsor, totalkotelezetsegekKovetelesekAdatsor, totalkotelezetsegekKovetelesekAdatsor, $"Kötelezettségek és Követelések - {kvp.Key}", $"Év_{kvp.Key}", baseColors[a]);
+                        AddGroupByDataToCollection($"Év_{kvp.Key}", a);
+                        if (a + 1 > 3)
+                            a = 0;
+                        a++;
+                    }
+                }
+                else if (GroupByMonthCheckBoxIsChecked)
+                {
+                    if (SelectedYear != 0)
+                    {
+                        var kotelezetsegekKovetelesekGroupedByDatum = _selectedKotelezettsegekKovetelesek.Where(x => x.KifizetesHatarideje.Year == SelectedYear).GroupBy(x => x.KifizetesHatarideje.Month);
+                        var totalkotelezetsegekKovetelesekAdatsor = _selectedKotelezettsegekKovetelesek.Where(x => x.KifizetesHatarideje.Year == SelectedYear).Sum(x => x.Osszeg);
+                        var hashSetsByDatum = new Dictionary<int, HashSet<KotelezettsegKoveteles>>();
+
+                        foreach (var group in kotelezetsegekKovetelesekGroupedByDatum)
+                        {
+                            // Create a HashSet for each group
+                            var hashSet = new HashSet<KotelezettsegKoveteles>(group);
+                            hashSetsByDatum[group.Key] = hashSet;
+                        }
+                        int a = 0;
+                        foreach (var kvp in hashSetsByDatum)
+                        {
+                            var bevetelekKiadasokAdatsor = new ChartValues<ObservableValue>();
+                            foreach (var bevetelKiadas in kvp.Value)
+                            {
+                                bevetelekKiadasokAdatsor.Add(new ObservableValue(bevetelKiadas.Osszeg));
+                            }
+                            AddPieSeries(bevetelekKiadasokAdatsor, totalkotelezetsegekKovetelesekAdatsor, totalkotelezetsegekKovetelesekAdatsor, $"Kötelezettségek és Követelések - {kvp.Key}", $"Hónap_{kvp.Key}", baseColors[a]);
+                            AddGroupByDataToCollection($"Hónap_{kvp.Key}", a);
+                            if (a + 1 > 3)
+                                a = 0;
+                            a++;
+                        }
+                    }
+                    else
+                    {
+
                     }
                 }
                 else
@@ -1913,7 +2359,7 @@ namespace Szakdolgozat.ViewModels
 
         public void UnCheckAllSelections()
         {
-            SelectedBevetelekKiadasok.Clear();
+            _selectedBevetelekKiadasok.Clear();
             for (int i = 0; i < BevetelekKiadasok.Count; i++)
             {
                 BevetelekKiadasok.ElementAt(i).IsSelected = false;
@@ -1924,6 +2370,7 @@ namespace Szakdolgozat.ViewModels
             }
             UpdateSearch(SearchQuery);
             SelectedKotelezettsegekKovetelesek.Clear();
+            Years.Clear();
             IsEnabledChangerOnTabItems();
         }
 
@@ -2043,7 +2490,7 @@ namespace Szakdolgozat.ViewModels
                 Values = new ChartValues<ObservableValue> { new ObservableValue(values.Sum(x => x.Value)) },
                 DataLabels = true,
                 LabelPoint = chartPoint => $"({(values.Sum(x => x.Value) / totalSum):P})",
-                Fill = color
+                Fill = color,
             }); ;
 
 

@@ -145,9 +145,13 @@ namespace Szakdolgozat.Views
                             break;
                         case "GroupByYearCB":
                             createChartsView.GroupByYearCheckBoxIsChecked = false;
+                            GroupByMonthCB.IsEnabled = true;
+                            GroupByMonthYearsCB.IsEnabled = true;
                             break;
                         case "GroupByMonthCB":
                             createChartsView.GroupByMonthCheckBoxIsChecked = false;
+                            GroupByYearCB.IsEnabled = true;
+                            createChartsView.Years.Clear();
                             break;
                         default:
                             break;
@@ -178,6 +182,8 @@ namespace Szakdolgozat.Views
                             break;
                         case "GroupByYearCB":
                             createChartsView.GroupByYearCheckBoxIsChecked = true;
+                            GroupByMonthCB.IsEnabled = false;
+                            GroupByMonthYearsCB.IsEnabled = false;
                             break;
                         case "GroupByMonthCB":
                             createChartsView.GroupByMonthCheckBoxIsChecked = true;
@@ -190,6 +196,16 @@ namespace Szakdolgozat.Views
                                     .OrderBy(year => year)
                                 );
                             }
+                            else if (createChartsView.SelectedKotelezettsegekKovetelesek.Count > 0)
+                            {
+                                createChartsView.Years = new ObservableCollection<int>(
+                                    createChartsView._selectedKotelezettsegekKovetelesek
+                                    .Select(x => x.KifizetesHatarideje.Year)
+                                    .Distinct()
+                                    .OrderBy(year => year)
+                                );
+                            }
+                            GroupByYearCB.IsEnabled = false;
                             break;
                         default:
                             break;
