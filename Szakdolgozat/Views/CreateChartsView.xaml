@@ -73,10 +73,10 @@
                     </Grid.ColumnDefinitions>
                 <lvc:CartesianChart Grid.Column="0" Zoom="X" ZoomingSpeed="0.5" x:Name="lineSeries" Series="{Binding LineSeries}" LegendLocation="Bottom" Visibility="Hidden">
                     <lvc:CartesianChart.AxisY>
-                        <lvc:Axis Title="Sales" LabelFormatter="{Binding LineSeriesYFormatter}"></lvc:Axis>
+                        <lvc:Axis Title="Értékek" LabelFormatter="{Binding LineSeriesYFormatter}"></lvc:Axis>
                     </lvc:CartesianChart.AxisY>
                     <lvc:CartesianChart.AxisX>
-                        <lvc:Axis Title="Month" Labels="{Binding LineSeriesLabels}"></lvc:Axis>
+                        <lvc:Axis Title="Hónapok" Labels="{Binding LineSeriesLabels}"></lvc:Axis>
                     </lvc:CartesianChart.AxisX>
                 </lvc:CartesianChart>
                     <lvc:PieChart InnerRadius="{Binding InnerRadius}" Grid.Row="0" x:Name="pieSeries" Series="{Binding PieSeries}" LegendLocation="Right" Visibility="Hidden">
@@ -84,9 +84,20 @@
                         <lvc:DefaultTooltip SelectionMode="OnlySender"/>
                     </lvc:PieChart.DataTooltip>
                 </lvc:PieChart>
-                    <Slider Orientation="Vertical" Grid.Column="1" x:Name="radiusSlider" Minimum="0" Maximum="80" Value="{Binding InnerRadius, Mode=TwoWay}"
+                <lvc:CartesianChart Zoom="X" ZoomingSpeed="0.5" x:Name="rowSeries" Grid.Column="0" Series="{Binding RowSeries}" LegendLocation="Bottom" Visibility="Hidden">
+                    <lvc:CartesianChart.AxisX>
+                        <lvc:Axis Title="Salesman" LabelFormatter="{Binding RowSeriesFormatter}"></lvc:Axis>
+                    </lvc:CartesianChart.AxisX>
+                    <lvc:CartesianChart.AxisY>
+                        <lvc:Axis Title="Sold Apps" Labels="{Binding RowSeriesLabels}"></lvc:Axis>
+                    </lvc:CartesianChart.AxisY>
+                    <lvc:CartesianChart.DataTooltip>
+                        <lvc:DefaultTooltip SelectionMode="SharedYValues"></lvc:DefaultTooltip>
+                    </lvc:CartesianChart.DataTooltip>
+                </lvc:CartesianChart>
+                    <Slider x:Name="pieSeriesRadiusSlider" Orientation="Vertical" Grid.Column="1" Minimum="0" Maximum="80" Value="{Binding InnerRadius, Mode=TwoWay}"
                 HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10"
-                Width="30" Height="200"/>
+                Width="30" Height="200" Visibility="Hidden"/>
                 </Grid>
             </Grid>
             <Grid Grid.Row="2">

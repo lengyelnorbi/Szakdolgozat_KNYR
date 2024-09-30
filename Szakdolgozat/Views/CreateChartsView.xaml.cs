@@ -214,21 +214,6 @@ namespace Szakdolgozat.Views
             }
         }
 
-
-        //private void Button_Click(object sender, RoutedEventArgs e)
-        //{
-        //    if(DataContext is CreateChartsViewModel viewmodel)
-        //    {
-        //        MessageBox.Show(viewmodel.SeriesType);
-        //    }
-        //    goBackButton.Visibility = Visibility.Visible;
-        //}
-
-        //private void goBackButton_Click(object sender, RoutedEventArgs e)
-        //{
-        //    goBackButton.Visibility = Visibility.Hidden;
-        //}
-
         private void ChangeSelection_Click(object sender, RoutedEventArgs e)
         {
             if (DataContext is CreateChartsViewModel viewModel)
@@ -338,8 +323,10 @@ namespace Szakdolgozat.Views
             {
                 case "DoghnutSeries":
                     pieSeries.Visibility = Visibility.Visible;
+                    pieSeriesRadiusSlider.Visibility = Visibility.Visible;
                     break;
                 case "RowSeries":
+                    rowSeries.Visibility = Visibility.Visible;
                     break;
                 case "StackedSeries":
                     break;
