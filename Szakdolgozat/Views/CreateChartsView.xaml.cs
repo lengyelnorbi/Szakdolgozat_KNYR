@@ -1,4 +1,5 @@
 ﻿using Org.BouncyCastle.Bcpg;
+using Org.BouncyCastle.Tls;
 using Org.BouncyCastle.Utilities;
 using System;
 using System.Collections.Generic;
@@ -41,6 +42,10 @@ namespace Szakdolgozat.Views
                 Mediator.SetSeriesVisibility += SetDiagramsVisibility;
                 viewModel.SeriesType = type;
                 this.Closed += viewModel.CloseWindow;
+                viewModel._selectionChanged = ChangeSelection_Click;
+                viewModel._selectionDeleted = ChangeSelection_Click;
+                viewModel._deleteAllSelections = deleteAllDataSelection_Click;
+                viewModel.BuildAndSetContextMenu();
             }
 
             koltsegvetes_mindCB.Checked += CheckBox_Checked;
@@ -218,6 +223,7 @@ namespace Szakdolgozat.Views
         {
             if (DataContext is CreateChartsViewModel viewModel)
             {
+                string senderName = (sender as FrameworkElement)?.Name;
                 //SolidColorBrush color = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#90EE90"));
                 if (chartsTabControl.SelectedContent is System.Windows.Controls.DataGrid dataGrid)
                 {
@@ -229,7 +235,7 @@ namespace Szakdolgozat.Views
                         {
                             BevetelKiadas i = (BevetelKiadas)item;
                             changeableItems[a] = i.ID;
-                            if (sender == cellSelectionTrue)
+                            if (senderName == "cellSelectionTrue")
                             {
                                 if(viewModel.SelectedBevetelekKiadasok.FirstOrDefault(x => x.ID == i.ID) == null)
                                 {
@@ -254,7 +260,7 @@ namespace Szakdolgozat.Views
                             }
                             a++;
                         }
-                        if (sender == cellSelectionTrue)
+                        if (senderName == "cellSelectionTrue")
                         {
                             viewModel.ChangeIsSelectedAndRefreshBevetelKiadas(changeableItems, true);
                         }
@@ -280,7 +286,7 @@ namespace Szakdolgozat.Views
                         {
                             KotelezettsegKoveteles i = (KotelezettsegKoveteles)item;
                             changeableItems[a] = i.ID;
-                            if (sender == cellSelectionTrue)
+                            if (senderName == "cellSelectionTrue")
                             {
                                 if (viewModel.SelectedKotelezettsegekKovetelesek.FirstOrDefault(x => x.ID == i.ID) == null)
                                 {
@@ -305,7 +311,7 @@ namespace Szakdolgozat.Views
                             }
                             a++;
                         }
-                        if (sender == cellSelectionTrue)
+                        if (senderName == "cellSelectionTrue")
                         {
                             viewModel.ChangeIsSelectedAndRefreshKotelKovet(changeableItems, true);
                         }

@@ -190,7 +190,7 @@
                                     </RadioButton>
                                 </StackPanel>
                             </Expander>
-                            <Expander x:Name="ExpanderMenuStatisztikak" Header="Statisztikák" IsExpanded="False" Width="250" Background="{x:Null}" Foreground="White" FontSize="13.5" HorizontalAlignment="Center">
+                            <!--<Expander x:Name="ExpanderMenuStatisztikak" Header="Statisztikák" IsExpanded="False" Width="250" Background="{x:Null}" Foreground="White" FontSize="13.5" HorizontalAlignment="Center">
                                 <StackPanel>
                                     <RadioButton GroupName="Content" Style="{StaticResource menuButton}"
                                  Tag="#E285DE"
@@ -209,7 +209,7 @@
                                         </StackPanel>
                                     </RadioButton>
                                 </StackPanel>
-                            </Expander>
+                            </Expander>-->
                         </StackPanel>
                     </ScrollViewer>
                 </Border>

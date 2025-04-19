@@ -157,6 +157,7 @@
       <DependentUpon>BindablePasswordBox.xaml</DependentUpon>
     </Compile>
     <Compile Include="Models\BeKiKod.cs" />
+    <Compile Include="Models\CurrencyData.cs" />
     <Compile Include="Models\Dolgozo.cs" />
     <Compile Include="Models\EditMode.cs" />
     <Compile Include="Models\GazdalkodoSzervezet.cs" />
@@ -181,6 +182,7 @@
     <Compile Include="Repositories\MaganSzemelyRepository.cs" />
     <Compile Include="Repositories\RepositoryBase.cs" />
     <Compile Include="Repositories\UserRepository.cs" />
+    <Compile Include="Specials\DataStatistics.cs" />
     <Compile Include="Specials\DateTimeParser.cs" />
     <Compile Include="Specials\EnumBindingSourceExtension.cs" />
     <Compile Include="Specials\WindowHelper.cs" />

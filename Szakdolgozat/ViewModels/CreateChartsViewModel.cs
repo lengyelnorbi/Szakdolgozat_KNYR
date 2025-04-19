@@ -23,6 +23,8 @@ using Szakdolgozat.Views;
 using System.Xml.Linq;
 using Szakdolgozat.Specials;
 using System.Runtime.InteropServices.ComTypes;
+using Org.BouncyCastle.Bcpg;
+using LiveCharts.Configurations;
 
 namespace Szakdolgozat.ViewModels
 {
@@ -30,6 +32,11 @@ namespace Szakdolgozat.ViewModels
     //The window's viewmodel that shows when creating a new diagram.
     public class CreateChartsViewModel : ViewModelBase
     {
+        public RoutedEventHandler _selectionChanged = null;
+        public RoutedEventHandler _selectionDeleted = null;
+        public RoutedEventHandler _deleteAllSelections = null;
+
+
         public bool GroupByPenznemCheckBoxIsChecked = false;
         public bool GroupByBeKiKodCheckBoxIsChecked = false;
         public bool GroupByKifizetettCheckBoxIsChecked = false;
@@ -39,6 +46,24 @@ namespace Szakdolgozat.ViewModels
         public bool GroupByDateCheckBoxIsChecked = false;
         public bool _isValidStartDateExists = false;
         public bool _isValidEndDateExists = false;
+
+        private string _selectedDataStatistics = "Nincs Kiválasztva";
+        public string SelectedDataStatistics
+        {
+            get => _selectedDataStatistics;
+            set
+            {
+                _selectedDataStatistics = value;
+                OnPropertyChanged(nameof(SelectedDataStatistics));
+            }
+        }
+
+        private ObservableCollection<string> _dataStatistics = new ObservableCollection<string> { "Nincs Kiválasztva", "Átlag", "Összeg", "Értékek Szórása", "Mértani Közép", "Minimum Érték", "Maximum Érték" };
+        public ObservableCollection<string> DataStatistics
+        {
+            get => _dataStatistics;
+            internal set { }
+        }
 
         private double _innerRadius;
 
@@ -150,8 +175,16 @@ namespace Szakdolgozat.ViewModels
         public SeriesCollection LineSeries { get; set; }
         public string[] LineSeriesLabels { get; set; }
         public Func<double, string> LineSeriesYFormatter { get; set; }
-
-        public SeriesCollection RowSeries { get; set; }
+        private SeriesCollection _rowSeries;
+        public SeriesCollection RowSeries 
+        {
+            get => _rowSeries;
+            set
+            {
+                _rowSeries = value;
+                OnPropertyChanged(nameof(RowSeries));
+            }
+        }
         public string[] RowSeriesLabels { get; set; }
         public Func<double, string> RowSeriesFormatter { get; set; }
 
@@ -424,6 +457,14 @@ namespace Szakdolgozat.ViewModels
 
         public CreateChartsViewModel()
         {
+            //FONTOS
+            var mapper = Mappers.Xy<CurrencyData>()
+            .X((val, index) => val.Value)
+            .Y(val => val.Position); // Controls row placement
+
+            Charting.For<CurrencyData>(mapper);
+            //
+
             checkboxStatuses.Add("koltsegvetes_mindCB", true);
             checkboxStatuses.Add("koltsegvetes_idCB", true);
             checkboxStatuses.Add("koltsegvetes_osszegCB", true);
@@ -1600,10 +1641,20 @@ namespace Szakdolgozat.ViewModels
                             if (isSelected)
                             {
                                 rowSeries.Visibility = Visibility.Visible;
+                                if(name == "Dollár")
+                                {
+                                    RowSeriesLabels = new[] { "Forint", "Euró", "Font", "Dollár" };
+                                    OnPropertyChanged(nameof(RowSeriesLabels));
+                                }
                             }
                             else
                             {
                                 rowSeries.Visibility = Visibility.Hidden;
+                                if (name == "Dollár")
+                                {
+                                    RowSeriesLabels = new[] { "Forint", "Euró", "Font" };
+                                    OnPropertyChanged(nameof(RowSeriesLabels));
+                                }
                             }
                         }
                     }
@@ -1613,7 +1664,7 @@ namespace Szakdolgozat.ViewModels
 
         public void SetRowSeries()
         {
-            RowSeries = new SeriesCollection();
+            RowSeries = new LiveCharts.SeriesCollection();
             GroupBySelections.Clear();
             //var totalBevetelekKiadasokAdatsor = _selectedBevetelekKiadasok.Sum(x => x.Osszeg);
             //var groupedByYear = _selectedBevetelekKiadasok
@@ -1875,26 +1926,34 @@ namespace Szakdolgozat.ViewModels
                     }
 
                     int a = 0;
-                    List<string> labels = new List<string> { "Forint", "Euró", "Font", "Dollár" };
+                    Dictionary<string, int> labels = new Dictionary<string, int> { { "Forint", 0 }, { "Euró", 1 }, { "Font", 2 }, { "Dollár", 3 } };
                     // Display the results
                     foreach (var kvp in hashSetsByPenznem)
                     {
                         var bevetelekKiadasokAdatsor = new ChartValues<double>();
+                        var value = Convert.ToDouble(kvp.Value.Sum(x => x.Osszeg));
+                        var data = new ChartValues<CurrencyData>();
+
                         foreach (var label in labels)
                         {
-                            if (kvp.Key.ToString() == label)
+                            //if (kvp.Key.ToString() == label)
+                            //{
+                            //    // If it's the current currency, add its sum
+                            //    bevetelekKiadasokAdatsor.Add(Convert.ToDouble(kvp.Value.Sum(x => x.Osszeg)));
+                            //}
+                            if (kvp.Key.ToString() == label.Key)
                             {
                                 // If it's the current currency, add its sum
                                 bevetelekKiadasokAdatsor.Add(Convert.ToDouble(kvp.Value.Sum(x => x.Osszeg)));
+                                data.Add(new CurrencyData { Value = Convert.ToDouble(kvp.Value.Sum(x => x.Osszeg)), Position = label.Value });
                             }
                             else
                             {
-                                // For other labels, add 0 or null
-                                bevetelekKiadasokAdatsor.Add(0); // Or null depending on how the chart handles empty values
+                                data.Add(new CurrencyData { Value = 0, Position = label.Value });
                             }
                         }
                         var totalBevetelekKiadasokAdatsor = bevetelekKiadasokAdatsor;
-                        AddRowSeries(bevetelekKiadasokAdatsor, $"Bevételek és Kiadások - {kvp.Key}", kvp.Key.ToString(), baseColors[a]);
+                        AddRowSeries(data, $"Bevételek és Kiadások - {kvp.Key}", kvp.Key.ToString(), baseColors[a]);
                         AddGroupByDataToCollection(kvp.Key.ToString(), a);
                         if (a + 1 > 3)
                             a = 0;
@@ -2799,6 +2858,7 @@ namespace Szakdolgozat.ViewModels
                 dataGrid.AutoGeneratingColumn += dataGrid_AutoGeneratingColumn;
                 // Set the binding to the ItemsSource property
                 dataGrid.SetBinding(System.Windows.Controls.DataGrid.ItemsSourceProperty, itemsSourceBinding);
+
             }
             else
             {
@@ -2840,6 +2900,27 @@ namespace Szakdolgozat.ViewModels
             };
             return tabItem;
         }
+
+        public void BuildAndSetContextMenu()
+        {
+            System.Windows.Controls.ContextMenu contextMenu = new System.Windows.Controls.ContextMenu();
+
+            System.Windows.Controls.MenuItem select = new System.Windows.Controls.MenuItem { Header = "Kijelölés" };
+            select.Click += _selectionChanged;
+            select.Name = "cellSelectionTrue";
+            System.Windows.Controls.MenuItem selectionDelete = new System.Windows.Controls.MenuItem { Header = "Kijelölés(ek) törlése" };
+            selectionDelete.Click += _selectionDeleted;
+            selectionDelete.Name = "cellSelectionFalse";
+            contextMenu.Items.Add(select);
+            contextMenu.Items.Add(selectionDelete);
+
+            System.Windows.Controls.DataGrid bevetelKiadasok = GetDataGrid("bevetelek_kiadasok");
+            System.Windows.Controls.DataGrid kotelKovet = GetDataGrid("kotelezettsegek_kovetelesek");
+
+            bevetelKiadasok.ContextMenu = contextMenu;
+            kotelKovet.ContextMenu = contextMenu;
+        }
+
 
         //Visszaadja azt a datagrid-et a Tabs listából, aminek megegyezik a neve az paraméterben kapottal
         //Gives back a datagrid from the Tabs collection which name is equal to string given in the parameter
@@ -2886,17 +2967,20 @@ namespace Szakdolgozat.ViewModels
             OnPropertyChanged(nameof(LabelFormatter));
         }
 
-        private void AddRowSeries(ChartValues<double> values, string title, string name, Brush color)
+        private void AddRowSeries(ChartValues<CurrencyData> values, string title, string name, Brush color)
         {
-            RowSeries.Add(new RowSeries
+            //StackedRowSeries-el megoldható a csoportokra bontás - viszont a RowSeries-el nem
+            //További feltételek szükségesek a RowSeries-hez, hogy a felhasználó tudjon több adatot is megjeleníteni
+            var rowSeries = new StackedRowSeries
             {
-                Name = name,
                 Title = title,
+                Name = name,
                 Values = values,
+                DataLabels = true,
                 Fill = color,
-                Foreground = color,
-            });
+            };
 
+            RowSeries.Add(rowSeries);
             if (GroupByDateCheckBoxIsChecked)
             {
                 RowSeriesLabels = new[] { "Jan", "Feb", "Mar", "Apr", "Maj", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dec" };
@@ -2905,16 +2989,44 @@ namespace Szakdolgozat.ViewModels
             {
                 RowSeriesLabels = new[] { "Forint", "Euró", "Font", "Dollár" };
             }
-            RowSeriesFormatter = value => value == 0 ? "" : value.ToString("N");
+
+            RowSeriesFormatter = value => value == double.NaN ? "" : value.ToString("N");
 
             OnPropertyChanged(nameof(RowSeries));
             OnPropertyChanged(nameof(RowSeriesLabels));
             OnPropertyChanged(nameof(RowSeriesFormatter));
         }
+        private void AddRowSeries(ChartValues<double> values, string title, string name, Brush color)
+        {
+            var rowSeries = new RowSeries
+            {
+                Title = title,
+                Name = name,
+                Values = values,
+                DataLabels = true,
+                Fill = color, // Transparent fill to allow custom colors
+                StrokeThickness = 0,
+                RowPadding = 20,
+            };
 
+            RowSeries.Add(rowSeries);
+            if (GroupByDateCheckBoxIsChecked)
+            {
+                RowSeriesLabels = new[] { "Jan", "Feb", "Mar", "Apr", "Maj", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dec" };
+            }
+            else if (GroupByPenznemCheckBoxIsChecked)
+            {
+                RowSeriesLabels = new[] { "Forint", "Euró", "Font", "Dollár" };
+            }
+
+            RowSeriesFormatter = value => value.ToString("N");
+
+            OnPropertyChanged(nameof(RowSeries));
+            OnPropertyChanged(nameof(RowSeriesLabels));
+            OnPropertyChanged(nameof(RowSeriesFormatter));
+        }
         private void AddLineSeries(ChartValues<double> asd, string title, string name, SolidColorBrush baseColor)
         {
-
             LineSeries.Add(new LineSeries
             {
                 Name = name,

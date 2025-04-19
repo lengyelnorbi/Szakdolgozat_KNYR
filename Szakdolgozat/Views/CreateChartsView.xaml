@@ -79,7 +79,7 @@
                         <lvc:Axis Title="Hónapok" Labels="{Binding LineSeriesLabels}"></lvc:Axis>
                     </lvc:CartesianChart.AxisX>
                 </lvc:CartesianChart>
-                    <lvc:PieChart InnerRadius="{Binding InnerRadius}" Grid.Row="0" x:Name="pieSeries" Series="{Binding PieSeries}" LegendLocation="Right" Visibility="Hidden">
+                <lvc:PieChart InnerRadius="{Binding InnerRadius}" Grid.Row="0" x:Name="pieSeries" Series="{Binding PieSeries}" LegendLocation="Right" Visibility="Hidden">
                     <lvc:PieChart.DataTooltip>
                         <lvc:DefaultTooltip SelectionMode="OnlySender"/>
                     </lvc:PieChart.DataTooltip>
@@ -89,7 +89,7 @@
                         <lvc:Axis Title="Salesman" LabelFormatter="{Binding RowSeriesFormatter}"></lvc:Axis>
                     </lvc:CartesianChart.AxisX>
                     <lvc:CartesianChart.AxisY>
-                        <lvc:Axis Title="Sold Apps" Labels="{Binding RowSeriesLabels}"></lvc:Axis>
+                            <lvc:Axis Title="Sold Apps" Labels="{Binding RowSeriesLabels}"></lvc:Axis>
                     </lvc:CartesianChart.AxisY>
                     <lvc:CartesianChart.DataTooltip>
                         <lvc:DefaultTooltip SelectionMode="SharedYValues"></lvc:DefaultTooltip>
@@ -100,19 +100,31 @@
                 Width="30" Height="200" Visibility="Hidden"/>
                 </Grid>
             </Grid>
+            <Border BorderThickness="0,2,0,0" Margin="10,0,10,10" BorderBrush="Black" Grid.Row="2"/>
             <Grid Grid.Row="2">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"></ColumnDefinition>
+                    <ColumnDefinition Width="12"></ColumnDefinition>
                     <ColumnDefinition Width="350"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
                 <Grid>
                     <Grid.RowDefinitions>
+                        <RowDefinition Height="140"/>
                         <RowDefinition Height="*"/>
-                        <RowDefinition Height="120"/>
                     </Grid.RowDefinitions>
-                    <TabControl SelectionChanged="chartsTabControl_SelectionChanged"  Grid.Row="0" x:Name="chartsTabControl" ItemsSource="{Binding Tabs,Mode=TwoWay, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}">
-                    </TabControl>
-                    <StackPanel Grid.Row="1" Orientation="Vertical">
+                    <Border Grid.Row="1" BorderBrush="AliceBlue" BorderThickness="0,1,0,1" CornerRadius="5" Margin="5" >
+                        <Border.Effect>
+                            <DropShadowEffect
+                            Color="#88000000"
+                            BlurRadius="12"
+                            ShadowDepth="3"
+                            Direction="150"
+                            Opacity="0.6"/>
+                        </Border.Effect>
+                        <TabControl SelectionChanged="chartsTabControl_SelectionChanged"  Grid.Row="1" x:Name="chartsTabControl" ItemsSource="{Binding Tabs,Mode=TwoWay, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}">
+                        </TabControl>
+                    </Border>
+                    <StackPanel Grid.Row="0" Orientation="Vertical">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
@@ -122,6 +134,7 @@
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="50"/>
                                     <RowDefinition Height="50"/>
+                                    <RowDefinition Height="40"/>
                                 </Grid.RowDefinitions>
                                 <StackPanel Orientation="Horizontal" Grid.Row="0">
                                     <StackPanel  x:Name="pnlSearchBar" Margin="10,10,0,0">
@@ -250,6 +263,10 @@
                                         <TextBlock Margin="10,-5,0,0" Text="-" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Top" Grid.Column="1"/>
                                     </Grid>
                                 </StackPanel>
+                                <StackPanel Grid.Row="2">
+                                    <ComboBox Margin="10,0,0,0" HorizontalAlignment="Left" HorizontalContentAlignment="Center" Width="150" x:Name="DataStatisticsCB" ItemsSource="{Binding DataStatistics, Mode=OneTime, UpdateSourceTrigger=PropertyChanged}" SelectedItem="{Binding SelectedDataStatistics, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                                    </ComboBox>
+                                </StackPanel>
                             </Grid>
                             <StackPanel Grid.Column="1" Orientation="Vertical" Margin="20,15,0,0">
                                 <TextBlock Text="Csoportosítási Opciók"/>
@@ -273,26 +290,27 @@
                                         <TextBlock Text="Hónap" Margin="0,0,0,3"/>
                                     </CheckBox>
                                 </StackPanel>
-                                <ComboBox x:Name="GroupByMonthYearsCB" ItemsSource="{Binding Years, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" SelectedItem="{Binding SelectedYear, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                                <ComboBox HorizontalAlignment="Left" Width="150" HorizontalContentAlignment="Center" x:Name="GroupByMonthYearsCB" ItemsSource="{Binding Years, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" SelectedItem="{Binding SelectedYear, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
                                 </ComboBox>
                             </StackPanel>
                         </Grid>
                     </StackPanel>
                 </Grid>
-                <Grid Grid.Row="1" Grid.Column="1">
+                <Border BorderThickness="0,0,2,0" Grid.Column="1" Margin="10,0,0,0" BorderBrush="Black" Grid.Row="1"/>
+                <Grid Grid.Row="1" Grid.Column="2">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="115"/>
+                        <RowDefinition Height="90"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
                     <StackPanel Grid.Row="0" Margin="10,0,0,0">
-                        <Grid>
+                        <!--<Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <Button Grid.Column="0" Margin="5,0,5,5" x:Name="cellSelectionTrue" Click="ChangeSelection_Click" Content="Kiválaszt"></Button>
-                            <Button Grid.Column="1" Margin="5,0,5,5" x:Name="cellSelectionFalse" Click="ChangeSelection_Click" Content="Töröl"></Button>
-                        </Grid>
+                            --><!--<Button Grid.Column="0" Margin="5,0,5,5" x:Name="cellSelectionTrue" Click="ChangeSelection_Click" Content="Kiválaszt"></Button>
+                            <Button Grid.Column="1" Margin="5,0,5,5" x:Name="cellSelectionFalse" Click="ChangeSelection_Click" Content="Töröl"></Button>--><!--
+                        </Grid>-->
                         <Button x:Name="deleteAllDataSelection" Margin="5,5,5,0" Click="deleteAllDataSelection_Click" Content="Összes jelölés törlése"></Button>
                         <Button x:Name="addDataToChart" Margin="5,5,5,0" Click="AddDataToChart_Click" Content="Adatok Hozzáadása"></Button>
                     </StackPanel>
