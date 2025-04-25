@@ -340,6 +340,7 @@ namespace Szakdolgozat.Views
                     break;
                 case "LineSeries":
                     lineSeries.Visibility = Visibility.Visible;
+                    GroupByMonthYearsCB.Visibility = Visibility.Hidden;
                     break;
                 default:
                     break;
