@@ -157,6 +157,7 @@ namespace Szakdolgozat.Views
                             createChartsView.GroupByMonthCheckBoxIsChecked = false;
                             GroupByYearCB.IsEnabled = true;
                             createChartsView.Years.Clear();
+                            createChartsView.SelectedYear = 0;
                             break;
                         default:
                             break;
@@ -337,6 +338,7 @@ namespace Szakdolgozat.Views
                 case "StackedSeries":
                     break;
                 case "BasicColumnSeries":
+                    columnSeries.Visibility = Visibility.Visible;
                     break;
                 case "LineSeries":
                     lineSeries.Visibility = Visibility.Visible;
@@ -582,6 +584,7 @@ namespace Szakdolgozat.Views
                         GroupByYearCB.Visibility = Visibility.Visible;
                         GroupByMonthCB.Visibility = Visibility.Visible;
                         GroupByDateCB.Visibility = Visibility.Collapsed;
+                        cimkekAdatsorokDataGrid.Visibility = Visibility.Collapsed;
                     }
                     else if(viewModel.SeriesType == "LineSeries")
                     {
@@ -603,8 +606,52 @@ namespace Szakdolgozat.Views
                         }
                         GroupByYearCB.Visibility = Visibility.Collapsed;
                         GroupByMonthCB.Visibility = Visibility.Collapsed;
+                        cimkekAdatsorokDataGrid.Visibility = Visibility.Collapsed;
                     }
-                    
+                    else if (viewModel.SeriesType == "RowSeries")
+                    {
+                        if (tabItem.Name.Contains("Koltsegvetes"))
+                        {
+                            viewModel.IsBevetelekKiadasokTabIsSelected = true;
+                            KoltsegvetesCB.Visibility = Visibility.Visible;
+                            KotelKovetCB.Visibility = Visibility.Collapsed;
+                            GroupByKifizetettCB.Visibility = Visibility.Collapsed;
+                            GroupByBeKiKodCB.Visibility = Visibility.Visible;
+                        }
+                        else if (tabItem.Name.Contains("KotelKovet"))
+                        {
+                            viewModel.IsBevetelekKiadasokTabIsSelected = false;
+                            KoltsegvetesCB.Visibility = Visibility.Collapsed;
+                            KotelKovetCB.Visibility = Visibility.Visible;
+                            GroupByKifizetettCB.Visibility = Visibility.Visible;
+                            GroupByBeKiKodCB.Visibility = Visibility.Collapsed;
+                        }
+                        GroupByYearCB.Visibility = Visibility.Collapsed;
+                        GroupByMonthCB.Visibility = Visibility.Collapsed;
+                        GroupByDateCB.Visibility = Visibility.Visible;
+                    }
+                    else if (viewModel.SeriesType == "BasicColumnSeries")
+                    {
+                        if (tabItem.Name.Contains("Koltsegvetes"))
+                        {
+                            viewModel.IsBevetelekKiadasokTabIsSelected = true;
+                            KoltsegvetesCB.Visibility = Visibility.Visible;
+                            KotelKovetCB.Visibility = Visibility.Collapsed;
+                            GroupByKifizetettCB.Visibility = Visibility.Collapsed;
+                            GroupByBeKiKodCB.Visibility = Visibility.Visible;
+                        }
+                        else if (tabItem.Name.Contains("KotelKovet"))
+                        {
+                            viewModel.IsBevetelekKiadasokTabIsSelected = false;
+                            KoltsegvetesCB.Visibility = Visibility.Collapsed;
+                            KotelKovetCB.Visibility = Visibility.Visible;
+                            GroupByKifizetettCB.Visibility = Visibility.Visible;
+                            GroupByBeKiKodCB.Visibility = Visibility.Collapsed;
+                        }
+                        GroupByYearCB.Visibility = Visibility.Collapsed;
+                        GroupByMonthCB.Visibility = Visibility.Collapsed;
+                        GroupByDateCB.Visibility = Visibility.Visible;
+                    }
                 }
             }
         }
