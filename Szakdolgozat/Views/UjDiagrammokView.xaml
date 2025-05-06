@@ -131,7 +131,7 @@
                         <lvc:Axis Title="Usage" LabelFormatter="{Binding TestStackedColumnSeriesFormatterForShow}"></lvc:Axis>
                     </lvc:CartesianChart.AxisY>
                 </lvc:CartesianChart>
-                    <Button Grid.Row="2" CommandParameter="StackedSeries" Command="{Binding CreateChartCommand}" Content="Új létrehozása"></Button>
+                    <Button Grid.Row="2" CommandParameter="StackedColumnSeries" Command="{Binding CreateChartCommand}" Content="Új létrehozása"></Button>
             </Grid>
         </materialDesign:Card>
         <materialDesign:Card Grid.Row="1"

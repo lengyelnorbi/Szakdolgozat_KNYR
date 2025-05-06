@@ -10,7 +10,7 @@
         mc:Ignorable="d"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf" xmlns:xctk1="http://materialdesigninxaml.net/winfx/xaml/themes"
-        Title="CreateChartsView" Height="1000" Width="1200"
+        Title="CreateChartsView" Height="1000" Width="1200" MinHeight="800" MinWidth="1000"
         HorizontalAlignment="Center"
         VerticalAlignment="Center"
         WindowStyle="None"
@@ -86,10 +86,10 @@
                 </lvc:PieChart>
                 <lvc:CartesianChart Zoom="X" ZoomingSpeed="0.5" x:Name="rowSeries" Grid.Column="0" Series="{Binding RowSeries}" LegendLocation="Bottom" Visibility="Hidden">
                     <lvc:CartesianChart.AxisX>
-                        <lvc:Axis MinValue="0" Title="Salesman" LabelFormatter="{Binding RowSeriesFormatter}"></lvc:Axis>
+                        <lvc:Axis MinValue="0" LabelFormatter="{Binding RowSeriesFormatter}"></lvc:Axis>
                     </lvc:CartesianChart.AxisX>
                     <lvc:CartesianChart.AxisY>
-                            <lvc:Axis MinValue="0" Title="Sold Apps" Labels="{Binding RowSeriesLabels}"></lvc:Axis>
+                            <lvc:Axis MinValue="0" Labels="{Binding RowSeriesLabels}"></lvc:Axis>
                     </lvc:CartesianChart.AxisY>
                     <lvc:CartesianChart.DataTooltip>
                         <lvc:DefaultTooltip SelectionMode="SharedYValues"></lvc:DefaultTooltip>
@@ -97,16 +97,27 @@
                 </lvc:CartesianChart>
                 <lvc:CartesianChart Zoom="X" ZoomingSpeed="0.5" x:Name="columnSeries" Grid.Column="0" Series="{Binding ColumnSeries}" LegendLocation="Bottom" Visibility="Hidden">
                     <lvc:CartesianChart.AxisY>
-                        <lvc:Axis MinValue="0" Title="Salesman" LabelFormatter="{Binding ColumnSeriesFormatter}"></lvc:Axis>
+                        <lvc:Axis MinValue="0" LabelFormatter="{Binding ColumnSeriesFormatter}"></lvc:Axis>
                     </lvc:CartesianChart.AxisY>
                     <lvc:CartesianChart.AxisX>
-                        <lvc:Axis MinValue="0" Title="Sold Apps" Labels="{Binding ColumnSeriesLabels}"></lvc:Axis>
+                        <lvc:Axis MinValue="0" Labels="{Binding ColumnSeriesLabels}"></lvc:Axis>
                     </lvc:CartesianChart.AxisX>
                     <lvc:CartesianChart.DataTooltip>
                         <lvc:DefaultTooltip SelectionMode="SharedYValues"></lvc:DefaultTooltip>
                     </lvc:CartesianChart.DataTooltip>
                 </lvc:CartesianChart>
-                    <Slider x:Name="pieSeriesRadiusSlider" Orientation="Vertical" Grid.Column="1" Minimum="0" Maximum="80" Value="{Binding InnerRadius, Mode=TwoWay}"
+                    <lvc:CartesianChart Zoom="X" ZoomingSpeed="0.5" x:Name="stackedColumnSeries" Grid.Column="0" Series="{Binding StackedColumnSeries}" LegendLocation="Bottom" Visibility="Hidden">
+                    <lvc:CartesianChart.AxisY>
+                    <lvc:Axis MinValue="0" LabelFormatter="{Binding StackedColumnSeriesFormatter}"></lvc:Axis>
+                    </lvc:CartesianChart.AxisY>
+                    <lvc:CartesianChart.AxisX>
+                    <lvc:Axis MinValue="0" Labels="{Binding StackedColumnSeriesLabels}"></lvc:Axis>
+                    </lvc:CartesianChart.AxisX>
+                    <lvc:CartesianChart.DataTooltip>
+                        <lvc:DefaultTooltip SelectionMode="SharedYValues"></lvc:DefaultTooltip>
+                    </lvc:CartesianChart.DataTooltip>
+                </lvc:CartesianChart>
+                <Slider x:Name="pieSeriesRadiusSlider" Orientation="Vertical" Grid.Column="1" Minimum="0" Maximum="80" Value="{Binding InnerRadius, Mode=TwoWay}"
                 HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10"
                 Width="30" Height="200" Visibility="Hidden"/>
                 </Grid>
@@ -143,13 +154,15 @@
                             </Grid.ColumnDefinitions>
                             <Grid Grid.Column="0">
                                 <Grid.RowDefinitions>
-                                    <RowDefinition Height="50"/>
-                                    <RowDefinition Height="50"/>
+                                    <RowDefinition Height="16"/>
+                                    <RowDefinition Height="45"/>
+                                    <RowDefinition Height="30"/>
                                     <RowDefinition Height="40"/>
                                 </Grid.RowDefinitions>
-                                <StackPanel Orientation="Horizontal" Grid.Row="0">
+                                <TextBlock Text="Szűrés/Keresés" Margin="10,3,0,0" />
+                                <StackPanel Orientation="Horizontal" Grid.Row="1">
                                     <StackPanel x:Name="pnlSearchBar" Margin="10,10,0,0">
-                                        <Grid Width="275" HorizontalAlignment="Left">
+                                        <Grid Width="175" HorizontalAlignment="Left">
                                             <TextBlock VerticalAlignment="Center" Foreground="#B0B9C6" IsHitTestVisible="False"
         Panel.ZIndex="1" Text="Keresés" Margin="10,0,0,0"
         Visibility="{Binding ElementName=searchBarInput, Path=Text.IsEmpty, Converter={StaticResource BoolToVis}}" />
@@ -245,7 +258,7 @@
                                     </ComboBoxItem>
                                 </ComboBox>
                                 </StackPanel>
-                                <StackPanel Grid.Row="1" Orientation="Horizontal">
+                                <StackPanel Grid.Row="2" Orientation="Horizontal">
                                     <TextBlock Text="Szűrés dátummal:" FontSize="14" Margin="10,0,0,5"/>
                                     <Grid x:Name="dateGrid" Grid.Row="1">
                                         <Grid.ColumnDefinitions>
@@ -274,11 +287,13 @@
                                         <TextBlock Margin="10,-5,0,0" Text="-" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Top" Grid.Column="1"/>
                                     </Grid>
                                 </StackPanel>
-                                <StackPanel Margin="10,0,0,0" Height="25" Grid.Row="2" Orientation="Horizontal">
-                                    <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="Statisztika használata:" FontSize="14" Margin="0"/>
-                                    <ComboBox Margin="10,0,0,0" HorizontalAlignment="Left" HorizontalContentAlignment="Center" Width="150" x:Name="DataStatisticsCB" ItemsSource="{Binding DataStatisticsCB, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" SelectedItem="{Binding SelectedDataStatistics, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
-                                    </ComboBox>
-                                </StackPanel>
+                                <Border Margin="8,0,0,0" Grid.Row="3" BorderBrush="Gray" BorderThickness="0,0.5,0,0" >
+                                    <StackPanel Margin="2,0,0,0" Height="25" Orientation="Horizontal">
+                                        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="Statisztika használata:" FontSize="14" Margin="0"/>
+                                        <ComboBox Margin="10,0,0,0" HorizontalAlignment="Left" HorizontalContentAlignment="Center" Width="150" x:Name="DataStatisticsCB" ItemsSource="{Binding DataStatisticsCB, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" SelectedItem="{Binding SelectedDataStatistics, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                                        </ComboBox>
+                                    </StackPanel>
+                                </Border>
                             </Grid>
                             <Grid Grid.Column="1">
                                 <Grid.ColumnDefinitions>
@@ -292,7 +307,7 @@
                                 <Border Margin="10,0,0,0" Grid.ColumnSpan="2" Grid.RowSpan="2" BorderBrush="Black" BorderThickness="1,0,0,0">
                                     
                                 </Border>
-                                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="0" Grid.ColumnSpan="2" Text="Csoportosítási Opciók"/>
+                                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="0" Grid.ColumnSpan="2" Text="Csoportosítási Opciók" Margin="0,3,0,0"/>
                                 <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical" Margin="20,5,0,0">
                                     <CheckBox x:Name="GroupByPenznemCB" IsChecked="False" Margin="0,0,20,0">
                                         <TextBlock Text="Penznem" Margin="0,0,0,3"/>
@@ -394,7 +409,7 @@
                                             </DataGrid.Columns>
                                             <DataGrid.ContextMenu>
                                                 <ContextMenu>
-                                                    <MenuItem Header="Átrakás adatsornak" Command="{Binding AddGroupByToCimkekCommand}" CommandParameter="Dátum"/>
+                                                    <MenuItem Header="Átrakás címkének" Command="{Binding AddGroupByToCimkekCommand}" CommandParameter="Dátum"/>
                                                 </ContextMenu>
                                             </DataGrid.ContextMenu>
                                         </DataGrid>

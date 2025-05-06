@@ -74,7 +74,12 @@ namespace Szakdolgozat.ViewModels
                 if (value)
                     SelectedCimkek.Add("Pénznem");
                 else
-                    SelectedCimkek.Remove("Pénznem");
+                {
+                    if (SelectedCimkek.Contains("Pénznem"))
+                        SelectedCimkek.Remove("Pénznem");
+                    else if (SelectedAdatsorok.Contains("Pénznem"))
+                        SelectedAdatsorok.Remove("Pénznem");
+                }
             }
         }
         public bool GroupByBeKiKodCheckBoxIsChecked
@@ -85,9 +90,14 @@ namespace Szakdolgozat.ViewModels
                 _groupByBeKiKodCheckBoxIsChecked = value;
                 OnPropertyChanged(nameof(GroupByBeKiKodCheckBoxIsChecked));
                 if (value)
-                    SelectedCimkek.Add("BeKiKod");
+                    SelectedCimkek.Add("BeKiKód");
                 else
-                    SelectedCimkek.Remove("BeKiKod");
+                {
+                    if (SelectedCimkek.Contains("BeKiKód"))
+                        SelectedCimkek.Remove("BeKiKód");
+                    else if (SelectedAdatsorok.Contains("BeKiKód"))
+                        SelectedAdatsorok.Remove("BeKiKód");
+                }
             }
         }
         public bool GroupByKifizetettCheckBoxIsChecked
@@ -100,7 +110,12 @@ namespace Szakdolgozat.ViewModels
                 if (value)
                     SelectedCimkek.Add("Kifizetett");
                 else
-                    SelectedCimkek.Remove("Kifizetett");
+                {
+                    if (SelectedCimkek.Contains("Kifizetett"))
+                        SelectedCimkek.Remove("Kifizetett");
+                    else if (SelectedAdatsorok.Contains("Kifizetett"))
+                        SelectedAdatsorok.Remove("Kifizetett");
+                }
             }
         }
         public bool GroupByMonthCheckBoxIsChecked
@@ -111,9 +126,17 @@ namespace Szakdolgozat.ViewModels
                 _groupByMonthCheckBoxIsChecked = value;
                 OnPropertyChanged(nameof(GroupByMonthCheckBoxIsChecked));
                 if (value)
-                    SelectedCimkek.Add("Hónap");
+                    if(SelectedCimkek.Contains("Év"))
+                        SelectedAdatsorok.Add("Hónap");
+                    else
+                        SelectedCimkek.Add("Hónap");
                 else
-                    SelectedCimkek.Remove("Hónap");
+                {
+                    if (SelectedCimkek.Contains("Hónap"))
+                        SelectedCimkek.Remove("Hónap");
+                    else if (SelectedAdatsorok.Contains("Hónap"))
+                        SelectedAdatsorok.Remove("Hónap");
+                }
             }
         }
         public bool GroupByYearCheckBoxIsChecked
@@ -124,9 +147,17 @@ namespace Szakdolgozat.ViewModels
                 _groupByYearCheckBoxIsChecked = value;
                 OnPropertyChanged(nameof(GroupByYearCheckBoxIsChecked));
                 if (value)
-                    SelectedCimkek.Add("Év");
+                    if (SelectedCimkek.Contains("Hónap"))
+                        SelectedAdatsorok.Add("Év");
+                    else
+                        SelectedCimkek.Add("Év");
                 else
-                    SelectedCimkek.Remove("Év");
+                {
+                    if (SelectedCimkek.Contains("Év"))
+                        SelectedCimkek.Remove("Év");
+                    else if (SelectedAdatsorok.Contains("Év"))
+                        SelectedAdatsorok.Remove("Év");
+                }
             }
         }
 
@@ -142,7 +173,12 @@ namespace Szakdolgozat.ViewModels
                 if(value)
                     SelectedCimkek.Add("Dátum");
                 else
-                    SelectedCimkek.Remove("Dátum");
+                {
+                    if (SelectedCimkek.Contains("Dátum"))
+                        SelectedCimkek.Remove("Dátum");
+                    else if (SelectedAdatsorok.Contains("Dátum"))
+                        SelectedAdatsorok.Remove("Dátum");
+                }
             }
         }
         public bool _isValidStartDateExists = false;
@@ -309,6 +345,9 @@ namespace Szakdolgozat.ViewModels
         public List<string> ColumnSeriesLabels { get; set; }
         public Func<double, string> ColumnSeriesFormatter { get; set; }
 
+        public SeriesCollection StackedColumnSeries { get; set; }
+        public List<string> StackedColumnSeriesLabels { get; set; }
+        public Func<double, string> StackedColumnSeriesFormatter { get; set; }
 
         public event Action checkboxChange;
 
@@ -520,7 +559,7 @@ namespace Szakdolgozat.ViewModels
                         DataStatisticsCB = new ObservableCollection<string> { "Összeg", "Átlag", "Értékek Szórása", "Mértani Közép", "Minimum Érték", "Maximum Érték" };
                         SelectedDataStatistics = "Összeg";
                         break;
-                    case "StackedSeries":
+                    case "StackedColumnSeries":
                         DataStatisticsCB = new ObservableCollection<string> { "Nincs Kiválasztva", "Összeg", "Átlag", "Értékek Szórása", "Mértani Közép", "Minimum Érték", "Maximum Érték" };
                         break;
                     case "BasicColumnSeries":
@@ -1028,6 +1067,22 @@ namespace Szakdolgozat.ViewModels
                     }
                 }
             }
+            else if (SeriesType == "StackedColumnSeries")
+            {
+                foreach (var a in StackedColumnSeries)
+                {
+                    if (a is StackedColumnSeries stackedColumnSeries)
+                    {
+                        if (stackedColumnSeries.Name == name)
+                        {
+                            stackedColumnSeries.Fill = color;
+                            stackedColumnSeries.Foreground = color;
+                            OnPropertyChanged(nameof(StackedColumnSeries));
+                            break;
+                        }
+                    }
+                }
+            }
         }
 
         public void SetSeries()
@@ -1040,8 +1095,8 @@ namespace Szakdolgozat.ViewModels
                 case "RowSeries":
                     SetRowSeries();
                     break;
-                case "StackedSeries":
-                    SetStackedSeries();
+                case "StackedColumnSeries":
+                    SetStackedColumnSeries();
                     break;
                 case "BasicColumnSeries":
                     SetBasicColumnSeries();
@@ -1054,33 +1109,962 @@ namespace Szakdolgozat.ViewModels
             }
         }
 
-        public void SetStackedSeries()
+        public void SetStackedColumnSeries()
         {
-
-            var bevetelekKiadasokAdatsor = new ChartValues<ObservableValue>();
-            var kotelezetsegekKovetelesekAdatsor = new ChartValues<ObservableValue>();
-
-            foreach (var a in _selectedBevetelekKiadasok)
+            StackedColumnSeries = new SeriesCollection();
+            GroupBySelections.Clear();
+            if (IsBevetelekKiadasokTabIsSelected)
             {
-                bevetelekKiadasokAdatsor.Add(new ObservableValue(a.Osszeg));
-            }
+                if (GroupByYearCheckBoxIsChecked && GroupByMonthCheckBoxIsChecked)
+                {
+                    if (SelectedCimkek.Contains("Év") && SelectedAdatsorok.Contains("Hónap"))
+                    {
+                        List<string> honapok = new List<string> { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
+                        var groupedByYearAndMonth = _selectedBevetelekKiadasok
+                           .GroupBy(p => new { p.TeljesitesiDatum.Year, p.TeljesitesiDatum.Month })
+                           .ToDictionary(
+                               g => g.Key,
+                               g => g.ToList()
+                           );
+                        var yearsDict = _selectedBevetelekKiadasok
+           .GroupBy(x => x.TeljesitesiDatum.Year)
+           .ToDictionary(
+               g => g.Key,
+               g =>
+               {
+                   var monthlyValues = Enumerable.Range(1, 12)
+                       .ToDictionary(
+                           month => month,
+                           month =>
+                           {
+                               var matchingGroup = groupedByYearAndMonth
+                                   .Where(kvp => kvp.Key.Year == g.Key && kvp.Key.Month == month)
+                                   .SelectMany(kvp => kvp.Value)
+                                   .ToList();
+                               var values = matchingGroup.Select(x => Convert.ToDouble(x.Osszeg)).ToList();
+                               return matchingGroup.Any() ? GetDataStatisticValueBack(values) : 0;
+                           }
+                       );
 
-            foreach (var a in _selectedKotelezettsegekKovetelesek)
+                   return monthlyValues;
+               }
+           );
+
+                        List<string> labels = new List<string>();
+                        foreach (var year in yearsDict)
+                        {
+                            labels.Add(year.Key.ToString());
+                        }
+                        var monthlyData = new List<ChartValues<double>>();
+                        for (int i = 0; i < 12; i++)
+                        {
+                            monthlyData.Add(new ChartValues<double>());
+                        }
+                        var sortedYears = yearsDict.OrderBy(y => y.Key);
+
+                        for (int month = 1; month <= 12; month++)
+                        {
+                            foreach (var year in sortedYears)
+                            {
+                                double monthValue = year.Value[month];
+                                monthlyData[month - 1].Add(monthValue);
+                            }
+                        }
+                        int a = 0;
+                        int c = 0;
+                        foreach (var b in monthlyData)
+                        {
+                            AddStackedColumnSeries(b, $"Bevételek és Kiadások - {honapok[c]}", honapok[c].ToString(), baseColors[a], labels);
+                            AddGroupByDataToCollection(honapok[c].ToString(), a);
+                            if (a + 1 > 3)
+                                a = 0;
+                            else
+                                a++;
+                            c++;
+                        }
+                    }
+                    else if (SelectedAdatsorok.Contains("Év") && SelectedCimkek.Contains("Hónap"))
+                    {
+                        List<string> labels = new List<string> { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
+                        // Create a Dictionary<int, Dictionary<int, double>> where the first key is month (1-12),
+                        // and the second dictionary maps years to values for that month
+                        var monthDict = Enumerable.Range(1, 12)
+                            .ToDictionary(
+                                month => month,
+                                month => _selectedBevetelekKiadasok
+                                    .GroupBy(p => p.TeljesitesiDatum.Year)
+                                    .ToDictionary(
+                                        yearGroup => yearGroup.Key,
+                                        yearGroup => {
+                                            // Find items for this specific year and month
+                                            var itemsForYearAndMonth = _selectedBevetelekKiadasok
+                                                .Where(p => p.TeljesitesiDatum.Year == yearGroup.Key &&
+                                                           p.TeljesitesiDatum.Month == month)
+                                                .ToList();
+
+                                            // Calculate value using existing items or return 0 if none exist
+                                            if (itemsForYearAndMonth.Any())
+                                            {
+                                                var values = itemsForYearAndMonth.Select(x => Convert.ToDouble(x.Osszeg)).ToList();
+                                                return GetDataStatisticValueBack(values);
+                                            }
+                                            return 0.0;
+                                        }
+                                    )
+                            );
+
+
+                        List<ChartValues<double>> yearlyData = new List<ChartValues<double>>();
+
+
+                        List<int> years = new List<int>();
+                        foreach (var year in _selectedBevetelekKiadasok.GroupBy(x => x.TeljesitesiDatum.Year))
+                        {
+                            years.Add(year.Key);
+                        }
+
+                        for (int i = 0; i < years.Count; i++)
+                        {
+                            yearlyData.Add(new ChartValues<double>());
+                        }
+                        for (int i = 0; i < years.Count; i++)
+                        {
+                            foreach (var month in monthDict)
+                            {
+                                yearlyData[i].Add(month.Value[years[i]]);
+                            }
+                        }
+                        int a = 0;
+                        int c = 0;
+                        foreach (var b in yearlyData)
+                        {
+                            AddStackedColumnSeries(b, $"Bevételek és Kiadások - {years[c]}", "Év_" + years[c].ToString(), baseColors[a], labels);
+                            AddGroupByDataToCollection("Év_" + years[c].ToString(), a);
+                            if (a + 1 > 3)
+                                a = 0;
+                            else
+                                a++;
+                            c++;
+
+                        }
+                    }
+                }
+                else if (GroupByBeKiKodCheckBoxIsChecked && GroupByPenznemCheckBoxIsChecked)
+                {
+                    if (SelectedCimkek.Contains("Pénznem") && SelectedCimkek.Contains("BeKiKód"))
+                    {
+                        var groupedByBeKiKodPenznem = _selectedBevetelekKiadasok
+                           .GroupBy(p => new { p.BeKiKod, p.Penznem })
+                           .ToDictionary(
+                               g => g.Key,
+                               g =>
+                               {
+                                   var v = g.Select(x => Convert.ToDouble(x.Osszeg)).ToList();
+                                   return g.Any() ? GetDataStatisticValueBack(v) : 0;
+                               }
+                           );
+                        ChartValues<double> values = new ChartValues<double>();
+                        List<string> labels = new List<string>();
+                        foreach (var beKiKodPenznem in groupedByBeKiKodPenznem)
+                        {
+                            labels.Add(beKiKodPenznem.Key.ToString());
+                            values.Add(beKiKodPenznem.Value);
+                        }
+
+                        AddStackedColumnSeries(values, $"Bevételek és Kiadások - BeKiKód és Pénznem", "BeKiKodPenznem", baseColors[0], labels);
+                        AddGroupByDataToCollection("BeKiKodPenznem", 0);
+                    }
+                    else if (SelectedCimkek.Contains("Pénznem") && SelectedAdatsorok.Contains("BeKiKód"))
+                    {
+                        List<string> beKiKodok = new List<string> { "Be1", "Be2", "Ki1", "Ki2" };
+                        var groupedByBeKiKodPenznem = _selectedBevetelekKiadasok
+                           .GroupBy(p => new { p.BeKiKod, p.Penznem })
+                           .ToDictionary(
+                               g => g.Key,
+                               g => g.ToList()
+                           );
+                        var penznemDict = System.Enum.GetValues(typeof(Penznem))
+                            .Cast<Penznem>()
+                            .ToDictionary(
+                                penznem => penznem,
+                                penznem =>
+                                {
+                                    var beKiKodValues = System.Enum.GetValues(typeof(BeKiKod))
+                                        .Cast<BeKiKod>()
+                                        .ToDictionary(
+                                            beKiKod => beKiKod,
+                                            beKiKod =>
+                                            {
+                                                var matchingGroup = groupedByBeKiKodPenznem
+                                                    .Where(kvp => kvp.Key.BeKiKod == beKiKod && kvp.Key.Penznem == penznem)
+                                                    .SelectMany(kvp => kvp.Value)
+                                                    .ToList();
+                                                var values = matchingGroup.Select(x => Convert.ToDouble(x.Osszeg)).ToList();
+                                                return matchingGroup.Any() ? GetDataStatisticValueBack(values) : 0;
+                                            }
+                                        );
+
+                                    return beKiKodValues;
+                                }
+                            );
+
+                        List<string> labels = new List<string>();
+                        foreach (var penznem in penznemDict)
+                        {
+                            labels.Add(penznem.Key.ToString());
+                        }
+                        var beKiKodData = System.Enum.GetValues(typeof(BeKiKod))
+                            .Cast<BeKiKod>()
+                            .ToDictionary(
+                                beKiKod => beKiKod,
+                                beKiKod =>
+                                {
+                                    return new ChartValues<double>();
+                                }
+                            );
+                        var sortedPenznem = penznemDict.OrderBy(y => y.Key);
+                        foreach (var penznem in sortedPenznem)
+                        {
+                            foreach (var beKiKod in System.Enum.GetValues(typeof(BeKiKod)).Cast<BeKiKod>())
+                            {
+                                beKiKodData[beKiKod].Add(penznem.Value[beKiKod]);
+                            }
+                        }
+
+                        int a = 0;
+                        int c = 0;
+                        foreach (var b in beKiKodData)
+                        {
+                            AddStackedColumnSeries(b.Value, $"Bevételek és Kiadások - {beKiKodok[c]}", beKiKodok[c].ToString(), baseColors[a], labels);
+                            AddGroupByDataToCollection(beKiKodok[c].ToString(), a);
+                            if (a + 1 > 3)
+                                a = 0;
+                            else
+                                a++;
+                            c++;
+                        }
+                    }
+                    else if (SelectedAdatsorok.Contains("Pénznem") && SelectedCimkek.Contains("BeKiKód"))
+                    {
+                        List<string> penznemek = new List<string> { "Forint", "Euró", "Font", "Dollár" };
+                        var groupedByBeKiKodPenznem = _selectedBevetelekKiadasok
+                           .GroupBy(p => new { p.BeKiKod, p.Penznem })
+                           .ToDictionary(
+                               g => g.Key,
+                               g => g.ToList()
+                           );
+                        var beKiKodDict = System.Enum.GetValues(typeof(BeKiKod))
+                            .Cast<BeKiKod>()
+                            .ToDictionary(
+                                beKiKod => beKiKod,
+                                beKiKod =>
+                                {
+                                    var penznemValues = System.Enum.GetValues(typeof(Penznem))
+                                        .Cast<Penznem>()
+                                        .ToDictionary(
+                                            penznem => penznem,
+                                            penznem =>
+                                            {
+                                                var matchingGroup = groupedByBeKiKodPenznem
+                                                    .Where(kvp => kvp.Key.BeKiKod == beKiKod && kvp.Key.Penznem == penznem)
+                                                    .SelectMany(kvp => kvp.Value)
+                                                    .ToList();
+                                                var values = matchingGroup.Select(x => Convert.ToDouble(x.Osszeg)).ToList();
+                                                return matchingGroup.Any() ? GetDataStatisticValueBack(values) : 0;
+                                            }
+                                        );
+
+                                    return penznemValues;
+                                }
+                            );
+
+                        List<string> labels = new List<string>();
+                        foreach (var bekikod in beKiKodDict)
+                        {
+                            labels.Add(bekikod.Key.ToString());
+                        }
+                        var penznemData = System.Enum.GetValues(typeof(Penznem))
+                            .Cast<Penznem>()
+                            .ToDictionary(
+                                penznem => penznem,
+                                penznem =>
+                                {
+                                    return new ChartValues<double>();
+                                }
+                            );
+                        var sortedBeKiKod = beKiKodDict.OrderBy(y => y.Key);
+                        foreach (var bekikod in sortedBeKiKod)
+                        {
+                            foreach (var penznem in System.Enum.GetValues(typeof(Penznem)).Cast<Penznem>())
+                            {
+                                penznemData[penznem].Add(bekikod.Value[penznem]);
+                            }
+                        }
+
+                        int a = 0;
+                        int c = 0;
+                        foreach (var b in penznemData)
+                        {
+                            AddStackedColumnSeries(b.Value, $"Bevételek és Kiadások - {penznemek[c]}", penznemek[c].ToString(), baseColors[a], labels);
+                            AddGroupByDataToCollection(penznemek[c].ToString(), a);
+                            if (a + 1 > 3)
+                                a = 0;
+                            else
+                                a++;
+                            c++;
+                        }
+                    }
+                }
+                else if (GroupByBeKiKodCheckBoxIsChecked)
+                {
+                    if (SelectedCimkek.Count > 0)
+                    {
+                        // Modify the grouping logic to include all Penznem enum values, even if there are no matching entries.
+                        var groupedByBeKiKod = System.Enum.GetValues(typeof(BeKiKod))
+                            .Cast<BeKiKod>()
+                            .ToDictionary(
+                                bekikod => bekikod,
+                                bekikod => new HashSet<BevetelKiadas>(
+                                    _selectedBevetelekKiadasok.Where(x => x.BeKiKod == bekikod)
+                                )
+                            );
+
+                        List<string> labels = new List<string>();
+                        var bevetelekKiadasokAdatsor = new ChartValues<double>();
+
+                        // Display the results
+                        foreach (var kvp in groupedByBeKiKod)
+                        {
+                            labels.Add(kvp.Key.ToString());
+                            switch (SelectedDataStatistics)
+                            {
+                                case "Nincs kiválasztva":
+                                    bevetelekKiadasokAdatsor.Add(kvp.Value.Sum(x => x.Osszeg));
+                                    break;
+                                case "Összeg":
+                                    bevetelekKiadasokAdatsor.Add(DataStatistics.GetSum(kvp.Value.Select(x => (int)x.Osszeg).ToList()));
+                                    break;
+                                case "Átlag":
+                                    bevetelekKiadasokAdatsor.Add(DataStatistics.GetAvarage(kvp.Value.Select(x => (int)x.Osszeg).ToList()));
+                                    break;
+                                case "Mértani Közép":
+                                    bevetelekKiadasokAdatsor.Add(DataStatistics.GetMedian(kvp.Value.Select(x => (int)x.Osszeg).ToList()));
+                                    break;
+                                case "Minimum Érték":
+                                    bevetelekKiadasokAdatsor.Add(DataStatistics.GetMinimumValue(kvp.Value.Select(x => (int)x.Osszeg).ToList()));
+                                    break;
+                                case "Maximum Érték":
+                                    bevetelekKiadasokAdatsor.Add(DataStatistics.GetMaximumValue(kvp.Value.Select(x => (int)x.Osszeg).ToList()));
+                                    break;
+                                case "Értékek Szórása":
+                                    bevetelekKiadasokAdatsor.Add(DataStatistics.GetStandardDeviation(kvp.Value.Select(x => (int)x.Osszeg).ToList()));
+                                    break;
+                                default:
+                                    bevetelekKiadasokAdatsor.Add(kvp.Value.Sum(x => x.Osszeg));
+                                    break;
+                            }
+                        }
+
+                        AddStackedColumnSeries(bevetelekKiadasokAdatsor, $"Bevételek és Kiadások - BeKiKod", "BeKiKod", baseColors[0], labels);
+                        AddGroupByDataToCollection("BeKiKod", 0);
+                    }
+                    else
+                    {
+                        //ERROR TODO
+                    }
+                }
+                else if (GroupByPenznemCheckBoxIsChecked)
+                {
+                    // Modify the grouping logic to include all Penznem enum values, even if there are no matching entries.
+                    var groupedByPenznem = System.Enum.GetValues(typeof(Penznem))
+                        .Cast<Penznem>()
+                        .ToDictionary(
+                            penznem => penznem,
+                            penznem => new HashSet<BevetelKiadas>(
+                                _selectedBevetelekKiadasok.Where(x => x.Penznem == penznem)
+                            )
+                        );
+
+                    List<string> labels = new List<string>();
+                    var bevetelekKiadasokAdatsor = new ChartValues<double>();
+
+                    // Display the results
+                    foreach (var kvp in groupedByPenznem)
+                    {
+                        labels.Add(kvp.Key.ToString());
+                        switch (SelectedDataStatistics)
+                        {
+                            case "Nincs kiválasztva":
+                                bevetelekKiadasokAdatsor.Add(kvp.Value.Sum(x => x.Osszeg));
+                                break;
+                            case "Összeg":
+                                bevetelekKiadasokAdatsor.Add(DataStatistics.GetSum(kvp.Value.Select(x => (int)x.Osszeg).ToList()));
+                                break;
+                            case "Átlag":
+                                bevetelekKiadasokAdatsor.Add(DataStatistics.GetAvarage(kvp.Value.Select(x => (int)x.Osszeg).ToList()));
+                                break;
+                            case "Mértani Közép":
+                                bevetelekKiadasokAdatsor.Add(DataStatistics.GetMedian(kvp.Value.Select(x => (int)x.Osszeg).ToList()));
+                                break;
+                            case "Minimum Érték":
+                                bevetelekKiadasokAdatsor.Add(DataStatistics.GetMinimumValue(kvp.Value.Select(x => (int)x.Osszeg).ToList()));
+                                break;
+                            case "Maximum Érték":
+                                bevetelekKiadasokAdatsor.Add(DataStatistics.GetMaximumValue(kvp.Value.Select(x => (int)x.Osszeg).ToList()));
+                                break;
+                            case "Értékek Szórása":
+                                bevetelekKiadasokAdatsor.Add(DataStatistics.GetStandardDeviation(kvp.Value.Select(x => (int)x.Osszeg).ToList()));
+                                break;
+                            default:
+                                bevetelekKiadasokAdatsor.Add(kvp.Value.Sum(x => x.Osszeg));
+                                break;
+                        }
+                    }
+
+                    AddStackedColumnSeries(bevetelekKiadasokAdatsor, $"Bevételek és Kiadások - Pénznem", "Pénznem", baseColors[0], labels);
+                    AddGroupByDataToCollection("Pénznem", 0);
+                }
+                else if (GroupByYearCheckBoxIsChecked)
+                {
+                    var groupedByYear = _selectedBevetelekKiadasok
+                       .GroupBy(p => new { p.TeljesitesiDatum.Year })
+                       .ToDictionary(
+                           g => g.Key,
+                           g =>
+                           {
+                               var v = g.Select(x => Convert.ToDouble(x.Osszeg)).ToList();
+                               return g.Any() ? GetDataStatisticValueBack(v) : 0;
+                           }
+                       );
+
+                    List<string> labels = new List<string>();
+                    ChartValues<double> values = new ChartValues<double>();
+                    foreach (var year in groupedByYear)
+                    {
+                        labels.Add(year.Key.ToString());
+                        values.Add(year.Value);
+                    }
+
+                    var sortedYears = groupedByYear.OrderBy(y => y.Key);
+
+                    AddStackedColumnSeries(values, $"Bevételek és Kiadások - Év", "Év", baseColors[0], labels);
+                    AddGroupByDataToCollection("Év", 0);
+                }
+                else if (GroupByMonthCheckBoxIsChecked)
+                {
+
+                    List<string> honapok = new List<string> { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
+                    var monthValuesDict = Enumerable.Range(1, 12)
+                        .ToDictionary(
+                            month => month,
+                            month => 0.0  // Default value for months with no data
+                        );
+
+                    // Group by month and calculate statistics for each month that has data
+                    var groupedByMonth = _selectedBevetelekKiadasok
+                        .GroupBy(p => p.TeljesitesiDatum.Month)
+                        .ToDictionary(
+                            g => g.Key,
+                            g =>
+                            {
+                                var v = g.Select(x => Convert.ToDouble(x.Osszeg)).ToList();
+                                return g.Any() ? GetDataStatisticValueBack(v) : 0;
+                            }
+                        );
+
+                    // Update our complete dictionary with values from grouped data
+                    foreach (var item in groupedByMonth)
+                    {
+                        monthValuesDict[item.Key] = item.Value;
+                    }
+
+                    // Convert to ordered list for display
+                    List<string> labels = honapok;
+                    ChartValues<double> values = new ChartValues<double>(
+                        Enumerable.Range(1, 12).Select(month => monthValuesDict[month])
+                    );
+
+                    AddStackedColumnSeries(values, $"Bevételek és Kiadások - Hónapok", "Hónapok", baseColors[0], honapok);
+                    AddGroupByDataToCollection("Hónapok", 0);
+                }
+                else
+                {
+                    //TODO ERROR
+                }
+            }
+            else
             {
-                kotelezetsegekKovetelesekAdatsor.Add(new ObservableValue(a.Osszeg));
+                if (GroupByYearCheckBoxIsChecked && GroupByMonthCheckBoxIsChecked)
+                {
+                    if (SelectedCimkek.Contains("Év") && SelectedAdatsorok.Contains("Hónap"))
+                    {
+                        List<string> honapok = new List<string> { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
+                        var groupedByYearAndMonth = _selectedKotelezettsegekKovetelesek
+                           .GroupBy(p => new { p.KifizetesHatarideje.Year, p.KifizetesHatarideje.Month })
+                           .ToDictionary(
+                               g => g.Key,
+                               g => g.ToList()
+                           );
+                        var yearsDict = _selectedKotelezettsegekKovetelesek
+           .GroupBy(x => x.KifizetesHatarideje.Year)
+           .ToDictionary(
+               g => g.Key,
+               g =>
+               {
+                   var monthlyValues = Enumerable.Range(1, 12)
+                       .ToDictionary(
+                           month => month,
+                           month =>
+                           {
+                               var matchingGroup = groupedByYearAndMonth
+                                   .Where(kvp => kvp.Key.Year == g.Key && kvp.Key.Month == month)
+                                   .SelectMany(kvp => kvp.Value)
+                                   .ToList();
+                               var values = matchingGroup.Select(x => Convert.ToDouble(x.Osszeg)).ToList();
+                               return matchingGroup.Any() ? GetDataStatisticValueBack(values) : 0;
+                           }
+                       );
+
+                   return monthlyValues;
+               }
+           );
+
+                        List<string> labels = new List<string>();
+                        foreach (var year in yearsDict)
+                        {
+                            labels.Add(year.Key.ToString());
+                        }
+                        var monthlyData = new List<ChartValues<double>>();
+                        for (int i = 0; i < 12; i++)
+                        {
+                            monthlyData.Add(new ChartValues<double>());
+                        }
+                        var sortedYears = yearsDict.OrderBy(y => y.Key);
+
+                        for (int month = 1; month <= 12; month++)
+                        {
+                            foreach (var year in sortedYears)
+                            {
+                                double monthValue = year.Value[month];
+                                monthlyData[month - 1].Add(monthValue);
+                            }
+                        }
+                        int a = 0;
+                        int c = 0;
+                        foreach (var b in monthlyData)
+                        {
+                            AddStackedColumnSeries(b, $"Kötelezettségek és Követelések - {honapok[c]}", honapok[c].ToString(), baseColors[a], labels);
+                            AddGroupByDataToCollection(honapok[c].ToString(), a);
+                            if (a + 1 > 3)
+                                a = 0;
+                            else
+                                a++;
+                            c++;
+                        }
+                    }
+                    else if (SelectedAdatsorok.Contains("Év") && SelectedCimkek.Contains("Hónap"))
+                    {
+                        List<string> labels = new List<string> { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
+                        // Create a Dictionary<int, Dictionary<int, double>> where the first key is month (1-12),
+                        // and the second dictionary maps years to values for that month
+                        var monthDict = Enumerable.Range(1, 12)
+                            .ToDictionary(
+                                month => month,
+                                month => _selectedKotelezettsegekKovetelesek
+                                    .GroupBy(p => p.KifizetesHatarideje.Year)
+                                    .ToDictionary(
+                                        yearGroup => yearGroup.Key,
+                                        yearGroup => {
+                                            // Find items for this specific year and month
+                                            var itemsForYearAndMonth = _selectedKotelezettsegekKovetelesek
+                                                .Where(p => p.KifizetesHatarideje.Year == yearGroup.Key &&
+                                                           p.KifizetesHatarideje.Month == month)
+                                                .ToList();
+
+                                            // Calculate value using existing items or return 0 if none exist
+                                            if (itemsForYearAndMonth.Any())
+                                            {
+                                                var values = itemsForYearAndMonth.Select(x => Convert.ToDouble(x.Osszeg)).ToList();
+                                                return GetDataStatisticValueBack(values);
+                                            }
+                                            return 0.0;
+                                        }
+                                    )
+                            );
+
+
+                        List<ChartValues<double>> yearlyData = new List<ChartValues<double>>();
+
+
+                        List<int> years = new List<int>();
+                        foreach (var year in _selectedKotelezettsegekKovetelesek.GroupBy(x => x.KifizetesHatarideje.Year))
+                        {
+                            years.Add(year.Key);
+                        }
+
+                        for (int i = 0; i < years.Count; i++)
+                        {
+                            yearlyData.Add(new ChartValues<double>());
+                        }
+                        for (int i = 0; i < years.Count; i++)
+                        {
+                            foreach (var month in monthDict)
+                            {
+                                yearlyData[i].Add(month.Value[years[i]]);
+                            }
+                        }
+                        int a = 0;
+                        int c = 0;
+                        foreach (var b in yearlyData)
+                        {
+                            AddStackedColumnSeries(b, $"Kötelezettségek és Követelések - {years[c]}", "Év_" + years[c].ToString(), baseColors[a], labels);
+                            AddGroupByDataToCollection("Év_" + years[c].ToString(), a);
+                            if (a + 1 > 3)
+                                a = 0;
+                            else
+                                a++;
+                            c++;
+
+                        }
+                    }
+                }
+                else if (GroupByKifizetettCheckBoxIsChecked && GroupByPenznemCheckBoxIsChecked)
+                {
+                    if (SelectedCimkek.Contains("Pénznem") && SelectedCimkek.Contains("Kifizetett"))
+                    {
+                        var groupedKifizetettPenznem = _selectedKotelezettsegekKovetelesek
+                           .GroupBy(p => new { p.Kifizetett, p.Penznem })
+                           .ToDictionary(
+                               g => g.Key,
+                               g =>
+                               {
+                                   var v = g.Select(x => Convert.ToDouble(x.Osszeg)).ToList();
+                                   return g.Any() ? GetDataStatisticValueBack(v) : 0;
+                               }
+                           );
+                        ChartValues<double> values = new ChartValues<double>();
+                        List<string> labels = new List<string>();
+                        foreach (var kifizetettPenznem in groupedKifizetettPenznem)
+                        {
+                            labels.Add(kifizetettPenznem.Key.ToString());
+                            values.Add(kifizetettPenznem.Value);
+                        }
+
+                        AddStackedColumnSeries(values, $"Kötelezettségek és Követelések - Kifizetett és Pénznem", "KifizetettPenznem", baseColors[0], labels);
+                        AddGroupByDataToCollection("KifizetettPenznem", 0);
+                    }
+                    else if (SelectedCimkek.Contains("Pénznem") && SelectedAdatsorok.Contains("Kifizetett"))
+                    {
+                        List<string> kifizetettLabels = new List<string> { "0", "1" };
+                        var groupedByKifizetettPenznem = _selectedKotelezettsegekKovetelesek
+                           .GroupBy(p => new { p.Kifizetett, p.Penznem })
+                           .ToDictionary(
+                               g => g.Key,
+                               g => g.ToList()
+                           );
+                        var penznemDict = System.Enum.GetValues(typeof(Penznem))
+                            .Cast<Penznem>()
+                            .ToDictionary(
+                                penznem => penznem,
+                                penznem =>
+                                {
+                                    var kifizetettValues = _selectedKotelezettsegekKovetelesek
+                                        .GroupBy(x => x.Kifizetett)
+                                        .ToDictionary(
+                                            kifizetett => kifizetett.Key,
+                                            kifizetett =>
+                                            {
+                                                var matchingGroup = groupedByKifizetettPenznem
+                                                    .Where(kvp => kvp.Key.Kifizetett == kifizetett.Key && kvp.Key.Penznem == penznem)
+                                                    .SelectMany(kvp => kvp.Value)
+                                                    .ToList();
+                                                var values = matchingGroup.Select(x => Convert.ToDouble(x.Osszeg)).ToList();
+                                                return matchingGroup.Any() ? GetDataStatisticValueBack(values) : 0;
+                                            }
+                                        );
+
+                                    return kifizetettValues;
+                                }
+                            );
+
+                        List<string> labels = new List<string>();
+                        foreach (var penznem in penznemDict)
+                        {
+                            labels.Add(penznem.Key.ToString());
+                        }
+                        var kifizetettData = new List<ChartValues<double>>();
+                        for (int i = 0; i < 2; i++)
+                        {
+                            kifizetettData.Add(new ChartValues<double>());
+                        }
+
+                        var sortedPenznem = penznemDict.OrderBy(y => y.Key);
+                        foreach (var penznem in sortedPenznem)
+                        {
+                            for (int i = 0; i < 2; i++)
+                            {
+                                kifizetettData[i].Add(penznem.Value[(short)i]);
+                            }
+                        }
+
+                        int a = 0;
+                        int c = 0;
+                        foreach (var b in kifizetettData)
+                        {
+                            AddStackedColumnSeries(b, $"Kötelezettségek és Követelések - {kifizetettLabels[c]}", "Kifizetett_" + kifizetettLabels[c].ToString(), baseColors[a], labels);
+                            AddGroupByDataToCollection("Kifizetett_" + kifizetettLabels[c].ToString(), a);
+                            if (a + 1 > 3)
+                                a = 0;
+                            else
+                                a++;
+                            c++;
+                        }
+                    }
+                    else if (SelectedAdatsorok.Contains("Pénznem") && SelectedCimkek.Contains("Kifizetett"))
+                    {
+                        List<string> penznemek = new List<string> { "Forint", "Euró", "Font", "Dollár" };
+                        var groupedByBeKiKodPenznem = _selectedKotelezettsegekKovetelesek
+                           .GroupBy(p => new { p.Kifizetett, p.Penznem })
+                           .ToDictionary(
+                               g => g.Key,
+                               g => g.ToList()
+                           );
+                        var beKiKodDict = _selectedKotelezettsegekKovetelesek
+                            .GroupBy(x => x.Kifizetett)
+                            .ToDictionary(
+                                kifizetett => kifizetett,
+                                kifizetett =>
+                                {
+                                    var penznemValues = System.Enum.GetValues(typeof(Penznem))
+                                        .Cast<Penznem>()
+                                        .ToDictionary(
+                                            penznem => penznem,
+                                            penznem =>
+                                            {
+                                                var matchingGroup = groupedByBeKiKodPenznem
+                                                    .Where(kvp => kvp.Key.Kifizetett == kifizetett.Key && kvp.Key.Penznem == penznem)
+                                                    .SelectMany(kvp => kvp.Value)
+                                                    .ToList();
+                                                var values = matchingGroup.Select(x => Convert.ToDouble(x.Osszeg)).ToList();
+                                                return matchingGroup.Any() ? GetDataStatisticValueBack(values) : 0;
+                                            }
+                                        );
+
+                                    return penznemValues;
+                                }
+                            );
+
+                        List<string> labels = new List<string>() { "0", "1" };
+
+                        var penznemData = System.Enum.GetValues(typeof(Penznem))
+                            .Cast<Penznem>()
+                            .ToDictionary(
+                                penznem => penznem,
+                                penznem =>
+                                {
+                                    return new ChartValues<double>();
+                                }
+                            );
+                        var sortedBeKiKod = beKiKodDict.OrderBy(y => y.Key.Key);
+                        foreach (var bekikod in sortedBeKiKod)
+                        {
+                            foreach (var penznem in System.Enum.GetValues(typeof(Penznem)).Cast<Penznem>())
+                            {
+                                penznemData[penznem].Add(bekikod.Value[penznem]);
+                            }
+                        }
+
+                        int a = 0;
+                        int c = 0;
+                        foreach (var b in penznemData)
+                        {
+                            AddStackedColumnSeries(b.Value, $"Kötelezettségek és Követelések - {penznemek[c]}", penznemek[c].ToString(), baseColors[a], labels);
+                            AddGroupByDataToCollection(penznemek[c].ToString(), a);
+                            if (a + 1 > 3)
+                                a = 0;
+                            else
+                                a++;
+                            c++;
+                        }
+                    }
+                }
+                else if (GroupByKifizetettCheckBoxIsChecked)
+                {
+                    if (SelectedCimkek.Count > 0)
+                    {
+                        // Modify the grouping logic to include all Penznem enum values, even if there are no matching entries.
+                        var groupedByKifizetett = _selectedKotelezettsegekKovetelesek
+                            .GroupBy(x => x.Kifizetett)
+                            .ToDictionary(
+                                kifizetett => kifizetett,
+                                kifizetett => new HashSet<KotelezettsegKoveteles>(
+                                    _selectedKotelezettsegekKovetelesek.Where(x => x.Kifizetett == kifizetett.Key)
+                                )
+                            );
+
+                        List<string> labels = new List<string>();
+                        var kotelezettsegekKovetelesekAdatsor = new ChartValues<double>();
+
+                        // Display the results
+                        foreach (var kvp in groupedByKifizetett)
+                        {
+                            labels.Add(kvp.Key.Key.ToString());
+                            switch (SelectedDataStatistics)
+                            {
+                                case "Nincs kiválasztva":
+                                    kotelezettsegekKovetelesekAdatsor.Add(kvp.Value.Sum(x => x.Osszeg));
+                                    break;
+                                case "Összeg":
+                                    kotelezettsegekKovetelesekAdatsor.Add(DataStatistics.GetSum(kvp.Value.Select(x => (int)x.Osszeg).ToList()));
+                                    break;
+                                case "Átlag":
+                                    kotelezettsegekKovetelesekAdatsor.Add(DataStatistics.GetAvarage(kvp.Value.Select(x => (int)x.Osszeg).ToList()));
+                                    break;
+                                case "Mértani Közép":
+                                    kotelezettsegekKovetelesekAdatsor.Add(DataStatistics.GetMedian(kvp.Value.Select(x => (int)x.Osszeg).ToList()));
+                                    break;
+                                case "Minimum Érték":
+                                    kotelezettsegekKovetelesekAdatsor.Add(DataStatistics.GetMinimumValue(kvp.Value.Select(x => (int)x.Osszeg).ToList()));
+                                    break;
+                                case "Maximum Érték":
+                                    kotelezettsegekKovetelesekAdatsor.Add(DataStatistics.GetMaximumValue(kvp.Value.Select(x => (int)x.Osszeg).ToList()));
+                                    break;
+                                case "Értékek Szórása":
+                                    kotelezettsegekKovetelesekAdatsor.Add(DataStatistics.GetStandardDeviation(kvp.Value.Select(x => (int)x.Osszeg).ToList()));
+                                    break;
+                                default:
+                                    kotelezettsegekKovetelesekAdatsor.Add(kvp.Value.Sum(x => x.Osszeg));
+                                    break;
+                            }
+                        }
+
+                        AddStackedColumnSeries(kotelezettsegekKovetelesekAdatsor, $"Kötelezettségek és Követelések - Kifizetett", "Kifizetett", baseColors[0], labels);
+                        AddGroupByDataToCollection("Kifizetett", 0);
+                    }
+                    else
+                    {
+                        //ERROR TODO
+                    }
+                }
+                else if (GroupByPenznemCheckBoxIsChecked)
+                {
+                    // Modify the grouping logic to include all Penznem enum values, even if there are no matching entries.
+                    var groupedByPenznem = System.Enum.GetValues(typeof(Penznem))
+                        .Cast<Penznem>()
+                        .ToDictionary(
+                            penznem => penznem,
+                            penznem => new HashSet<KotelezettsegKoveteles>(
+                                _selectedKotelezettsegekKovetelesek.Where(x => x.Penznem == penznem)
+                            )
+                        );
+
+                    List<string> labels = new List<string>();
+                    var kotelezettsegekKovetelesekAdatsor = new ChartValues<double>();
+
+                    // Display the results
+                    foreach (var kvp in groupedByPenznem)
+                    {
+                        labels.Add(kvp.Key.ToString());
+                        switch (SelectedDataStatistics)
+                        {
+                            case "Nincs kiválasztva":
+                                kotelezettsegekKovetelesekAdatsor.Add(kvp.Value.Sum(x => x.Osszeg));
+                                break;
+                            case "Összeg":
+                                kotelezettsegekKovetelesekAdatsor.Add(DataStatistics.GetSum(kvp.Value.Select(x => (int)x.Osszeg).ToList()));
+                                break;
+                            case "Átlag":
+                                kotelezettsegekKovetelesekAdatsor.Add(DataStatistics.GetAvarage(kvp.Value.Select(x => (int)x.Osszeg).ToList()));
+                                break;
+                            case "Mértani Közép":
+                                kotelezettsegekKovetelesekAdatsor.Add(DataStatistics.GetMedian(kvp.Value.Select(x => (int)x.Osszeg).ToList()));
+                                break;
+                            case "Minimum Érték":
+                                kotelezettsegekKovetelesekAdatsor.Add(DataStatistics.GetMinimumValue(kvp.Value.Select(x => (int)x.Osszeg).ToList()));
+                                break;
+                            case "Maximum Érték":
+                                kotelezettsegekKovetelesekAdatsor.Add(DataStatistics.GetMaximumValue(kvp.Value.Select(x => (int)x.Osszeg).ToList()));
+                                break;
+                            case "Értékek Szórása":
+                                kotelezettsegekKovetelesekAdatsor.Add(DataStatistics.GetStandardDeviation(kvp.Value.Select(x => (int)x.Osszeg).ToList()));
+                                break;
+                            default:
+                                kotelezettsegekKovetelesekAdatsor.Add(kvp.Value.Sum(x => x.Osszeg));
+                                break;
+                        }
+                    }
+
+                    AddStackedColumnSeries(kotelezettsegekKovetelesekAdatsor, $"Kötelezettségek és Követelések - Pénznem", "Pénznem", baseColors[0], labels);
+                    AddGroupByDataToCollection("Pénznem", 0);
+                }
+                else if (GroupByYearCheckBoxIsChecked)
+                {
+                    var groupedByYear = _selectedKotelezettsegekKovetelesek
+                       .GroupBy(p => new { p.KifizetesHatarideje.Year })
+                       .ToDictionary(
+                           g => g.Key,
+                           g =>
+                           {
+                               var v = g.Select(x => Convert.ToDouble(x.Osszeg)).ToList();
+                               return g.Any() ? GetDataStatisticValueBack(v) : 0;
+                           }
+                       );
+
+                    List<string> labels = new List<string>();
+                    ChartValues<double> values = new ChartValues<double>();
+                    foreach (var year in groupedByYear)
+                    {
+                        labels.Add(year.Key.ToString());
+                        values.Add(year.Value);
+                    }
+
+                    var sortedYears = groupedByYear.OrderBy(y => y.Key);
+
+                    AddStackedColumnSeries(values, $"Kötelezettségek és Követelések - Év", "Év", baseColors[0], labels);
+                    AddGroupByDataToCollection("Év", 0);
+                }
+                else if (GroupByMonthCheckBoxIsChecked)
+                {
+
+                    List<string> honapok = new List<string> { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
+                    var monthValuesDict = Enumerable.Range(1, 12)
+                        .ToDictionary(
+                            month => month,
+                            month => 0.0  // Default value for months with no data
+                        );
+
+                    // Group by month and calculate statistics for each month that has data
+                    var groupedByMonth = _selectedKotelezettsegekKovetelesek
+                        .GroupBy(p => p.KifizetesHatarideje.Month)
+                        .ToDictionary(
+                            g => g.Key,
+                            g =>
+                            {
+                                var v = g.Select(x => Convert.ToDouble(x.Osszeg)).ToList();
+                                return g.Any() ? GetDataStatisticValueBack(v) : 0;
+                            }
+                        );
+
+                    // Update our complete dictionary with values from grouped data
+                    foreach (var item in groupedByMonth)
+                    {
+                        monthValuesDict[item.Key] = item.Value;
+                    }
+
+                    // Convert to ordered list for display
+                    List<string> labels = honapok;
+                    ChartValues<double> values = new ChartValues<double>(
+                        Enumerable.Range(1, 12).Select(month => monthValuesDict[month])
+                    );
+
+                    AddStackedColumnSeries(values, $"Kötelezettségek és Követelések - Hónapok", "Hónapok", baseColors[0], honapok);
+                    AddGroupByDataToCollection("Hónapok", 0);
+                }
+                else
+                {
+                    //TODO ERROR
+                }
             }
-
-            var totalBevetelekKiadasokAdatsor = bevetelekKiadasokAdatsor.Sum(x => x.Value);
-            var totalKotelezetsegekKovetelesekAdatsor = kotelezetsegekKovetelesekAdatsor.Sum(x => x.Value);
-            var totalSum = totalBevetelekKiadasokAdatsor + totalKotelezetsegekKovetelesekAdatsor;
-
-            Series = new SeriesCollection();
-
-            // Add Chrome series
-            //AddPieSeries(bevetelekKiadasokAdatsor, totalBevetelekKiadasokAdatsor, totalSum, "Bevételek és Kiadások", Brushes.Blue);
-
-            // Add Firefox series
-            //AddPieSeries(kotelezetsegekKovetelesekAdatsor, totalKotelezetsegekKovetelesekAdatsor, totalSum, "Kötelezettségek és Követelések", Brushes.Red);
 
             OnPropertyChanged(nameof(Series));
         }
@@ -1089,69 +2073,956 @@ namespace Szakdolgozat.ViewModels
         {
             ColumnSeries = new SeriesCollection();
             GroupBySelections.Clear();
-            if (GroupByDateCheckBoxIsChecked)
+            if (IsBevetelekKiadasokTabIsSelected)
             {
-                List<string> honapok = new List<string> { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
-                var groupedByYearAndMonth = _selectedBevetelekKiadasok
-                   .GroupBy(p => new { p.TeljesitesiDatum.Year, p.TeljesitesiDatum.Month })
-                   .ToDictionary(
-                       g => g.Key,
-                       g => g.ToList()
-                   );
-                var yearsDict = _selectedBevetelekKiadasok
-                   .GroupBy(x => x.TeljesitesiDatum.Year)
-                   .ToDictionary(
-                       g => g.Key,
-                       g =>
-                       {
-                       var monthlyValues = Enumerable.Range(1, 12)
-                           .ToDictionary(
-                               month => month,
-                               month =>
-                               {
-                                   var matchingGroup = groupedByYearAndMonth
-                                       .Where(kvp => kvp.Key.Year == g.Key && kvp.Key.Month == month)
-                                       .SelectMany(kvp => kvp.Value)
-                                       .ToList();
-                                   var values = matchingGroup.Select(x => Convert.ToDouble(x.Osszeg)).ToList();
-                                   return matchingGroup.Any() ? GetDataStatisticValueBack(values) : 0;
-                               }
-                           );
-                        return monthlyValues;
-                       }
-                   );
-
-                List<string> labels = new List<string>();
-                foreach (var year in yearsDict)
+                if (GroupByYearCheckBoxIsChecked && GroupByMonthCheckBoxIsChecked)
                 {
-                    labels.Add(year.Key.ToString());
-                }
-                var monthlyData = new List<ChartValues<double>>();
-                for (int i = 0; i < 12; i++)
-                {
-                    monthlyData.Add(new ChartValues<double>());
-                }
-                var sortedYears = yearsDict.OrderBy(y => y.Key);
-
-                for (int month = 1; month <= 12; month++)
-                {
-                    foreach (var year in sortedYears)
+                    if (SelectedCimkek.Contains("Év") && SelectedAdatsorok.Contains("Hónap"))
                     {
-                        double monthValue = year.Value[month];
-                        monthlyData[month - 1].Add(monthValue);
+                        List<string> honapok = new List<string> { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
+                        var groupedByYearAndMonth = _selectedBevetelekKiadasok
+                           .GroupBy(p => new { p.TeljesitesiDatum.Year, p.TeljesitesiDatum.Month })
+                           .ToDictionary(
+                               g => g.Key,
+                               g => g.ToList()
+                           );
+                        var yearsDict = _selectedBevetelekKiadasok
+           .GroupBy(x => x.TeljesitesiDatum.Year)
+           .ToDictionary(
+               g => g.Key,
+               g =>
+               {
+                   var monthlyValues = Enumerable.Range(1, 12)
+                       .ToDictionary(
+                           month => month,
+                           month =>
+                           {
+                               var matchingGroup = groupedByYearAndMonth
+                                   .Where(kvp => kvp.Key.Year == g.Key && kvp.Key.Month == month)
+                                   .SelectMany(kvp => kvp.Value)
+                                   .ToList();
+                               var values = matchingGroup.Select(x => Convert.ToDouble(x.Osszeg)).ToList();
+                               return matchingGroup.Any() ? GetDataStatisticValueBack(values) : 0;
+                           }
+                       );
+
+                   return monthlyValues;
+               }
+           );
+
+                        List<string> labels = new List<string>();
+                        foreach (var year in yearsDict)
+                        {
+                            labels.Add(year.Key.ToString());
+                        }
+                        var monthlyData = new List<ChartValues<double>>();
+                        for (int i = 0; i < 12; i++)
+                        {
+                            monthlyData.Add(new ChartValues<double>());
+                        }
+                        var sortedYears = yearsDict.OrderBy(y => y.Key);
+
+                        for (int month = 1; month <= 12; month++)
+                        {
+                            foreach (var year in sortedYears)
+                            {
+                                double monthValue = year.Value[month];
+                                monthlyData[month - 1].Add(monthValue);
+                            }
+                        }
+                        int a = 0;
+                        int c = 0;
+                        foreach (var b in monthlyData)
+                        {
+                            AddColumnSeries(b, $"Bevételek és Kiadások - {honapok[c]}", honapok[c].ToString(), baseColors[a], labels);
+                            AddGroupByDataToCollection(honapok[c].ToString(), a);
+                            if (a + 1 > 3)
+                                a = 0;
+                            else
+                                a++;
+                            c++;
+                        }
+                    }
+                    else if (SelectedAdatsorok.Contains("Év") && SelectedCimkek.Contains("Hónap"))
+                    {
+                        List<string> labels = new List<string> { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
+                        // Create a Dictionary<int, Dictionary<int, double>> where the first key is month (1-12),
+                        // and the second dictionary maps years to values for that month
+                        var monthDict = Enumerable.Range(1, 12)
+                            .ToDictionary(
+                                month => month,
+                                month => _selectedBevetelekKiadasok
+                                    .GroupBy(p => p.TeljesitesiDatum.Year)
+                                    .ToDictionary(
+                                        yearGroup => yearGroup.Key,
+                                        yearGroup => {
+                                            // Find items for this specific year and month
+                                            var itemsForYearAndMonth = _selectedBevetelekKiadasok
+                                                .Where(p => p.TeljesitesiDatum.Year == yearGroup.Key &&
+                                                           p.TeljesitesiDatum.Month == month)
+                                                .ToList();
+
+                                            // Calculate value using existing items or return 0 if none exist
+                                            if (itemsForYearAndMonth.Any())
+                                            {
+                                                var values = itemsForYearAndMonth.Select(x => Convert.ToDouble(x.Osszeg)).ToList();
+                                                return GetDataStatisticValueBack(values);
+                                            }
+                                            return 0.0;
+                                        }
+                                    )
+                            );
+
+
+                        List<ChartValues<double>> yearlyData = new List<ChartValues<double>>();
+
+
+                        List<int> years = new List<int>();
+                        foreach (var year in _selectedBevetelekKiadasok.GroupBy(x => x.TeljesitesiDatum.Year))
+                        {
+                            years.Add(year.Key);
+                        }
+
+                        for (int i = 0; i < years.Count; i++)
+                        {
+                            yearlyData.Add(new ChartValues<double>());
+                        }
+                        for (int i = 0; i < years.Count; i++)
+                        {
+                            foreach (var month in monthDict)
+                            {
+                                yearlyData[i].Add(month.Value[years[i]]);
+                            }
+                        }
+                        int a = 0;
+                        int c = 0;
+                        foreach (var b in yearlyData)
+                        {
+                            AddColumnSeries(b, $"Bevételek és Kiadások - {years[c]}", "Év_" + years[c].ToString(), baseColors[a], labels);
+                            AddGroupByDataToCollection("Év_" + years[c].ToString(), a);
+                            if (a + 1 > 3)
+                                a = 0;
+                            else
+                                a++;
+                            c++;
+
+                        }
                     }
                 }
-                int a = 0;
-                int c = 0;
-                foreach (var b in monthlyData)
+                else if (GroupByBeKiKodCheckBoxIsChecked && GroupByPenznemCheckBoxIsChecked)
                 {
-                    AddColumnSeries(b, $"Bevételek és Kiadások - {honapok[c]}", honapok[c].ToString(), baseColors[a], labels);
-                    AddGroupByDataToCollection(honapok[c].ToString(), a);
-                    if (a + 1 > 3)
-                        a = 0;
+                    if (SelectedCimkek.Contains("Pénznem") && SelectedCimkek.Contains("BeKiKód"))
+                    {
+                        var groupedByBeKiKodPenznem = _selectedBevetelekKiadasok
+                           .GroupBy(p => new { p.BeKiKod, p.Penznem })
+                           .ToDictionary(
+                               g => g.Key,
+                               g =>
+                               {
+                                   var v = g.Select(x => Convert.ToDouble(x.Osszeg)).ToList();
+                                   return g.Any() ? GetDataStatisticValueBack(v) : 0;
+                               }
+                           );
+                        ChartValues<double> values = new ChartValues<double>();
+                        List<string> labels = new List<string>();
+                        foreach (var beKiKodPenznem in groupedByBeKiKodPenznem)
+                        {
+                            labels.Add(beKiKodPenznem.Key.ToString());
+                            values.Add(beKiKodPenznem.Value);
+                        }
+
+                        AddColumnSeries(values, $"Bevételek és Kiadások - BeKiKód és Pénznem", "BeKiKodPenznem", baseColors[0], labels);
+                        AddGroupByDataToCollection("BeKiKodPenznem", 0);
+                    }
+                    else if (SelectedCimkek.Contains("Pénznem") && SelectedAdatsorok.Contains("BeKiKód"))
+                    {
+                        List<string> beKiKodok = new List<string> { "Be1", "Be2", "Ki1", "Ki2" };
+                        var groupedByBeKiKodPenznem = _selectedBevetelekKiadasok
+                           .GroupBy(p => new { p.BeKiKod, p.Penznem })
+                           .ToDictionary(
+                               g => g.Key,
+                               g => g.ToList()
+                           );
+                        var penznemDict = System.Enum.GetValues(typeof(Penznem))
+                            .Cast<Penznem>()
+                            .ToDictionary(
+                                penznem => penznem,
+                                penznem =>
+                                {
+                                    var beKiKodValues = System.Enum.GetValues(typeof(BeKiKod))
+                                        .Cast<BeKiKod>()
+                                        .ToDictionary(
+                                            beKiKod => beKiKod,
+                                            beKiKod =>
+                                            {
+                                                var matchingGroup = groupedByBeKiKodPenznem
+                                                    .Where(kvp => kvp.Key.BeKiKod == beKiKod && kvp.Key.Penznem == penznem)
+                                                    .SelectMany(kvp => kvp.Value)
+                                                    .ToList();
+                                                var values = matchingGroup.Select(x => Convert.ToDouble(x.Osszeg)).ToList();
+                                                return matchingGroup.Any() ? GetDataStatisticValueBack(values) : 0;
+                                            }
+                                        );
+
+                                    return beKiKodValues;
+                                }
+                            );
+
+                        List<string> labels = new List<string>();
+                        foreach (var penznem in penznemDict)
+                        {
+                            labels.Add(penznem.Key.ToString());
+                        }
+                        var beKiKodData = System.Enum.GetValues(typeof(BeKiKod))
+                            .Cast<BeKiKod>()
+                            .ToDictionary(
+                                beKiKod => beKiKod,
+                                beKiKod =>
+                                {
+                                    return new ChartValues<double>();
+                                }
+                            );
+                        var sortedPenznem = penznemDict.OrderBy(y => y.Key);
+                        foreach (var penznem in sortedPenznem)
+                        {
+                            foreach (var beKiKod in System.Enum.GetValues(typeof(BeKiKod)).Cast<BeKiKod>())
+                            {
+                                beKiKodData[beKiKod].Add(penznem.Value[beKiKod]);
+                            }
+                        }
+
+                        int a = 0;
+                        int c = 0;
+                        foreach (var b in beKiKodData)
+                        {
+                            AddColumnSeries(b.Value, $"Bevételek és Kiadások - {beKiKodok[c]}", beKiKodok[c].ToString(), baseColors[a], labels);
+                            AddGroupByDataToCollection(beKiKodok[c].ToString(), a);
+                            if (a + 1 > 3)
+                                a = 0;
+                            else
+                                a++;
+                            c++;
+                        }
+                    }
+                    else if (SelectedAdatsorok.Contains("Pénznem") && SelectedCimkek.Contains("BeKiKód"))
+                    {
+                        List<string> penznemek = new List<string> { "Forint", "Euró", "Font", "Dollár" };
+                        var groupedByBeKiKodPenznem = _selectedBevetelekKiadasok
+                           .GroupBy(p => new { p.BeKiKod, p.Penznem })
+                           .ToDictionary(
+                               g => g.Key,
+                               g => g.ToList()
+                           );
+                        var beKiKodDict = System.Enum.GetValues(typeof(BeKiKod))
+                            .Cast<BeKiKod>()
+                            .ToDictionary(
+                                beKiKod => beKiKod,
+                                beKiKod =>
+                                {
+                                    var penznemValues = System.Enum.GetValues(typeof(Penznem))
+                                        .Cast<Penznem>()
+                                        .ToDictionary(
+                                            penznem => penznem,
+                                            penznem =>
+                                            {
+                                                var matchingGroup = groupedByBeKiKodPenznem
+                                                    .Where(kvp => kvp.Key.BeKiKod == beKiKod && kvp.Key.Penznem == penznem)
+                                                    .SelectMany(kvp => kvp.Value)
+                                                    .ToList();
+                                                var values = matchingGroup.Select(x => Convert.ToDouble(x.Osszeg)).ToList();
+                                                return matchingGroup.Any() ? GetDataStatisticValueBack(values) : 0;
+                                            }
+                                        );
+
+                                    return penznemValues;
+                                }
+                            );
+
+                        List<string> labels = new List<string>();
+                        foreach (var bekikod in beKiKodDict)
+                        {
+                            labels.Add(bekikod.Key.ToString());
+                        }
+                        var penznemData = System.Enum.GetValues(typeof(Penznem))
+                            .Cast<Penznem>()
+                            .ToDictionary(
+                                penznem => penznem,
+                                penznem =>
+                                {
+                                    return new ChartValues<double>();
+                                }
+                            );
+                        var sortedBeKiKod = beKiKodDict.OrderBy(y => y.Key);
+                        foreach (var bekikod in sortedBeKiKod)
+                        {
+                            foreach (var penznem in System.Enum.GetValues(typeof(Penznem)).Cast<Penznem>())
+                            {
+                                penznemData[penznem].Add(bekikod.Value[penznem]);
+                            }
+                        }
+
+                        int a = 0;
+                        int c = 0;
+                        foreach (var b in penznemData)
+                        {
+                            AddColumnSeries(b.Value, $"Bevételek és Kiadások - {penznemek[c]}", penznemek[c].ToString(), baseColors[a], labels);
+                            AddGroupByDataToCollection(penznemek[c].ToString(), a);
+                            if (a + 1 > 3)
+                                a = 0;
+                            else
+                                a++;
+                            c++;
+                        }
+                    }
+                }
+                else if (GroupByBeKiKodCheckBoxIsChecked)
+                {
+                    if (SelectedCimkek.Count > 0)
+                    {
+                        // Modify the grouping logic to include all Penznem enum values, even if there are no matching entries.
+                        var groupedByBeKiKod = System.Enum.GetValues(typeof(BeKiKod))
+                            .Cast<BeKiKod>()
+                            .ToDictionary(
+                                bekikod => bekikod,
+                                bekikod => new HashSet<BevetelKiadas>(
+                                    _selectedBevetelekKiadasok.Where(x => x.BeKiKod == bekikod)
+                                )
+                            );
+
+                        List<string> labels = new List<string>();
+                        var bevetelekKiadasokAdatsor = new ChartValues<double>();
+
+                        // Display the results
+                        foreach (var kvp in groupedByBeKiKod)
+                        {
+                            labels.Add(kvp.Key.ToString());
+                            switch (SelectedDataStatistics)
+                            {
+                                case "Nincs kiválasztva":
+                                    bevetelekKiadasokAdatsor.Add(kvp.Value.Sum(x => x.Osszeg));
+                                    break;
+                                case "Összeg":
+                                    bevetelekKiadasokAdatsor.Add(DataStatistics.GetSum(kvp.Value.Select(x => (int)x.Osszeg).ToList()));
+                                    break;
+                                case "Átlag":
+                                    bevetelekKiadasokAdatsor.Add(DataStatistics.GetAvarage(kvp.Value.Select(x => (int)x.Osszeg).ToList()));
+                                    break;
+                                case "Mértani Közép":
+                                    bevetelekKiadasokAdatsor.Add(DataStatistics.GetMedian(kvp.Value.Select(x => (int)x.Osszeg).ToList()));
+                                    break;
+                                case "Minimum Érték":
+                                    bevetelekKiadasokAdatsor.Add(DataStatistics.GetMinimumValue(kvp.Value.Select(x => (int)x.Osszeg).ToList()));
+                                    break;
+                                case "Maximum Érték":
+                                    bevetelekKiadasokAdatsor.Add(DataStatistics.GetMaximumValue(kvp.Value.Select(x => (int)x.Osszeg).ToList()));
+                                    break;
+                                case "Értékek Szórása":
+                                    bevetelekKiadasokAdatsor.Add(DataStatistics.GetStandardDeviation(kvp.Value.Select(x => (int)x.Osszeg).ToList()));
+                                    break;
+                                default:
+                                    bevetelekKiadasokAdatsor.Add(kvp.Value.Sum(x => x.Osszeg));
+                                    break;
+                            }
+                        }
+
+                        AddColumnSeries(bevetelekKiadasokAdatsor, $"Bevételek és Kiadások - BeKiKod", "BeKiKod", baseColors[0], labels);
+                        AddGroupByDataToCollection("BeKiKod", 0);
+                    }
                     else
-                        a++;
-                    c++;
+                    {
+                        //ERROR TODO
+                    }
+                }
+                else if (GroupByPenznemCheckBoxIsChecked)
+                {
+                    // Modify the grouping logic to include all Penznem enum values, even if there are no matching entries.
+                    var groupedByPenznem = System.Enum.GetValues(typeof(Penznem))
+                        .Cast<Penznem>()
+                        .ToDictionary(
+                            penznem => penznem,
+                            penznem => new HashSet<BevetelKiadas>(
+                                _selectedBevetelekKiadasok.Where(x => x.Penznem == penznem)
+                            )
+                        );
+
+                    List<string> labels = new List<string>();
+                    var bevetelekKiadasokAdatsor = new ChartValues<double>();
+
+                    // Display the results
+                    foreach (var kvp in groupedByPenznem)
+                    {
+                        labels.Add(kvp.Key.ToString());
+                        switch (SelectedDataStatistics)
+                        {
+                            case "Nincs kiválasztva":
+                                bevetelekKiadasokAdatsor.Add(kvp.Value.Sum(x => x.Osszeg));
+                                break;
+                            case "Összeg":
+                                bevetelekKiadasokAdatsor.Add(DataStatistics.GetSum(kvp.Value.Select(x => (int)x.Osszeg).ToList()));
+                                break;
+                            case "Átlag":
+                                bevetelekKiadasokAdatsor.Add(DataStatistics.GetAvarage(kvp.Value.Select(x => (int)x.Osszeg).ToList()));
+                                break;
+                            case "Mértani Közép":
+                                bevetelekKiadasokAdatsor.Add(DataStatistics.GetMedian(kvp.Value.Select(x => (int)x.Osszeg).ToList()));
+                                break;
+                            case "Minimum Érték":
+                                bevetelekKiadasokAdatsor.Add(DataStatistics.GetMinimumValue(kvp.Value.Select(x => (int)x.Osszeg).ToList()));
+                                break;
+                            case "Maximum Érték":
+                                bevetelekKiadasokAdatsor.Add(DataStatistics.GetMaximumValue(kvp.Value.Select(x => (int)x.Osszeg).ToList()));
+                                break;
+                            case "Értékek Szórása":
+                                bevetelekKiadasokAdatsor.Add(DataStatistics.GetStandardDeviation(kvp.Value.Select(x => (int)x.Osszeg).ToList()));
+                                break;
+                            default:
+                                bevetelekKiadasokAdatsor.Add(kvp.Value.Sum(x => x.Osszeg));
+                                break;
+                        }
+                    }
+
+                    AddColumnSeries(bevetelekKiadasokAdatsor, $"Bevételek és Kiadások - Pénznem", "Pénznem", baseColors[0], labels);
+                    AddGroupByDataToCollection("Pénznem", 0);
+                }
+                else if (GroupByYearCheckBoxIsChecked)
+                {
+                    var groupedByYear = _selectedBevetelekKiadasok
+                       .GroupBy(p => new { p.TeljesitesiDatum.Year })
+                       .ToDictionary(
+                           g => g.Key,
+                           g =>
+                           {
+                               var v = g.Select(x => Convert.ToDouble(x.Osszeg)).ToList();
+                               return g.Any() ? GetDataStatisticValueBack(v) : 0;
+                           }
+                       );
+
+                    List<string> labels = new List<string>();
+                    ChartValues<double> values = new ChartValues<double>();
+                    foreach (var year in groupedByYear)
+                    {
+                        labels.Add(year.Key.ToString());
+                        values.Add(year.Value);
+                    }
+
+                    var sortedYears = groupedByYear.OrderBy(y => y.Key);
+
+                    AddColumnSeries(values, $"Bevételek és Kiadások - Év", "Év", baseColors[0], labels);
+                    AddGroupByDataToCollection("Év", 0);
+                }
+                else if (GroupByMonthCheckBoxIsChecked)
+                {
+
+                    List<string> honapok = new List<string> { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
+                    var monthValuesDict = Enumerable.Range(1, 12)
+                        .ToDictionary(
+                            month => month,
+                            month => 0.0  // Default value for months with no data
+                        );
+
+                    // Group by month and calculate statistics for each month that has data
+                    var groupedByMonth = _selectedBevetelekKiadasok
+                        .GroupBy(p => p.TeljesitesiDatum.Month)
+                        .ToDictionary(
+                            g => g.Key,
+                            g =>
+                            {
+                                var v = g.Select(x => Convert.ToDouble(x.Osszeg)).ToList();
+                                return g.Any() ? GetDataStatisticValueBack(v) : 0;
+                            }
+                        );
+
+                    // Update our complete dictionary with values from grouped data
+                    foreach (var item in groupedByMonth)
+                    {
+                        monthValuesDict[item.Key] = item.Value;
+                    }
+
+                    // Convert to ordered list for display
+                    List<string> labels = honapok;
+                    ChartValues<double> values = new ChartValues<double>(
+                        Enumerable.Range(1, 12).Select(month => monthValuesDict[month])
+                    );
+
+                    AddColumnSeries(values, $"Bevételek és Kiadások - Hónapok", "Hónapok", baseColors[0], honapok);
+                    AddGroupByDataToCollection("Hónapok", 0);
+                }
+                else
+                {
+                    //TODO ERROR
+                }
+            }
+            else
+            {
+                if (GroupByYearCheckBoxIsChecked && GroupByMonthCheckBoxIsChecked)
+                {
+                    if (SelectedCimkek.Contains("Év") && SelectedAdatsorok.Contains("Hónap"))
+                    {
+                        List<string> honapok = new List<string> { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
+                        var groupedByYearAndMonth = _selectedKotelezettsegekKovetelesek
+                           .GroupBy(p => new { p.KifizetesHatarideje.Year, p.KifizetesHatarideje.Month })
+                           .ToDictionary(
+                               g => g.Key,
+                               g => g.ToList()
+                           );
+                        var yearsDict = _selectedKotelezettsegekKovetelesek
+           .GroupBy(x => x.KifizetesHatarideje.Year)
+           .ToDictionary(
+               g => g.Key,
+               g =>
+               {
+                   var monthlyValues = Enumerable.Range(1, 12)
+                       .ToDictionary(
+                           month => month,
+                           month =>
+                           {
+                               var matchingGroup = groupedByYearAndMonth
+                                   .Where(kvp => kvp.Key.Year == g.Key && kvp.Key.Month == month)
+                                   .SelectMany(kvp => kvp.Value)
+                                   .ToList();
+                               var values = matchingGroup.Select(x => Convert.ToDouble(x.Osszeg)).ToList();
+                               return matchingGroup.Any() ? GetDataStatisticValueBack(values) : 0;
+                           }
+                       );
+
+                   return monthlyValues;
+               }
+           );
+
+                        List<string> labels = new List<string>();
+                        foreach (var year in yearsDict)
+                        {
+                            labels.Add(year.Key.ToString());
+                        }
+                        var monthlyData = new List<ChartValues<double>>();
+                        for (int i = 0; i < 12; i++)
+                        {
+                            monthlyData.Add(new ChartValues<double>());
+                        }
+                        var sortedYears = yearsDict.OrderBy(y => y.Key);
+
+                        for (int month = 1; month <= 12; month++)
+                        {
+                            foreach (var year in sortedYears)
+                            {
+                                double monthValue = year.Value[month];
+                                monthlyData[month - 1].Add(monthValue);
+                            }
+                        }
+                        int a = 0;
+                        int c = 0;
+                        foreach (var b in monthlyData)
+                        {
+                            AddColumnSeries(b, $"Kötelezettségek és Követelések - {honapok[c]}", honapok[c].ToString(), baseColors[a], labels);
+                            AddGroupByDataToCollection(honapok[c].ToString(), a);
+                            if (a + 1 > 3)
+                                a = 0;
+                            else
+                                a++;
+                            c++;
+                        }
+                    }
+                    else if (SelectedAdatsorok.Contains("Év") && SelectedCimkek.Contains("Hónap"))
+                    {
+                        List<string> labels = new List<string> { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
+                        // Create a Dictionary<int, Dictionary<int, double>> where the first key is month (1-12),
+                        // and the second dictionary maps years to values for that month
+                        var monthDict = Enumerable.Range(1, 12)
+                            .ToDictionary(
+                                month => month,
+                                month => _selectedKotelezettsegekKovetelesek
+                                    .GroupBy(p => p.KifizetesHatarideje.Year)
+                                    .ToDictionary(
+                                        yearGroup => yearGroup.Key,
+                                        yearGroup => {
+                                            // Find items for this specific year and month
+                                            var itemsForYearAndMonth = _selectedKotelezettsegekKovetelesek
+                                                .Where(p => p.KifizetesHatarideje.Year == yearGroup.Key &&
+                                                           p.KifizetesHatarideje.Month == month)
+                                                .ToList();
+
+                                            // Calculate value using existing items or return 0 if none exist
+                                            if (itemsForYearAndMonth.Any())
+                                            {
+                                                var values = itemsForYearAndMonth.Select(x => Convert.ToDouble(x.Osszeg)).ToList();
+                                                return GetDataStatisticValueBack(values);
+                                            }
+                                            return 0.0;
+                                        }
+                                    )
+                            );
+
+
+                        List<ChartValues<double>> yearlyData = new List<ChartValues<double>>();
+
+
+                        List<int> years = new List<int>();
+                        foreach (var year in _selectedKotelezettsegekKovetelesek.GroupBy(x => x.KifizetesHatarideje.Year))
+                        {
+                            years.Add(year.Key);
+                        }
+
+                        for (int i = 0; i < years.Count; i++)
+                        {
+                            yearlyData.Add(new ChartValues<double>());
+                        }
+                        for (int i = 0; i < years.Count; i++)
+                        {
+                            foreach (var month in monthDict)
+                            {
+                                yearlyData[i].Add(month.Value[years[i]]);
+                            }
+                        }
+                        int a = 0;
+                        int c = 0;
+                        foreach (var b in yearlyData)
+                        {
+                            AddColumnSeries(b, $"Kötelezettségek és Követelések - {years[c]}", "Év_" + years[c].ToString(), baseColors[a], labels);
+                            AddGroupByDataToCollection("Év_" + years[c].ToString(), a);
+                            if (a + 1 > 3)
+                                a = 0;
+                            else
+                                a++;
+                            c++;
+
+                        }
+                    }
+                }
+                else if (GroupByKifizetettCheckBoxIsChecked && GroupByPenznemCheckBoxIsChecked)
+                {
+                    if (SelectedCimkek.Contains("Pénznem") && SelectedCimkek.Contains("Kifizetett"))
+                    {
+                        var groupedKifizetettPenznem = _selectedKotelezettsegekKovetelesek
+                           .GroupBy(p => new { p.Kifizetett, p.Penznem })
+                           .ToDictionary(
+                               g => g.Key,
+                               g =>
+                               {
+                                   var v = g.Select(x => Convert.ToDouble(x.Osszeg)).ToList();
+                                   return g.Any() ? GetDataStatisticValueBack(v) : 0;
+                               }
+                           );
+                        ChartValues<double> values = new ChartValues<double>();
+                        List<string> labels = new List<string>();
+                        foreach (var kifizetettPenznem in groupedKifizetettPenznem)
+                        {
+                            labels.Add(kifizetettPenznem.Key.ToString());
+                            values.Add(kifizetettPenznem.Value);
+                        }
+
+                        AddColumnSeries(values, $"Kötelezettségek és Követelések - Kifizetett és Pénznem", "KifizetettPenznem", baseColors[0], labels);
+                        AddGroupByDataToCollection("KifizetettPenznem", 0);
+                    }
+                    else if (SelectedCimkek.Contains("Pénznem") && SelectedAdatsorok.Contains("Kifizetett"))
+                    {
+                        List<string> kifizetettLabels = new List<string> { "0", "1" };
+                        var groupedByKifizetettPenznem = _selectedKotelezettsegekKovetelesek
+                           .GroupBy(p => new { p.Kifizetett, p.Penznem })
+                           .ToDictionary(
+                               g => g.Key,
+                               g => g.ToList()
+                           );
+                        var penznemDict = System.Enum.GetValues(typeof(Penznem))
+                            .Cast<Penznem>()
+                            .ToDictionary(
+                                penznem => penznem,
+                                penznem =>
+                                {
+                                    var kifizetettValues = _selectedKotelezettsegekKovetelesek
+                                        .GroupBy(x => x.Kifizetett)
+                                        .ToDictionary(
+                                            kifizetett => kifizetett.Key,
+                                            kifizetett =>
+                                            {
+                                                var matchingGroup = groupedByKifizetettPenznem
+                                                    .Where(kvp => kvp.Key.Kifizetett == kifizetett.Key && kvp.Key.Penznem == penznem)
+                                                    .SelectMany(kvp => kvp.Value)
+                                                    .ToList();
+                                                var values = matchingGroup.Select(x => Convert.ToDouble(x.Osszeg)).ToList();
+                                                return matchingGroup.Any() ? GetDataStatisticValueBack(values) : 0;
+                                            }
+                                        );
+
+                                    return kifizetettValues;
+                                }
+                            );
+
+                        List<string> labels = new List<string>();
+                        foreach (var penznem in penznemDict)
+                        {
+                            labels.Add(penznem.Key.ToString());
+                        }
+                        var kifizetettData = new List<ChartValues<double>>();
+                        for (int i = 0; i < 2; i++)
+                        {
+                            kifizetettData.Add(new ChartValues<double>());
+                        }
+
+                        var sortedPenznem = penznemDict.OrderBy(y => y.Key);
+                        foreach (var penznem in sortedPenznem)
+                        {
+                            for(int i = 0; i < 2; i++)
+                            {
+                                kifizetettData[i].Add(penznem.Value[(short)i]);
+                            }
+                        }
+
+                        int a = 0;
+                        int c = 0;
+                        foreach (var b in kifizetettData)
+                        {
+                            AddColumnSeries(b, $"Kötelezettségek és Követelések - {kifizetettLabels[c]}", "Kifizetett_" + kifizetettLabels[c].ToString(), baseColors[a], labels);
+                            AddGroupByDataToCollection("Kifizetett_" + kifizetettLabels[c].ToString(), a);
+                            if (a + 1 > 3)
+                                a = 0;
+                            else
+                                a++;
+                            c++;
+                        }
+                    }
+                    else if (SelectedAdatsorok.Contains("Pénznem") && SelectedCimkek.Contains("Kifizetett"))
+                    {
+                        List<string> penznemek = new List<string> { "Forint", "Euró", "Font", "Dollár" };
+                        var groupedByBeKiKodPenznem = _selectedKotelezettsegekKovetelesek
+                           .GroupBy(p => new { p.Kifizetett, p.Penznem })
+                           .ToDictionary(
+                               g => g.Key,
+                               g => g.ToList()
+                           );
+                        var beKiKodDict = _selectedKotelezettsegekKovetelesek
+                            .GroupBy(x => x.Kifizetett)
+                            .ToDictionary(
+                                kifizetett => kifizetett,
+                                kifizetett =>
+                                {
+                                    var penznemValues = System.Enum.GetValues(typeof(Penznem))
+                                        .Cast<Penznem>()
+                                        .ToDictionary(
+                                            penznem => penznem,
+                                            penznem =>
+                                            {
+                                                var matchingGroup = groupedByBeKiKodPenznem
+                                                    .Where(kvp => kvp.Key.Kifizetett == kifizetett.Key && kvp.Key.Penznem == penznem)
+                                                    .SelectMany(kvp => kvp.Value)
+                                                    .ToList();
+                                                var values = matchingGroup.Select(x => Convert.ToDouble(x.Osszeg)).ToList();
+                                                return matchingGroup.Any() ? GetDataStatisticValueBack(values) : 0;
+                                            }
+                                        );
+
+                                    return penznemValues;
+                                }
+                            );
+
+                        List<string> labels = new List<string>() { "0", "1" };
+                        
+                        var penznemData = System.Enum.GetValues(typeof(Penznem))
+                            .Cast<Penznem>()
+                            .ToDictionary(
+                                penznem => penznem,
+                                penznem =>
+                                {
+                                    return new ChartValues<double>();
+                                }
+                            );
+                        var sortedBeKiKod = beKiKodDict.OrderBy(y => y.Key.Key);
+                        foreach (var bekikod in sortedBeKiKod)
+                        {
+                            foreach (var penznem in System.Enum.GetValues(typeof(Penznem)).Cast<Penznem>())
+                            {
+                                penznemData[penznem].Add(bekikod.Value[penznem]);
+                            }
+                        }
+
+                        int a = 0;
+                        int c = 0;
+                        foreach (var b in penznemData)
+                        {
+                            AddColumnSeries(b.Value, $"Kötelezettségek és Követelések - {penznemek[c]}", penznemek[c].ToString(), baseColors[a], labels);
+                            AddGroupByDataToCollection(penznemek[c].ToString(), a);
+                            if (a + 1 > 3)
+                                a = 0;
+                            else
+                                a++;
+                            c++;
+                        }
+                    }
+                }
+                else if (GroupByKifizetettCheckBoxIsChecked)
+                {
+                    if (SelectedCimkek.Count > 0)
+                    {
+                        // Modify the grouping logic to include all Penznem enum values, even if there are no matching entries.
+                        var groupedByKifizetett = _selectedKotelezettsegekKovetelesek
+                            .GroupBy(x => x.Kifizetett)
+                            .ToDictionary(
+                                kifizetett => kifizetett,
+                                kifizetett => new HashSet<KotelezettsegKoveteles>(
+                                    _selectedKotelezettsegekKovetelesek.Where(x => x.Kifizetett == kifizetett.Key)
+                                )
+                            );
+
+                        List<string> labels = new List<string>();
+                        var kotelezettsegekKovetelesekAdatsor = new ChartValues<double>();
+
+                        // Display the results
+                        foreach (var kvp in groupedByKifizetett)
+                        {
+                            labels.Add(kvp.Key.Key.ToString());
+                            switch (SelectedDataStatistics)
+                            {
+                                case "Nincs kiválasztva":
+                                    kotelezettsegekKovetelesekAdatsor.Add(kvp.Value.Sum(x => x.Osszeg));
+                                    break;
+                                case "Összeg":
+                                    kotelezettsegekKovetelesekAdatsor.Add(DataStatistics.GetSum(kvp.Value.Select(x => (int)x.Osszeg).ToList()));
+                                    break;
+                                case "Átlag":
+                                    kotelezettsegekKovetelesekAdatsor.Add(DataStatistics.GetAvarage(kvp.Value.Select(x => (int)x.Osszeg).ToList()));
+                                    break;
+                                case "Mértani Közép":
+                                    kotelezettsegekKovetelesekAdatsor.Add(DataStatistics.GetMedian(kvp.Value.Select(x => (int)x.Osszeg).ToList()));
+                                    break;
+                                case "Minimum Érték":
+                                    kotelezettsegekKovetelesekAdatsor.Add(DataStatistics.GetMinimumValue(kvp.Value.Select(x => (int)x.Osszeg).ToList()));
+                                    break;
+                                case "Maximum Érték":
+                                    kotelezettsegekKovetelesekAdatsor.Add(DataStatistics.GetMaximumValue(kvp.Value.Select(x => (int)x.Osszeg).ToList()));
+                                    break;
+                                case "Értékek Szórása":
+                                    kotelezettsegekKovetelesekAdatsor.Add(DataStatistics.GetStandardDeviation(kvp.Value.Select(x => (int)x.Osszeg).ToList()));
+                                    break;
+                                default:
+                                    kotelezettsegekKovetelesekAdatsor.Add(kvp.Value.Sum(x => x.Osszeg));
+                                    break;
+                            }
+                        }
+
+                        AddColumnSeries(kotelezettsegekKovetelesekAdatsor, $"Kötelezettségek és Követelések - Kifizetett", "Kifizetett", baseColors[0], labels);
+                        AddGroupByDataToCollection("Kifizetett", 0);
+                    }
+                    else
+                    {
+                        //ERROR TODO
+                    }
+                }
+                else if (GroupByPenznemCheckBoxIsChecked)
+                {
+                    // Modify the grouping logic to include all Penznem enum values, even if there are no matching entries.
+                    var groupedByPenznem = System.Enum.GetValues(typeof(Penznem))
+                        .Cast<Penznem>()
+                        .ToDictionary(
+                            penznem => penznem,
+                            penznem => new HashSet<KotelezettsegKoveteles>(
+                                _selectedKotelezettsegekKovetelesek.Where(x => x.Penznem == penznem)
+                            )
+                        );
+
+                    List<string> labels = new List<string>();
+                    var kotelezettsegekKovetelesekAdatsor = new ChartValues<double>();
+
+                    // Display the results
+                    foreach (var kvp in groupedByPenznem)
+                    {
+                        labels.Add(kvp.Key.ToString());
+                        switch (SelectedDataStatistics)
+                        {
+                            case "Nincs kiválasztva":
+                                kotelezettsegekKovetelesekAdatsor.Add(kvp.Value.Sum(x => x.Osszeg));
+                                break;
+                            case "Összeg":
+                                kotelezettsegekKovetelesekAdatsor.Add(DataStatistics.GetSum(kvp.Value.Select(x => (int)x.Osszeg).ToList()));
+                                break;
+                            case "Átlag":
+                                kotelezettsegekKovetelesekAdatsor.Add(DataStatistics.GetAvarage(kvp.Value.Select(x => (int)x.Osszeg).ToList()));
+                                break;
+                            case "Mértani Közép":
+                                kotelezettsegekKovetelesekAdatsor.Add(DataStatistics.GetMedian(kvp.Value.Select(x => (int)x.Osszeg).ToList()));
+                                break;
+                            case "Minimum Érték":
+                                kotelezettsegekKovetelesekAdatsor.Add(DataStatistics.GetMinimumValue(kvp.Value.Select(x => (int)x.Osszeg).ToList()));
+                                break;
+                            case "Maximum Érték":
+                                kotelezettsegekKovetelesekAdatsor.Add(DataStatistics.GetMaximumValue(kvp.Value.Select(x => (int)x.Osszeg).ToList()));
+                                break;
+                            case "Értékek Szórása":
+                                kotelezettsegekKovetelesekAdatsor.Add(DataStatistics.GetStandardDeviation(kvp.Value.Select(x => (int)x.Osszeg).ToList()));
+                                break;
+                            default:
+                                kotelezettsegekKovetelesekAdatsor.Add(kvp.Value.Sum(x => x.Osszeg));
+                                break;
+                        }
+                    }
+
+                    AddColumnSeries(kotelezettsegekKovetelesekAdatsor, $"Kötelezettségek és Követelések - Pénznem", "Pénznem", baseColors[0], labels);
+                    AddGroupByDataToCollection("Pénznem", 0);
+                }
+                else if (GroupByYearCheckBoxIsChecked)
+                {
+                    var groupedByYear = _selectedKotelezettsegekKovetelesek
+                       .GroupBy(p => new { p.KifizetesHatarideje.Year })
+                       .ToDictionary(
+                           g => g.Key,
+                           g =>
+                           {
+                               var v = g.Select(x => Convert.ToDouble(x.Osszeg)).ToList();
+                               return g.Any() ? GetDataStatisticValueBack(v) : 0;
+                           }
+                       );
+
+                    List<string> labels = new List<string>();
+                    ChartValues<double> values = new ChartValues<double>();
+                    foreach (var year in groupedByYear)
+                    {
+                        labels.Add(year.Key.ToString());
+                        values.Add(year.Value);
+                    }
+
+                    var sortedYears = groupedByYear.OrderBy(y => y.Key);
+
+                    AddColumnSeries(values, $"Kötelezettségek és Követelések - Év", "Év", baseColors[0], labels);
+                    AddGroupByDataToCollection("Év", 0);
+                }
+                else if (GroupByMonthCheckBoxIsChecked)
+                {
+
+                    List<string> honapok = new List<string> { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
+                    var monthValuesDict = Enumerable.Range(1, 12)
+                        .ToDictionary(
+                            month => month,
+                            month => 0.0  // Default value for months with no data
+                        );
+
+                    // Group by month and calculate statistics for each month that has data
+                    var groupedByMonth = _selectedKotelezettsegekKovetelesek
+                        .GroupBy(p => p.KifizetesHatarideje.Month)
+                        .ToDictionary(
+                            g => g.Key,
+                            g =>
+                            {
+                                var v = g.Select(x => Convert.ToDouble(x.Osszeg)).ToList();
+                                return g.Any() ? GetDataStatisticValueBack(v) : 0;
+                            }
+                        );
+
+                    // Update our complete dictionary with values from grouped data
+                    foreach (var item in groupedByMonth)
+                    {
+                        monthValuesDict[item.Key] = item.Value;
+                    }
+
+                    // Convert to ordered list for display
+                    List<string> labels = honapok;
+                    ChartValues<double> values = new ChartValues<double>(
+                        Enumerable.Range(1, 12).Select(month => monthValuesDict[month])
+                    );
+
+                    AddColumnSeries(values, $"Kötelezettségek és Követelések - Hónapok", "Hónapok", baseColors[0], honapok);
+                    AddGroupByDataToCollection("Hónapok", 0);
+                }
+                else
+                {
+                    //TODO ERROR
                 }
             }
 
@@ -2098,6 +3969,26 @@ namespace Szakdolgozat.ViewModels
                     }
                 }
             }
+            else if (SeriesType == "StackedColumnSeries")
+            {
+                foreach (var a in StackedColumnSeries)
+                {
+                    if (a is StackedColumnSeries stackedColumnSeries)
+                    {
+                        if (stackedColumnSeries.Name == name)
+                        {
+                            if (isSelected)
+                            {
+                                stackedColumnSeries.Visibility = Visibility.Visible;
+                            }
+                            else
+                            {
+                                stackedColumnSeries.Visibility = Visibility.Hidden;
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         public void SetRowSeries()
@@ -2107,106 +3998,304 @@ namespace Szakdolgozat.ViewModels
 
             if (IsBevetelekKiadasokTabIsSelected)
             {
-                if (GroupByBeKiKodCheckBoxIsChecked && GroupByPenznemCheckBoxIsChecked && GroupByDateCheckBoxIsChecked)
+                if (GroupByYearCheckBoxIsChecked && GroupByMonthCheckBoxIsChecked)
                 {
-                     
-                }
-                else if (GroupByBeKiKodCheckBoxIsChecked && GroupByDateCheckBoxIsChecked)
-                {
-               
-                }
-                else if (GroupByDateCheckBoxIsChecked && GroupByPenznemCheckBoxIsChecked)
-                {
-                 
+                    if (SelectedCimkek.Contains("Év") && SelectedAdatsorok.Contains("Hónap"))
+                    {
+                        List<string> honapok = new List<string> { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
+                        var groupedByYearAndMonth = _selectedBevetelekKiadasok
+                           .GroupBy(p => new { p.TeljesitesiDatum.Year, p.TeljesitesiDatum.Month })
+                           .ToDictionary(
+                               g => g.Key,
+                               g => g.ToList()
+                           );
+                        var yearsDict = _selectedBevetelekKiadasok
+           .GroupBy(x => x.TeljesitesiDatum.Year)
+           .ToDictionary(
+               g => g.Key,
+               g =>
+               {
+                   var monthlyValues = Enumerable.Range(1, 12)
+                       .ToDictionary(
+                           month => month,
+                           month =>
+                           {
+                               var matchingGroup = groupedByYearAndMonth
+                                   .Where(kvp => kvp.Key.Year == g.Key && kvp.Key.Month == month)
+                                   .SelectMany(kvp => kvp.Value)
+                                   .ToList();
+                               var values = matchingGroup.Select(x => Convert.ToDouble(x.Osszeg)).ToList();
+                               return matchingGroup.Any() ? GetDataStatisticValueBack(values) : 0;
+                           }
+                       );
+
+                   return monthlyValues;
+               }
+           );
+
+                        List<string> labels = new List<string>();
+                        foreach (var year in yearsDict)
+                        {
+                            labels.Add(year.Key.ToString());
+                        }
+                        var monthlyData = new List<ChartValues<double>>();
+                        for (int i = 0; i < 12; i++)
+                        {
+                            monthlyData.Add(new ChartValues<double>());
+                        }
+                        var sortedYears = yearsDict.OrderBy(y => y.Key);
+
+                        for (int month = 1; month <= 12; month++)
+                        {
+                            foreach (var year in sortedYears)
+                            {
+                                double monthValue = year.Value[month];
+                                monthlyData[month - 1].Add(monthValue);
+                            }
+                        }
+                        int a = 0;
+                        int c = 0;
+                        foreach (var b in monthlyData)
+                        {
+                            AddRowSeries(b, $"Bevételek és Kiadások - {honapok[c]}", honapok[c].ToString(), baseColors[a], labels);
+                            AddGroupByDataToCollection(honapok[c].ToString(), a);
+                            if (a + 1 > 3)
+                                a = 0;
+                            else
+                                a++;
+                            c++;
+                        }
+                    }
+                    else if (SelectedAdatsorok.Contains("Év") && SelectedCimkek.Contains("Hónap"))
+                    {
+                        List<string> labels = new List<string> { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
+                        // Create a Dictionary<int, Dictionary<int, double>> where the first key is month (1-12),
+                        // and the second dictionary maps years to values for that month
+                        var monthDict = Enumerable.Range(1, 12)
+                            .ToDictionary(
+                                month => month,
+                                month => _selectedBevetelekKiadasok
+                                    .GroupBy(p => p.TeljesitesiDatum.Year)
+                                    .ToDictionary(
+                                        yearGroup => yearGroup.Key,
+                                        yearGroup => {
+                                            // Find items for this specific year and month
+                                            var itemsForYearAndMonth = _selectedBevetelekKiadasok
+                                                .Where(p => p.TeljesitesiDatum.Year == yearGroup.Key &&
+                                                           p.TeljesitesiDatum.Month == month)
+                                                .ToList();
+
+                                            // Calculate value using existing items or return 0 if none exist
+                                            if (itemsForYearAndMonth.Any())
+                                            {
+                                                var values = itemsForYearAndMonth.Select(x => Convert.ToDouble(x.Osszeg)).ToList();
+                                                return GetDataStatisticValueBack(values);
+                                            }
+                                            return 0.0;
+                                        }
+                                    )
+                            );
+
+
+                        List<ChartValues<double>> yearlyData = new List<ChartValues<double>>();
+
+
+                        List<int> years = new List<int>();
+                        foreach (var year in _selectedBevetelekKiadasok.GroupBy(x => x.TeljesitesiDatum.Year))
+                        {
+                            years.Add(year.Key);
+                        }
+
+                        for (int i = 0; i < years.Count; i++)
+                        {
+                            yearlyData.Add(new ChartValues<double>());
+                        }
+                        for (int i = 0; i < years.Count; i++)
+                        {
+                            foreach (var month in monthDict)
+                            {
+                                yearlyData[i].Add(month.Value[years[i]]);
+                            }
+                        }
+                        int a = 0;
+                        int c = 0;
+                        foreach (var b in yearlyData)
+                        {
+                            AddRowSeries(b, $"Bevételek és Kiadások - {years[c]}", "Év_" + years[c].ToString(), baseColors[a], labels);
+                            AddGroupByDataToCollection("Év_" + years[c].ToString(), a);
+                            if (a + 1 > 3)
+                                a = 0;
+                            else
+                                a++;
+                            c++;
+
+                        }
+                    }
                 }
                 else if (GroupByBeKiKodCheckBoxIsChecked && GroupByPenznemCheckBoxIsChecked)
                 {
-                    List<string> penznemek = new List<string> { "Forint", "Euró", "Font", "Dollár" };
-                    var groupedByBeKiKodPenznem = _selectedBevetelekKiadasok
-                       .GroupBy(p => new { p.BeKiKod, p.Penznem })
-                       .ToDictionary(
-                           g => g.Key,
-                           g => g.ToList()
-                       );
-                    var beKiKodDict = System.Enum.GetValues(typeof(BeKiKod))
-                        .Cast<BeKiKod>()
-                        .ToDictionary(
-                            beKiKod => beKiKod,
-                            beKiKod =>
-                            {
-                                var penznemValues = System.Enum.GetValues(typeof(Penznem))
-                                    .Cast<Penznem>()
-                                    .ToDictionary(
-                                        penznem => penznem,
-                                        penznem =>
-                                        {
-                                            var matchingGroup = groupedByBeKiKodPenznem
-                                                .Where(kvp => kvp.Key.BeKiKod == beKiKod && kvp.Key.Penznem == penznem)
-                                                .SelectMany(kvp => kvp.Value)
-                                                .ToList();
-                                            var values = matchingGroup.Select(x => Convert.ToDouble(x.Osszeg)).ToList();
-                                            return matchingGroup.Any() ? GetDataStatisticValueBack(values) : 0;
-                                        }
-                                    );
-
-                                return penznemValues;
-                            }
-                        );
-
-                    List<string> labels = new List<string>();
-                    foreach (var bekikod in beKiKodDict)
+                    if (SelectedCimkek.Contains("Pénznem") && SelectedCimkek.Contains("BeKiKód"))
                     {
-                        labels.Add(bekikod.Key.ToString());
-                    }
-
-                    //var beKiKodData = new List<ChartValues<double>>();
-                    //for (int i = 0; i < System.Enum.GetValues(typeof(Penznem)).Cast<Penznem>().ToList().Count; i++)
-                    //{
-                    //    beKiKodData.Add(new ChartValues<double>());
-                    //}
-                    //var sortedBeKiKod = beKiKodDict.OrderBy(y => y.Key);
-
-                    //foreach(var bekikod in sortedBeKiKod)
-                    //{
-                    //    int penznemCounter = 0;
-                    //    foreach (var penznem in System.Enum.GetValues(typeof(Penznem)).Cast<Penznem>())
-                    //    {
-                    //        if (bekikod.Value.TryGetValue(penznem, out var penznemValues))
-                    //        {
-                    //            beKiKodData[penznemCounter].Add(penznemValues);
-                    //        }
-                    //        penznemCounter++;
-                    //    }
-                    //}
-                    var penznemData = System.Enum.GetValues(typeof(Penznem))
-                        .Cast<Penznem>()
-                        .ToDictionary(
-                            beKiKod => beKiKod,
-                            beKiKod =>
-                            {
-                                return new ChartValues<double>();
-                            }
-                        );
-                    var sortedBeKiKod = beKiKodDict.OrderBy(y => y.Key);
-                    foreach (var bekikod in sortedBeKiKod)
-                    {
-                        foreach (var penznem in System.Enum.GetValues(typeof(Penznem)).Cast<Penznem>())
+                        var groupedByBeKiKodPenznem = _selectedBevetelekKiadasok
+                           .GroupBy(p => new { p.BeKiKod, p.Penznem })
+                           .ToDictionary(
+                               g => g.Key,
+                               g =>
+                               {
+                                   var v = g.Select(x => Convert.ToDouble(x.Osszeg)).ToList();
+                                   return g.Any() ? GetDataStatisticValueBack(v) : 0;
+                               }
+                           );
+                        ChartValues<double> values = new ChartValues<double>();
+                        List<string> labels = new List<string>();
+                        foreach (var beKiKodPenznem in groupedByBeKiKodPenznem)
                         {
-                            penznemData[penznem].Add(bekikod.Value[penznem]);
+                            labels.Add(beKiKodPenznem.Key.ToString());
+                            values.Add(beKiKodPenznem.Value);
+                        }
+
+                        AddRowSeries(values, $"Bevételek és Kiadások - BeKiKód és Pénznem", "BeKiKodPenznem", baseColors[0], labels);
+                        AddGroupByDataToCollection("BeKiKodPenznem", 0);
+                    }
+                    else if (SelectedCimkek.Contains("Pénznem") && SelectedAdatsorok.Contains("BeKiKód"))
+                    {
+                        List<string> beKiKodok = new List<string> { "Be1", "Be2", "Ki1", "Ki2" };
+                        var groupedByBeKiKodPenznem = _selectedBevetelekKiadasok
+                           .GroupBy(p => new { p.BeKiKod, p.Penznem })
+                           .ToDictionary(
+                               g => g.Key,
+                               g => g.ToList()
+                           );
+                        var penznemDict = System.Enum.GetValues(typeof(Penznem))
+                            .Cast<Penznem>()
+                            .ToDictionary(
+                                penznem => penznem,
+                                penznem =>
+                                {
+                                    var beKiKodValues = System.Enum.GetValues(typeof(BeKiKod))
+                                        .Cast<BeKiKod>()
+                                        .ToDictionary(
+                                            beKiKod => beKiKod,
+                                            beKiKod =>
+                                            {
+                                                var matchingGroup = groupedByBeKiKodPenznem
+                                                    .Where(kvp => kvp.Key.BeKiKod == beKiKod && kvp.Key.Penznem == penznem)
+                                                    .SelectMany(kvp => kvp.Value)
+                                                    .ToList();
+                                                var values = matchingGroup.Select(x => Convert.ToDouble(x.Osszeg)).ToList();
+                                                return matchingGroup.Any() ? GetDataStatisticValueBack(values) : 0;
+                                            }
+                                        );
+
+                                    return beKiKodValues;
+                                }
+                            );
+
+                        List<string> labels = new List<string>();
+                        foreach (var penznem in penznemDict)
+                        {
+                            labels.Add(penznem.Key.ToString());
+                        }
+                        var beKiKodData = System.Enum.GetValues(typeof(BeKiKod))
+                            .Cast<BeKiKod>()
+                            .ToDictionary(
+                                beKiKod => beKiKod,
+                                beKiKod =>
+                                {
+                                    return new ChartValues<double>();
+                                }
+                            );
+                        var sortedPenznem = penznemDict.OrderBy(y => y.Key);
+                        foreach (var penznem in sortedPenznem)
+                        {
+                            foreach (var beKiKod in System.Enum.GetValues(typeof(BeKiKod)).Cast<BeKiKod>())
+                            {
+                                beKiKodData[beKiKod].Add(penznem.Value[beKiKod]);
+                            }
+                        }
+
+                        int a = 0;
+                        int c = 0;
+                        foreach (var b in beKiKodData)
+                        {
+                            AddRowSeries(b.Value, $"Bevételek és Kiadások - {beKiKodok[c]}", beKiKodok[c].ToString(), baseColors[a], labels);
+                            AddGroupByDataToCollection(beKiKodok[c].ToString(), a);
+                            if (a + 1 > 3)
+                                a = 0;
+                            else
+                                a++;
+                            c++;
                         }
                     }
-
-                    int a = 0;
-                    int c = 0;
-                    foreach (var b in penznemData)
+                    else if (SelectedAdatsorok.Contains("Pénznem") && SelectedCimkek.Contains("BeKiKód"))
                     {
-                        AddRowSeries(b.Value, $"Bevételek és Kiadások - {penznemek[c]}", penznemek[c].ToString(), baseColors[a], labels);
-                        AddGroupByDataToCollection(penznemek[c].ToString(), a);
-                        if (a + 1 > 3)
-                            a = 0;
-                        else
-                            a++;
-                        c++;
+                        List<string> penznemek = new List<string> { "Forint", "Euró", "Font", "Dollár" };
+                        var groupedByBeKiKodPenznem = _selectedBevetelekKiadasok
+                           .GroupBy(p => new { p.BeKiKod, p.Penznem })
+                           .ToDictionary(
+                               g => g.Key,
+                               g => g.ToList()
+                           );
+                        var beKiKodDict = System.Enum.GetValues(typeof(BeKiKod))
+                            .Cast<BeKiKod>()
+                            .ToDictionary(
+                                beKiKod => beKiKod,
+                                beKiKod =>
+                                {
+                                    var penznemValues = System.Enum.GetValues(typeof(Penznem))
+                                        .Cast<Penznem>()
+                                        .ToDictionary(
+                                            penznem => penznem,
+                                            penznem =>
+                                            {
+                                                var matchingGroup = groupedByBeKiKodPenznem
+                                                    .Where(kvp => kvp.Key.BeKiKod == beKiKod && kvp.Key.Penznem == penznem)
+                                                    .SelectMany(kvp => kvp.Value)
+                                                    .ToList();
+                                                var values = matchingGroup.Select(x => Convert.ToDouble(x.Osszeg)).ToList();
+                                                return matchingGroup.Any() ? GetDataStatisticValueBack(values) : 0;
+                                            }
+                                        );
+
+                                    return penznemValues;
+                                }
+                            );
+
+                        List<string> labels = new List<string>();
+                        foreach (var bekikod in beKiKodDict)
+                        {
+                            labels.Add(bekikod.Key.ToString());
+                        }
+                        var penznemData = System.Enum.GetValues(typeof(Penznem))
+                            .Cast<Penznem>()
+                            .ToDictionary(
+                                penznem => penznem,
+                                penznem =>
+                                {
+                                    return new ChartValues<double>();
+                                }
+                            );
+                        var sortedBeKiKod = beKiKodDict.OrderBy(y => y.Key);
+                        foreach (var bekikod in sortedBeKiKod)
+                        {
+                            foreach (var penznem in System.Enum.GetValues(typeof(Penznem)).Cast<Penznem>())
+                            {
+                                penznemData[penznem].Add(bekikod.Value[penznem]);
+                            }
+                        }
+
+                        int a = 0;
+                        int c = 0;
+                        foreach (var b in penznemData)
+                        {
+                            AddRowSeries(b.Value, $"Bevételek és Kiadások - {penznemek[c]}", penznemek[c].ToString(), baseColors[a], labels);
+                            AddGroupByDataToCollection(penznemek[c].ToString(), a);
+                            if (a + 1 > 3)
+                                a = 0;
+                            else
+                                a++;
+                            c++;
+                        }
                     }
                 }
                 else if (GroupByBeKiKodCheckBoxIsChecked)
@@ -2318,86 +4407,545 @@ namespace Szakdolgozat.ViewModels
                     AddRowSeries(bevetelekKiadasokAdatsor, $"Bevételek és Kiadások - Pénznem", "Pénznem", baseColors[0], labels);
                     AddGroupByDataToCollection("Pénznem", 0);
                 }
-                else if (GroupByDateCheckBoxIsChecked)
+                else if (GroupByYearCheckBoxIsChecked)
                 {
-                    List<string> honapok = new List<string> { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
-                    var groupedByYearAndMonth = _selectedBevetelekKiadasok
-                       .GroupBy(p => new { p.TeljesitesiDatum.Year, p.TeljesitesiDatum.Month })
-                       .ToDictionary(
-                           g => g.Key,
-                           g => g.ToList()
-                       );
-                                    var yearsDict = _selectedBevetelekKiadasok
-                       .GroupBy(x => x.TeljesitesiDatum.Year)
+                    var groupedByYear = _selectedBevetelekKiadasok
+                       .GroupBy(p => new { p.TeljesitesiDatum.Year })
                        .ToDictionary(
                            g => g.Key,
                            g =>
                            {
-                               var monthlyValues = Enumerable.Range(1, 12)
-                                   .ToDictionary(
-                                       month => month,
-                                       month =>
-                                       {
-                                           var matchingGroup = groupedByYearAndMonth
-                                               .Where(kvp => kvp.Key.Year == g.Key && kvp.Key.Month == month)
-                                               .SelectMany(kvp => kvp.Value)
-                                               .ToList();
-                                           var values = matchingGroup.Select(x => Convert.ToDouble(x.Osszeg)).ToList();
-                                           return matchingGroup.Any() ? GetDataStatisticValueBack(values) : 0;
-                                       }
-                                   );
-
-                               return monthlyValues;
+                               var v = g.Select(x => Convert.ToDouble(x.Osszeg)).ToList();
+                               return g.Any() ? GetDataStatisticValueBack(v) : 0;
                            }
                        );
 
                     List<string> labels = new List<string>();
-                    foreach (var year in yearsDict)
+                    ChartValues<double> values = new ChartValues<double>();
+                    foreach (var year in groupedByYear)
                     {
                         labels.Add(year.Key.ToString());
+                        values.Add(year.Value);
                     }
-                    var monthlyData = new List<ChartValues<double>>();
-                    for (int i = 0; i < 12; i++)
-                    {
-                        monthlyData.Add(new ChartValues<double>());
-                    }
-                    var sortedYears = yearsDict.OrderBy(y => y.Key);
 
-                    for (int month = 1; month <= 12; month++)
+                    var sortedYears = groupedByYear.OrderBy(y => y.Key);
+
+                    AddRowSeries(values, $"Bevételek és Kiadások - Év", "Év", baseColors[0], labels);
+                    AddGroupByDataToCollection("Év", 0);
+                }
+                else if (GroupByMonthCheckBoxIsChecked)
+                {
+
+                    List<string> honapok = new List<string> { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
+                    var monthValuesDict = Enumerable.Range(1, 12)
+                        .ToDictionary(
+                            month => month,
+                            month => 0.0  // Default value for months with no data
+                        );
+
+                    // Group by month and calculate statistics for each month that has data
+                    var groupedByMonth = _selectedBevetelekKiadasok
+                        .GroupBy(p => p.TeljesitesiDatum.Month)
+                        .ToDictionary(
+                            g => g.Key,
+                            g =>
+                            {
+                                var v = g.Select(x => Convert.ToDouble(x.Osszeg)).ToList();
+                                return g.Any() ? GetDataStatisticValueBack(v) : 0;
+                            }
+                        );
+
+                    // Update our complete dictionary with values from grouped data
+                    foreach (var item in groupedByMonth)
                     {
-                        foreach (var year in sortedYears)
-                        {
-                            double monthValue = year.Value[month];
-                            monthlyData[month - 1].Add(monthValue);
-                        }
+                        monthValuesDict[item.Key] = item.Value;
                     }
-                    int a = 0;
-                    int c = 0;
-                    foreach (var b in monthlyData)
-                    {
-                        AddRowSeries(b, $"Bevételek és Kiadások - {honapok[c]}", honapok[c].ToString(), baseColors[a], labels);
-                        AddGroupByDataToCollection(honapok[c].ToString(), a);
-                        if (a + 1 > 3)
-                            a = 0;
-                        else
-                            a++;
-                        c++;
-                    }
+
+                    // Convert to ordered list for display
+                    List<string> labels = honapok;
+                    ChartValues<double> values = new ChartValues<double>(
+                        Enumerable.Range(1, 12).Select(month => monthValuesDict[month])
+                    );
+
+                    AddRowSeries(values, $"Bevételek és Kiadások - Hónapok", "Hónapok", baseColors[0], honapok);
+                    AddGroupByDataToCollection("Hónapok", 0);
                 }
                 else
                 {
-                    var bevetelekKiadasokAdatsor = new ChartValues<double>();
-
-                    foreach (var a in _selectedBevetelekKiadasok)
+                    //TODO ERROR
+                }
+            }
+            else
+            {
+                if (GroupByYearCheckBoxIsChecked && GroupByMonthCheckBoxIsChecked)
+                {
+                    if (SelectedCimkek.Contains("Év") && SelectedAdatsorok.Contains("Hónap"))
                     {
-                        bevetelekKiadasokAdatsor.Add(Convert.ToDouble(a.Osszeg));
+                        List<string> honapok = new List<string> { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
+                        var groupedByYearAndMonth = _selectedKotelezettsegekKovetelesek
+                           .GroupBy(p => new { p.KifizetesHatarideje.Year, p.KifizetesHatarideje.Month })
+                           .ToDictionary(
+                               g => g.Key,
+                               g => g.ToList()
+                           );
+                        var yearsDict = _selectedKotelezettsegekKovetelesek
+           .GroupBy(x => x.KifizetesHatarideje.Year)
+           .ToDictionary(
+               g => g.Key,
+               g =>
+               {
+                   var monthlyValues = Enumerable.Range(1, 12)
+                       .ToDictionary(
+                           month => month,
+                           month =>
+                           {
+                               var matchingGroup = groupedByYearAndMonth
+                                   .Where(kvp => kvp.Key.Year == g.Key && kvp.Key.Month == month)
+                                   .SelectMany(kvp => kvp.Value)
+                                   .ToList();
+                               var values = matchingGroup.Select(x => Convert.ToDouble(x.Osszeg)).ToList();
+                               return matchingGroup.Any() ? GetDataStatisticValueBack(values) : 0;
+                           }
+                       );
+
+                   return monthlyValues;
+               }
+           );
+
+                        List<string> labels = new List<string>();
+                        foreach (var year in yearsDict)
+                        {
+                            labels.Add(year.Key.ToString());
+                        }
+                        var monthlyData = new List<ChartValues<double>>();
+                        for (int i = 0; i < 12; i++)
+                        {
+                            monthlyData.Add(new ChartValues<double>());
+                        }
+                        var sortedYears = yearsDict.OrderBy(y => y.Key);
+
+                        for (int month = 1; month <= 12; month++)
+                        {
+                            foreach (var year in sortedYears)
+                            {
+                                double monthValue = year.Value[month];
+                                monthlyData[month - 1].Add(monthValue);
+                            }
+                        }
+                        int a = 0;
+                        int c = 0;
+                        foreach (var b in monthlyData)
+                        {
+                            AddRowSeries(b, $"Kötelezettségek és Követelések - {honapok[c]}", honapok[c].ToString(), baseColors[a], labels);
+                            AddGroupByDataToCollection(honapok[c].ToString(), a);
+                            if (a + 1 > 3)
+                                a = 0;
+                            else
+                                a++;
+                            c++;
+                        }
+                    }
+                    else if (SelectedAdatsorok.Contains("Év") && SelectedCimkek.Contains("Hónap"))
+                    {
+                        List<string> labels = new List<string> { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
+                        // Create a Dictionary<int, Dictionary<int, double>> where the first key is month (1-12),
+                        // and the second dictionary maps years to values for that month
+                        var monthDict = Enumerable.Range(1, 12)
+                            .ToDictionary(
+                                month => month,
+                                month => _selectedKotelezettsegekKovetelesek
+                                    .GroupBy(p => p.KifizetesHatarideje.Year)
+                                    .ToDictionary(
+                                        yearGroup => yearGroup.Key,
+                                        yearGroup => {
+                                            // Find items for this specific year and month
+                                            var itemsForYearAndMonth = _selectedKotelezettsegekKovetelesek
+                                                .Where(p => p.KifizetesHatarideje.Year == yearGroup.Key &&
+                                                           p.KifizetesHatarideje.Month == month)
+                                                .ToList();
+
+                                            // Calculate value using existing items or return 0 if none exist
+                                            if (itemsForYearAndMonth.Any())
+                                            {
+                                                var values = itemsForYearAndMonth.Select(x => Convert.ToDouble(x.Osszeg)).ToList();
+                                                return GetDataStatisticValueBack(values);
+                                            }
+                                            return 0.0;
+                                        }
+                                    )
+                            );
+
+
+                        List<ChartValues<double>> yearlyData = new List<ChartValues<double>>();
+
+
+                        List<int> years = new List<int>();
+                        foreach (var year in _selectedKotelezettsegekKovetelesek.GroupBy(x => x.KifizetesHatarideje.Year))
+                        {
+                            years.Add(year.Key);
+                        }
+
+                        for (int i = 0; i < years.Count; i++)
+                        {
+                            yearlyData.Add(new ChartValues<double>());
+                        }
+                        for (int i = 0; i < years.Count; i++)
+                        {
+                            foreach (var month in monthDict)
+                            {
+                                yearlyData[i].Add(month.Value[years[i]]);
+                            }
+                        }
+                        int a = 0;
+                        int c = 0;
+                        foreach (var b in yearlyData)
+                        {
+                            AddRowSeries(b, $"Kötelezettségek és Követelések - {years[c]}", "Év_" + years[c].ToString(), baseColors[a], labels);
+                            AddGroupByDataToCollection("Év_" + years[c].ToString(), a);
+                            if (a + 1 > 3)
+                                a = 0;
+                            else
+                                a++;
+                            c++;
+
+                        }
+                    }
+                }
+                else if (GroupByKifizetettCheckBoxIsChecked && GroupByPenznemCheckBoxIsChecked)
+                {
+                    if (SelectedCimkek.Contains("Pénznem") && SelectedCimkek.Contains("Kifizetett"))
+                    {
+                        var groupedKifizetettPenznem = _selectedKotelezettsegekKovetelesek
+                           .GroupBy(p => new { p.Kifizetett, p.Penznem })
+                           .ToDictionary(
+                               g => g.Key,
+                               g =>
+                               {
+                                   var v = g.Select(x => Convert.ToDouble(x.Osszeg)).ToList();
+                                   return g.Any() ? GetDataStatisticValueBack(v) : 0;
+                               }
+                           );
+                        ChartValues<double> values = new ChartValues<double>();
+                        List<string> labels = new List<string>();
+                        foreach (var kifizetettPenznem in groupedKifizetettPenznem)
+                        {
+                            labels.Add(kifizetettPenznem.Key.ToString());
+                            values.Add(kifizetettPenznem.Value);
+                        }
+
+                        AddRowSeries(values, $"Kötelezettségek és Követelések - Kifizetett és Pénznem", "KifizetettPenznem", baseColors[0], labels);
+                        AddGroupByDataToCollection("KifizetettPenznem", 0);
+                    }
+                    else if (SelectedCimkek.Contains("Pénznem") && SelectedAdatsorok.Contains("Kifizetett"))
+                    {
+                        List<string> kifizetettLabels = new List<string> { "0", "1" };
+                        var groupedByKifizetettPenznem = _selectedKotelezettsegekKovetelesek
+                           .GroupBy(p => new { p.Kifizetett, p.Penznem })
+                           .ToDictionary(
+                               g => g.Key,
+                               g => g.ToList()
+                           );
+                        var penznemDict = System.Enum.GetValues(typeof(Penznem))
+                            .Cast<Penznem>()
+                            .ToDictionary(
+                                penznem => penznem,
+                                penznem =>
+                                {
+                                    var kifizetettValues = _selectedKotelezettsegekKovetelesek
+                                        .GroupBy(x => x.Kifizetett)
+                                        .ToDictionary(
+                                            kifizetett => kifizetett.Key,
+                                            kifizetett =>
+                                            {
+                                                var matchingGroup = groupedByKifizetettPenznem
+                                                    .Where(kvp => kvp.Key.Kifizetett == kifizetett.Key && kvp.Key.Penznem == penznem)
+                                                    .SelectMany(kvp => kvp.Value)
+                                                    .ToList();
+                                                var values = matchingGroup.Select(x => Convert.ToDouble(x.Osszeg)).ToList();
+                                                return matchingGroup.Any() ? GetDataStatisticValueBack(values) : 0;
+                                            }
+                                        );
+
+                                    return kifizetettValues;
+                                }
+                            );
+
+                        List<string> labels = new List<string>();
+                        foreach (var penznem in penznemDict)
+                        {
+                            labels.Add(penznem.Key.ToString());
+                        }
+                        var kifizetettData = new List<ChartValues<double>>();
+                        for (int i = 0; i < 2; i++)
+                        {
+                            kifizetettData.Add(new ChartValues<double>());
+                        }
+
+                        var sortedPenznem = penznemDict.OrderBy(y => y.Key);
+                        foreach (var penznem in sortedPenznem)
+                        {
+                            for (int i = 0; i < 2; i++)
+                            {
+                                kifizetettData[i].Add(penznem.Value[(short)i]);
+                            }
+                        }
+
+                        int a = 0;
+                        int c = 0;
+                        foreach (var b in kifizetettData)
+                        {
+                            AddRowSeries(b, $"Kötelezettségek és Követelések - {kifizetettLabels[c]}", "Kifizetett_" + kifizetettLabels[c].ToString(), baseColors[a], labels);
+                            AddGroupByDataToCollection("Kifizetett_" + kifizetettLabels[c].ToString(), a);
+                            if (a + 1 > 3)
+                                a = 0;
+                            else
+                                a++;
+                            c++;
+                        }
+                    }
+                    else if (SelectedAdatsorok.Contains("Pénznem") && SelectedCimkek.Contains("Kifizetett"))
+                    {
+                        List<string> penznemek = new List<string> { "Forint", "Euró", "Font", "Dollár" };
+                        var groupedByBeKiKodPenznem = _selectedKotelezettsegekKovetelesek
+                           .GroupBy(p => new { p.Kifizetett, p.Penznem })
+                           .ToDictionary(
+                               g => g.Key,
+                               g => g.ToList()
+                           );
+                        var beKiKodDict = _selectedKotelezettsegekKovetelesek
+                            .GroupBy(x => x.Kifizetett)
+                            .ToDictionary(
+                                kifizetett => kifizetett,
+                                kifizetett =>
+                                {
+                                    var penznemValues = System.Enum.GetValues(typeof(Penznem))
+                                        .Cast<Penznem>()
+                                        .ToDictionary(
+                                            penznem => penznem,
+                                            penznem =>
+                                            {
+                                                var matchingGroup = groupedByBeKiKodPenznem
+                                                    .Where(kvp => kvp.Key.Kifizetett == kifizetett.Key && kvp.Key.Penznem == penznem)
+                                                    .SelectMany(kvp => kvp.Value)
+                                                    .ToList();
+                                                var values = matchingGroup.Select(x => Convert.ToDouble(x.Osszeg)).ToList();
+                                                return matchingGroup.Any() ? GetDataStatisticValueBack(values) : 0;
+                                            }
+                                        );
+
+                                    return penznemValues;
+                                }
+                            );
+
+                        List<string> labels = new List<string>() { "0", "1" };
+
+                        var penznemData = System.Enum.GetValues(typeof(Penznem))
+                            .Cast<Penznem>()
+                            .ToDictionary(
+                                penznem => penznem,
+                                penznem =>
+                                {
+                                    return new ChartValues<double>();
+                                }
+                            );
+                        var sortedBeKiKod = beKiKodDict.OrderBy(y => y.Key.Key);
+                        foreach (var bekikod in sortedBeKiKod)
+                        {
+                            foreach (var penznem in System.Enum.GetValues(typeof(Penznem)).Cast<Penznem>())
+                            {
+                                penznemData[penznem].Add(bekikod.Value[penznem]);
+                            }
+                        }
+
+                        int a = 0;
+                        int c = 0;
+                        foreach (var b in penznemData)
+                        {
+                            AddRowSeries(b.Value, $"Kötelezettségek és Követelések - {penznemek[c]}", penznemek[c].ToString(), baseColors[a], labels);
+                            AddGroupByDataToCollection(penznemek[c].ToString(), a);
+                            if (a + 1 > 3)
+                                a = 0;
+                            else
+                                a++;
+                            c++;
+                        }
+                    }
+                }
+                else if (GroupByKifizetettCheckBoxIsChecked)
+                {
+                    if (SelectedCimkek.Count > 0)
+                    {
+                        // Modify the grouping logic to include all Penznem enum values, even if there are no matching entries.
+                        var groupedByKifizetett = _selectedKotelezettsegekKovetelesek
+                            .GroupBy(x => x.Kifizetett)
+                            .ToDictionary(
+                                kifizetett => kifizetett,
+                                kifizetett => new HashSet<KotelezettsegKoveteles>(
+                                    _selectedKotelezettsegekKovetelesek.Where(x => x.Kifizetett == kifizetett.Key)
+                                )
+                            );
+
+                        List<string> labels = new List<string>();
+                        var kotelezettsegekKovetelesekAdatsor = new ChartValues<double>();
+
+                        // Display the results
+                        foreach (var kvp in groupedByKifizetett)
+                        {
+                            labels.Add(kvp.Key.Key.ToString());
+                            switch (SelectedDataStatistics)
+                            {
+                                case "Nincs kiválasztva":
+                                    kotelezettsegekKovetelesekAdatsor.Add(kvp.Value.Sum(x => x.Osszeg));
+                                    break;
+                                case "Összeg":
+                                    kotelezettsegekKovetelesekAdatsor.Add(DataStatistics.GetSum(kvp.Value.Select(x => (int)x.Osszeg).ToList()));
+                                    break;
+                                case "Átlag":
+                                    kotelezettsegekKovetelesekAdatsor.Add(DataStatistics.GetAvarage(kvp.Value.Select(x => (int)x.Osszeg).ToList()));
+                                    break;
+                                case "Mértani Közép":
+                                    kotelezettsegekKovetelesekAdatsor.Add(DataStatistics.GetMedian(kvp.Value.Select(x => (int)x.Osszeg).ToList()));
+                                    break;
+                                case "Minimum Érték":
+                                    kotelezettsegekKovetelesekAdatsor.Add(DataStatistics.GetMinimumValue(kvp.Value.Select(x => (int)x.Osszeg).ToList()));
+                                    break;
+                                case "Maximum Érték":
+                                    kotelezettsegekKovetelesekAdatsor.Add(DataStatistics.GetMaximumValue(kvp.Value.Select(x => (int)x.Osszeg).ToList()));
+                                    break;
+                                case "Értékek Szórása":
+                                    kotelezettsegekKovetelesekAdatsor.Add(DataStatistics.GetStandardDeviation(kvp.Value.Select(x => (int)x.Osszeg).ToList()));
+                                    break;
+                                default:
+                                    kotelezettsegekKovetelesekAdatsor.Add(kvp.Value.Sum(x => x.Osszeg));
+                                    break;
+                            }
+                        }
+
+                        AddRowSeries(kotelezettsegekKovetelesekAdatsor, $"Kötelezettségek és Követelések - Kifizetett", "Kifizetett", baseColors[0], labels);
+                        AddGroupByDataToCollection("Kifizetett", 0);
+                    }
+                    else
+                    {
+                        //ERROR TODO
+                    }
+                }
+                else if (GroupByPenznemCheckBoxIsChecked)
+                {
+                    // Modify the grouping logic to include all Penznem enum values, even if there are no matching entries.
+                    var groupedByPenznem = System.Enum.GetValues(typeof(Penznem))
+                        .Cast<Penznem>()
+                        .ToDictionary(
+                            penznem => penznem,
+                            penznem => new HashSet<KotelezettsegKoveteles>(
+                                _selectedKotelezettsegekKovetelesek.Where(x => x.Penznem == penznem)
+                            )
+                        );
+
+                    List<string> labels = new List<string>();
+                    var kotelezettsegekKovetelesekAdatsor = new ChartValues<double>();
+
+                    // Display the results
+                    foreach (var kvp in groupedByPenznem)
+                    {
+                        labels.Add(kvp.Key.ToString());
+                        switch (SelectedDataStatistics)
+                        {
+                            case "Nincs kiválasztva":
+                                kotelezettsegekKovetelesekAdatsor.Add(kvp.Value.Sum(x => x.Osszeg));
+                                break;
+                            case "Összeg":
+                                kotelezettsegekKovetelesekAdatsor.Add(DataStatistics.GetSum(kvp.Value.Select(x => (int)x.Osszeg).ToList()));
+                                break;
+                            case "Átlag":
+                                kotelezettsegekKovetelesekAdatsor.Add(DataStatistics.GetAvarage(kvp.Value.Select(x => (int)x.Osszeg).ToList()));
+                                break;
+                            case "Mértani Közép":
+                                kotelezettsegekKovetelesekAdatsor.Add(DataStatistics.GetMedian(kvp.Value.Select(x => (int)x.Osszeg).ToList()));
+                                break;
+                            case "Minimum Érték":
+                                kotelezettsegekKovetelesekAdatsor.Add(DataStatistics.GetMinimumValue(kvp.Value.Select(x => (int)x.Osszeg).ToList()));
+                                break;
+                            case "Maximum Érték":
+                                kotelezettsegekKovetelesekAdatsor.Add(DataStatistics.GetMaximumValue(kvp.Value.Select(x => (int)x.Osszeg).ToList()));
+                                break;
+                            case "Értékek Szórása":
+                                kotelezettsegekKovetelesekAdatsor.Add(DataStatistics.GetStandardDeviation(kvp.Value.Select(x => (int)x.Osszeg).ToList()));
+                                break;
+                            default:
+                                kotelezettsegekKovetelesekAdatsor.Add(kvp.Value.Sum(x => x.Osszeg));
+                                break;
+                        }
                     }
 
-                    if (bevetelekKiadasokAdatsor.Count != 0)
+                    AddRowSeries(kotelezettsegekKovetelesekAdatsor, $"Kötelezettségek és Követelések - Pénznem", "Pénznem", baseColors[0], labels);
+                    AddGroupByDataToCollection("Pénznem", 0);
+                }
+                else if (GroupByYearCheckBoxIsChecked)
+                {
+                    var groupedByYear = _selectedKotelezettsegekKovetelesek
+                       .GroupBy(p => new { p.KifizetesHatarideje.Year })
+                       .ToDictionary(
+                           g => g.Key,
+                           g =>
+                           {
+                               var v = g.Select(x => Convert.ToDouble(x.Osszeg)).ToList();
+                               return g.Any() ? GetDataStatisticValueBack(v) : 0;
+                           }
+                       );
+
+                    List<string> labels = new List<string>();
+                    ChartValues<double> values = new ChartValues<double>();
+                    foreach (var year in groupedByYear)
                     {
-                        //AddRowSeries(bevetelekKiadasokAdatsor, "Bevételek és Kiadások", "bevetelekKiadasok", baseColors[0]);
-                        AddGroupByDataToCollection("bevetelekKiadasok", 0);
+                        labels.Add(year.Key.ToString());
+                        values.Add(year.Value);
                     }
+
+                    var sortedYears = groupedByYear.OrderBy(y => y.Key);
+
+                    AddRowSeries(values, $"Kötelezettségek és Követelések - Év", "Év", baseColors[0], labels);
+                    AddGroupByDataToCollection("Év", 0);
+                }
+                else if (GroupByMonthCheckBoxIsChecked)
+                {
+
+                    List<string> honapok = new List<string> { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
+                    var monthValuesDict = Enumerable.Range(1, 12)
+                        .ToDictionary(
+                            month => month,
+                            month => 0.0  // Default value for months with no data
+                        );
+
+                    // Group by month and calculate statistics for each month that has data
+                    var groupedByMonth = _selectedKotelezettsegekKovetelesek
+                        .GroupBy(p => p.KifizetesHatarideje.Month)
+                        .ToDictionary(
+                            g => g.Key,
+                            g =>
+                            {
+                                var v = g.Select(x => Convert.ToDouble(x.Osszeg)).ToList();
+                                return g.Any() ? GetDataStatisticValueBack(v) : 0;
+                            }
+                        );
+
+                    // Update our complete dictionary with values from grouped data
+                    foreach (var item in groupedByMonth)
+                    {
+                        monthValuesDict[item.Key] = item.Value;
+                    }
+
+                    // Convert to ordered list for display
+                    List<string> labels = honapok;
+                    ChartValues<double> values = new ChartValues<double>(
+                        Enumerable.Range(1, 12).Select(month => monthValuesDict[month])
+                    );
+
+                    AddRowSeries(values, $"Kötelezettségek és Követelések - Hónapok", "Hónapok", baseColors[0], honapok);
+                    AddGroupByDataToCollection("Hónapok", 0);
+                }
+                else
+                {
+                    //TODO ERROR
                 }
             }
 
@@ -3305,6 +5853,7 @@ namespace Szakdolgozat.ViewModels
                 }
             }
         }
+
         private void AddPieSeries(ChartValues<ObservableValue> values, double categoryTotal, double totalSum, string title, string name, Brush color)
         {
             double value;
@@ -3374,15 +5923,6 @@ namespace Szakdolgozat.ViewModels
                 Fill = color,
             });
 
-            //if (GroupByDateCheckBoxIsChecked)
-            //{
-            //    RowSeriesLabels = new[] { "Jan", "Feb", "Mar", "Apr", "Maj", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dec" };
-            //}
-            //else if (GroupByPenznemCheckBoxIsChecked)
-            //{
-            //    RowSeriesLabels = new[] { "Forint", "Euró", "Font", "Dollár" };
-            //}
-
             RowSeriesLabels = labels;
 
             RowSeriesFormatter = value => value == 0 ? "" : value.ToString("N");
@@ -3406,15 +5946,6 @@ namespace Szakdolgozat.ViewModels
                 Fill = color,
             });
 
-            //if (GroupByDateCheckBoxIsChecked)
-            //{
-            //    RowSeriesLabels = new[] { "Jan", "Feb", "Mar", "Apr", "Maj", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dec" };
-            //}
-            //else if (GroupByPenznemCheckBoxIsChecked)
-            //{
-            //    RowSeriesLabels = new[] { "Forint", "Euró", "Font", "Dollár" };
-            //}
-
             ColumnSeriesLabels = labels;
 
             ColumnSeriesFormatter = value => value == 0 ? "" : value.ToString("N");
@@ -3424,6 +5955,28 @@ namespace Szakdolgozat.ViewModels
             OnPropertyChanged(nameof(ColumnSeriesFormatter));
         }
 
+        private void AddStackedColumnSeries(ChartValues<double> values, string title, string name, Brush color, List<string> labels)
+        {
+            //StackedRowSeries-el megoldható a csoportokra bontás - viszont a RowSeries-el nem
+            //További feltételek szükségesek a RowSeries-hez, hogy a felhasználó tudjon több adatot is megjeleníteni
+
+            StackedColumnSeries.Add(new StackedColumnSeries
+            {
+                Title = title,
+                Name = name,
+                Values = values,
+                DataLabels = true,
+                Fill = color,
+            });
+
+            StackedColumnSeriesLabels = labels;
+
+            StackedColumnSeriesFormatter = value => value == 0 ? "" : value.ToString("N");
+
+            OnPropertyChanged(nameof(StackedColumnSeries));
+            OnPropertyChanged(nameof(StackedColumnSeriesLabels));
+            OnPropertyChanged(nameof(StackedColumnSeriesFormatter));
+        }
 
         private void AddLineSeries(ChartValues<double> values, string title, string name, SolidColorBrush baseColor)
         {
@@ -3493,8 +6046,18 @@ namespace Szakdolgozat.ViewModels
             {
                 return;
             }
-            if (SelectedCimkek.Count < 2)
+            if (SelectedCimkek.Count < 2 && SelectedCimke != "Év" && SelectedCimke != "Hónap")
                 return;
+            if(SelectedCimke == "Hónap" && SelectedAdatsorok.Contains("Év"))
+            {
+                SelectedAdatsorok.Remove("Év");
+                SelectedCimkek.Add("Év");
+            }
+            if (SelectedCimke == "Év" && SelectedAdatsorok.Contains("Hónap"))
+            {
+                SelectedAdatsorok.Remove("Hónap");
+                SelectedCimkek.Add("Hónap");
+            }
             SelectedAdatsorok.Add(SelectedCimke);
             SelectedCimkek.Remove(SelectedCimke);
         }
@@ -3504,6 +6067,16 @@ namespace Szakdolgozat.ViewModels
             if(SelectedAdatsor == null)
             {
                 return;
+            }
+            if (SelectedAdatsor == "Hónap" && SelectedCimkek.Contains("Év"))
+            {
+                SelectedCimkek.Remove("Év");
+                SelectedAdatsorok.Add("Év");
+            }
+            if (SelectedAdatsor == "Év" && SelectedCimkek.Contains("Hónap"))
+            {
+                SelectedCimkek.Remove("Hónap");
+                SelectedAdatsorok.Add("Hónap");
             }
             SelectedCimkek.Add(SelectedAdatsor);
             SelectedAdatsorok.Remove(SelectedAdatsor);
