@@ -1,4 +1,5 @@
-﻿using Org.BouncyCastle.Bcpg;
+﻿using LiveCharts.Wpf;
+using Org.BouncyCastle.Bcpg;
 using Org.BouncyCastle.Tls;
 using Org.BouncyCastle.Utilities;
 using System;
@@ -46,6 +47,9 @@ namespace Szakdolgozat.Views
                 viewModel._selectionDeleted = ChangeSelection_Click;
                 viewModel._deleteAllSelections = deleteAllDataSelection_Click;
                 viewModel.BuildAndSetContextMenu();
+
+
+                Mediator.GetSpecificChartRequest += GetSpecificChart;
             }
 
             koltsegvetes_mindCB.Checked += CheckBox_Checked;
@@ -93,6 +97,25 @@ namespace Szakdolgozat.Views
             GroupByYearCB.Unchecked += GroupByCheckBox_Unchecked;
             GroupByMonthCB.Checked += GroupByCheckBox_Checked;
             GroupByMonthCB.Unchecked += GroupByCheckBox_Unchecked;
+        }
+
+        private UIElement GetSpecificChart(string chartName)
+        {
+            switch (chartName)
+            {
+                case "DoughnutSeries":
+                    return pieSeries;
+                case "LineSeries":
+                    return lineSeries;
+                case "RowSeries":
+                    return rowSeries;
+                case "BasicColumnSeries":
+                    return columnSeries;
+                case "StackedColumnSeries":
+                    return stackedColumnSeries;
+                default:
+                    return null;
+            }
         }
 
         [DllImport("user32.dll")]
@@ -400,7 +423,7 @@ namespace Szakdolgozat.Views
         {
             switch (seriesType)
             {
-                case "DoghnutSeries":
+                case "DoughnutSeries":
                     pieSeries.Visibility = Visibility.Visible;
                     pieSeriesRadiusSlider.Visibility = Visibility.Visible;
                     break;
@@ -641,7 +664,7 @@ namespace Szakdolgozat.Views
                 {
                     if (chartsTabControl.SelectedItem is System.Windows.Controls.TabItem tabItem)
                     {
-                        if (viewModel.SeriesType == "DoghnutSeries")
+                        if (viewModel.SeriesType == "DoughnutSeries")
                         {
                             if (tabItem.Name.Contains("Koltsegvetes"))
                             {

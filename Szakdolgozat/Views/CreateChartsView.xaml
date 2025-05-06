@@ -437,6 +437,7 @@
                         </Grid>-->
                         <Button x:Name="deleteAllDataSelection" Margin="5,5,5,0" Click="deleteAllDataSelection_Click" Content="Összes jelölés törlése"></Button>
                         <Button x:Name="addDataToChart" Margin="5,5,5,0" Click="AddDataToChart_Click" Content="Adatok Hozzáadása"></Button>
+                        <Button Content="Export" Command="{Binding ExportChartAsImageCommand}"></Button>
                     </StackPanel>
                     <Grid Grid.Row="1">
                         <DataGrid ItemsSource="{Binding GroupBySelections}" AutoGenerateColumns="False" HeadersVisibility="Column" Margin="10">

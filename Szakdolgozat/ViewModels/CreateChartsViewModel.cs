@@ -26,6 +26,8 @@ using System.Runtime.InteropServices.ComTypes;
 using Org.BouncyCastle.Bcpg;
 using LiveCharts.Configurations;
 using Xceed.Wpf.Toolkit.Panels;
+using System.IO;
+using System.Windows.Media.Imaging;
 
 namespace Szakdolgozat.ViewModels
 {
@@ -547,7 +549,7 @@ namespace Szakdolgozat.ViewModels
                 OnPropertyChanged(nameof(SeriesType));
                 switch (value)
                 {
-                    case "DoghnutSeries":
+                    case "DoughnutSeries":
                         DataStatisticsCB = new ObservableCollection<string> { "Összeg", "Átlag", "Értékek Szórása", "Mértani Közép", "Minimum Érték", "Maximum Érték" };
                         SelectedDataStatistics = "Összeg";
                         break;
@@ -623,6 +625,7 @@ namespace Szakdolgozat.ViewModels
         public ICommand ShowAddOptionToNewChartViewCommand { get; }
         public ICommand AddGroupByToAdatsorokCommand { get; }
         public ICommand AddGroupByToCimkekCommand { get; }
+        public ICommand ExportChartAsImageCommand { get; }
 
         public CreateChartsViewModel()
         {
@@ -659,6 +662,7 @@ namespace Szakdolgozat.ViewModels
             ShowAddOptionToNewChartViewCommand = new ViewModelCommand(ExecuteShowAddOptionToNewChartViewCommand);
             AddGroupByToAdatsorokCommand = new ViewModelCommand(ExecuteAddGroupByToAdatsorokCommand);
             AddGroupByToCimkekCommand = new ViewModelCommand(ExecuteAddGroupByToCimkekCommand);
+            ExportChartAsImageCommand = new ViewModelCommand(ExecuteExportChartAsImageCommand);
 
             //idáig
 
@@ -1020,7 +1024,7 @@ namespace Szakdolgozat.ViewModels
                     }
                 }
             }
-            else if(SeriesType == "DoghnutSeries")
+            else if(SeriesType == "DoughnutSeries")
             {
                 foreach (var a in PieSeries)
                 {
@@ -1089,8 +1093,8 @@ namespace Szakdolgozat.ViewModels
         {
             switch(SeriesType)
             {
-                case "DoghnutSeries":
-                    SetDoghnutSeries();
+                case "DoughnutSeries":
+                    SetDoughnutSeries();
                     break;
                 case "RowSeries":
                     SetRowSeries();
@@ -3909,7 +3913,7 @@ namespace Szakdolgozat.ViewModels
                     }
                 }
             }
-           else if(SeriesType == "DoghnutSeries")
+           else if(SeriesType == "DoughnutSeries")
             {
                 foreach (var a in PieSeries)
                 {
@@ -4952,7 +4956,7 @@ namespace Szakdolgozat.ViewModels
             OnPropertyChanged(nameof(RowSeries));
         }
 
-        public void SetDoghnutSeries()
+        public void SetDoughnutSeries()
         {
             //NORMAL SETTING STARTS
             PieSeries = new SeriesCollection();
@@ -6085,6 +6089,72 @@ namespace Szakdolgozat.ViewModels
         private void ExecuteShowAddOptionToNewChartViewCommand(object obj)
         {
             CurrentChildView = new AddOptionsToNewChartViewModel(SelectedRows);
+        }
+
+        private void ExecuteExportChartAsImageCommand(object obj)
+        {
+            ExportSpecificChart(SeriesType);
+        }
+
+        public void ExportChartAsImage(UIElement chart, string folderPath)
+        {
+            if (!Directory.Exists(folderPath))
+            {
+                Directory.CreateDirectory(folderPath);
+            }
+
+            // Generate a unique file name based on date/time
+            string fileName = $"Chart_{DateTime.Now:yyyyMMdd_HHmmss}.png";
+
+            // Combine folder path and file name
+            string filePath = Path.Combine(folderPath, fileName);
+
+            // Define the size of the chart to render
+            var size = new Size(chart.RenderSize.Width, chart.RenderSize.Height);
+
+            // Measure and arrange the chart to ensure it is properly rendered
+            chart.Measure(size);
+            chart.Arrange(new Rect(size));
+
+            // Create a RenderTargetBitmap to render the chart
+            var renderBitmap = new RenderTargetBitmap(
+                (int)size.Width,
+                (int)size.Height,
+                96, // DPI X
+                96, // DPI Y
+                PixelFormats.Pbgra32);
+
+            // Create a DrawingVisual to draw a white background
+            DrawingVisual drawingVisual = new DrawingVisual();
+            using (DrawingContext drawingContext = drawingVisual.RenderOpen())
+            {
+                // Fill the entire area with white
+                drawingContext.DrawRectangle(Brushes.White, null, new Rect(new Point(0, 0), size));
+
+                // Create a VisualBrush from the chart
+                VisualBrush visualBrush = new VisualBrush(chart);
+                drawingContext.DrawRectangle(visualBrush, null, new Rect(new Point(0, 0), size));
+            }
+
+            // Render the visual with white background to the bitmap
+            renderBitmap.Render(drawingVisual);
+
+            // Save the bitmap to a file
+            using (var fileStream = new FileStream(filePath, FileMode.Create))
+            {
+                var encoder = new PngBitmapEncoder();
+                encoder.Frames.Add(BitmapFrame.Create(renderBitmap));
+                encoder.Save(fileStream);
+            }
+        }
+
+        public void ExportSpecificChart(string chartName)
+        {
+            UIElement chart = Mediator.NotifyGetSpecificChart(chartName);
+            if (chart != null)
+            {
+                ExportChartAsImage(chart, "C:\\Users\\NorbiPC\\Downloads\\teszt\\");
+            }
         }
     }
 }

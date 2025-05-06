@@ -93,7 +93,7 @@
 
                         </StackPanel>-->
                     <TextBlock Text="Doughnut Series" Grid.Row="0" FontSize="30" HorizontalAlignment="Center"></TextBlock>
-                    <lvc:PieChart Grid.Row="1" Name="Chart" Series="{Binding TestDoghnutSeriesForShow}" 
+                    <lvc:PieChart Grid.Row="1" Name="Chart" Series="{Binding TestDoughnutSeriesForShow}" 
                       LegendLocation="Right" InnerRadius="40" Margin="0 15">
                             <lvc:PieChart.ChartLegend>
                                 <lvc:DefaultLegend BulletSize="20"></lvc:DefaultLegend>
@@ -104,7 +104,7 @@
                         </lvc:PieChart>
                     <!--</Grid>
                 </StackPanel>-->
-                    <Button Grid.Row="2" x:Name="DoghnutSeriesCreateNewButton" CommandParameter="DoghnutSeries" Command="{Binding CreateChartCommand}" Content="Új létrehozása"></Button>
+                    <Button Grid.Row="2" x:Name="DoughnutSeriesCreateNewButton" CommandParameter="DoughnutSeries" Command="{Binding CreateChartCommand}" Content="Új létrehozása"></Button>
             </Grid>
         </materialDesign:Card>
         <materialDesign:Card Grid.Row="0"
