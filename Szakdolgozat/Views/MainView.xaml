@@ -27,12 +27,6 @@
         <DataTemplate DataType="{x:Type viewModels:LetezoDiagrammokViewModel}">
             <views:LetezoDiagrammokView/>
         </DataTemplate>
-        <DataTemplate DataType="{x:Type viewModels:UjStatisztikakViewModel}">
-            <views:UjStatisztikakView/>
-        </DataTemplate>
-        <DataTemplate DataType="{x:Type viewModels:LetezoStatisztikakViewModel}">
-            <views:LetezoStatisztikakView/>
-        </DataTemplate>
         <DataTemplate DataType="{x:Type viewModels:ElozmenyekViewModel}">
             <views:ElozmenyekView/>
         </DataTemplate>

@@ -49,7 +49,7 @@ namespace Szakdolgozat.ViewModels
         public string[] TestStackedColumnSeriesLabelsForShow { get; set; }
         public Func<double, string> TestStackedColumnSeriesFormatterForShow { get; set; }
 
-        public SeriesCollection TestDoghnutSeriesForShow { get; set; }
+        public SeriesCollection TestDoughnutSeriesForShow { get; set; }
         public Func<ChartPoint, string> TestPieRowSeriesLableForShow { get; set; }
         public void TestDataRowSeries()
         {
@@ -145,7 +145,7 @@ namespace Szakdolgozat.ViewModels
         }
         public void TestDataPieSeries()
         {
-            TestDoghnutSeriesForShow = new SeriesCollection
+            TestDoughnutSeriesForShow = new SeriesCollection
             {
                 new PieSeries
                 {

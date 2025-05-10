@@ -18,8 +18,11 @@ namespace Szakdolgozat.ViewModels
         public string Header { get; set; }
         public ObservableCollection<CustomMenuItemViewModel> MenuItems { get; } = new ObservableCollection<CustomMenuItemViewModel>();
     }
+
     public class MainViewModel : ViewModelBase
     {
+        public int UserID { get; set; }
+
         private ViewModelBase _currentChildView;
         public ViewModelBase CurrentChildView
         {
@@ -36,8 +39,6 @@ namespace Szakdolgozat.ViewModels
 
         public ICommand ShowUjDiagrammokViewCommand { get; }
         public ICommand ShowLetezoDiagrammokViewCommand { get; }
-        public ICommand ShowUjStatisztikakViewCommand { get; }
-        public ICommand ShowLetezoStatisztikakViewCommand { get; }
         public ICommand ShowElozmenyekViewCommand { get; }
         public ICommand ShowKoltsegvetesViewCommand { get; }
         public ICommand ShowMaganSzemelyekViewCommand { get; }
@@ -50,8 +51,6 @@ namespace Szakdolgozat.ViewModels
             //Initialize commands
             ShowUjDiagrammokViewCommand = new ViewModelCommand(ExecuteShowUjDiagrammokViewCommand);
             ShowLetezoDiagrammokViewCommand = new ViewModelCommand(ExecuteShowLetezoDiagrammokViewCommand);
-            ShowUjStatisztikakViewCommand = new ViewModelCommand(ExecuteShowUjStatisztikakViewCommand);
-            ShowLetezoStatisztikakViewCommand = new ViewModelCommand(ExecuteShowLetezoStatisztikakViewCommand);
             ShowElozmenyekViewCommand = new ViewModelCommand(ExecuteShowElozmenyekViewCommand);
             ShowKoltsegvetesViewCommand = new ViewModelCommand(ExecuteShowKoltsegvetesViewCommand);
             ShowMaganSzemelyekViewCommand = new ViewModelCommand(ExecuteShowMaganSzemelyekViewCommand);
@@ -69,14 +68,6 @@ namespace Szakdolgozat.ViewModels
         private void ExecuteShowLetezoDiagrammokViewCommand(object obj)
         {
             CurrentChildView = new LetezoDiagrammokViewModel();
-        }
-        private void ExecuteShowUjStatisztikakViewCommand(object obj)
-        {
-            CurrentChildView = new UjStatisztikakViewModel();
-        }
-        private void ExecuteShowLetezoStatisztikakViewCommand(object obj)
-        {
-            CurrentChildView = new LetezoStatisztikakViewModel();
         }
         private void ExecuteShowElozmenyekViewCommand(object obj)
         {

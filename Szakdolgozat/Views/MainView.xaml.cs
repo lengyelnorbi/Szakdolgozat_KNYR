@@ -12,10 +12,15 @@ namespace Szakdolgozat.Views
     /// </summary>
     public partial class MainView : Window
     {
-        public MainView()
+        public MainView(int userID)
         {
             InitializeComponent();
             this.MaxHeight = SystemParameters.MaximizedPrimaryScreenHeight;
+            if (this.DataContext is MainViewModel viewModel)
+            {
+                viewModel.UserID = userID;
+            }
+            Mediator.GetUserID += () => GetUserID();
         }
 
         [DllImport("user32.dll")]
@@ -49,6 +54,15 @@ namespace Szakdolgozat.Views
         private void btnClose_Click(object sender, RoutedEventArgs e)
         {
             Application.Current.Shutdown();
+        }
+
+        private int GetUserID()
+        {
+            if (this.DataContext is MainViewModel viewModel)
+            {
+                return viewModel.UserID;
+            }
+            return 0;
         }
     }
 }

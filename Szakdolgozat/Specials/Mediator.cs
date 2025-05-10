@@ -160,5 +160,19 @@ namespace Szakdolgozat.ViewModels
         {
             return GetSpecificChartRequest?.Invoke(chartName);
         }
+
+        public static Action<Dictionary<string, bool>> UpdateCheckboxStates;
+
+        public static void NotifyUpdateCheckboxStates(Dictionary<string, bool> checkboxStates)
+        {
+            UpdateCheckboxStates?.Invoke(checkboxStates);
+        }
+
+        public delegate int GetUserIDEventHandler();
+        public static event GetUserIDEventHandler GetUserID;
+        public static int NotifyGetUserID()
+        {
+            return GetUserID.Invoke();
+        }
     }
 }

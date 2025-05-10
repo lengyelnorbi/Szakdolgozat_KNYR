@@ -144,5 +144,31 @@ namespace Szakdolgozat.Views
                     comboBox.SelectedIndex = 0;
             }
         }
+
+        private void DataGrid_ContextMenuOpening(object sender, ContextMenuEventArgs e)
+        {
+            if (DataContext is DolgozoViewModel viewModel && viewModel.IsExportModeActive)
+            {
+                // Cancel the context menu when in export mode
+                e.Handled = true;
+            }
+        }
+
+        private void DataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (DataContext is DolgozoViewModel viewModel)
+            {
+                // Get all selected items from the DataGrid
+                var dataGrid = sender as DataGrid;
+                if (dataGrid != null)
+                {
+                    // Update selected items collection for export
+                    viewModel.UpdateSelectedItems(dataGrid.SelectedItems);
+
+                    // Update the IsSingleRowSelected property for context menu visibility
+                    viewModel.IsSingleRowSelected = dataGrid.SelectedItems.Count == 1;
+                }
+            }
+        }
     }
 }

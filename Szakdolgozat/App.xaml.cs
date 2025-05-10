@@ -5,6 +5,7 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using Szakdolgozat.ViewModels;
 using Szakdolgozat.Views;
 
 namespace Szakdolgozat
@@ -24,7 +25,12 @@ namespace Szakdolgozat
                 {
                     try
                     {
-                        var mainView = new MainView();
+                        int userID = 0;
+                        if (loginView.DataContext is LoginViewModel viewModel)
+                        {
+                            userID = viewModel.UserID;
+                        }
+                        var mainView = new MainView(userID);
                         mainView.Show();
                         loginView.Close();
                     }

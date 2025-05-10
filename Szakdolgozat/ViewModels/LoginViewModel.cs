@@ -21,6 +21,7 @@ namespace Szakdolgozat.ViewModels
         private string _errorMessage;
         private bool _isViewVisible = true;
         private UserRepository _userRepository;
+        public int UserID { get; set; }
         //Properties
         public string Username
         {
@@ -94,8 +95,10 @@ namespace Szakdolgozat.ViewModels
             Thread.CurrentPrincipal = new GenericPrincipal(
                 new GenericIdentity(Username), null);
             //DESING TESZTELÉSIG false-ra állítva
-            IsViewVisible = false;
-            var isValidUser = _userRepository.AuthenticateUser(new NetworkCredential(Username, Password));
+            IsViewVisible = true;
+            bool isValidUser = false;
+            int userId = 0;
+            (isValidUser, UserID) = _userRepository.AuthenticateUser(new NetworkCredential(Username, Password));
             if (isValidUser)
             {
                 Thread.CurrentPrincipal = new GenericPrincipal(

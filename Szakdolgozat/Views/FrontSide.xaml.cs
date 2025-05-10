@@ -16,11 +16,11 @@ using System.Windows.Shapes;
 namespace Szakdolgozat.Views
 {
     /// <summary>
-    /// Interaction logic for LetezoStatisztikakView.xaml
+    /// Interaction logic for FrontSide.xaml
     /// </summary>
-    public partial class LetezoStatisztikakView : UserControl
+    public partial class FrontSide : UserControl
     {
-        public LetezoStatisztikakView()
+        public FrontSide()
         {
             InitializeComponent();
         }

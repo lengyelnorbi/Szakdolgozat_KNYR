@@ -39,6 +39,12 @@ namespace Szakdolgozat.ViewModels
         public RoutedEventHandler _selectionDeleted = null;
         public RoutedEventHandler _deleteAllSelections = null;
 
+        private int DiagrammID = 0;
+        private string DiagrammName = $"Chart_{DateTime.Now:yyyyMMdd_HHmmss}";
+        private string DiagrammDescription = "";
+
+        public bool IsChartModifying = false;
+
         private string _selectedCimke = "";
         public string SelectedCimke
         {
@@ -626,6 +632,7 @@ namespace Szakdolgozat.ViewModels
         public ICommand AddGroupByToAdatsorokCommand { get; }
         public ICommand AddGroupByToCimkekCommand { get; }
         public ICommand ExportChartAsImageCommand { get; }
+        public ICommand SaveChartCommand { get; }
 
         public CreateChartsViewModel()
         {
@@ -664,6 +671,7 @@ namespace Szakdolgozat.ViewModels
             AddGroupByToCimkekCommand = new ViewModelCommand(ExecuteAddGroupByToCimkekCommand);
             ExportChartAsImageCommand = new ViewModelCommand(ExecuteExportChartAsImageCommand);
 
+            SaveChartCommand = new ViewModelCommand(ExecuteSaveChartCommand);
             //idáig
 
 
@@ -6155,6 +6163,405 @@ namespace Szakdolgozat.ViewModels
             {
                 ExportChartAsImage(chart, "C:\\Users\\NorbiPC\\Downloads\\teszt\\");
             }
+        }
+
+
+
+
+
+
+
+        private void ExecuteSaveChartCommand(object obj)
+        {
+            try
+            {
+                // Prompt for chart name and description
+                string chartName = GetChartNameFromUser();
+                if (string.IsNullOrEmpty(chartName))
+                    return; // User cancelled
+
+                string chartDescription = GetChartDescriptionFromUser();
+
+                // Create and save the chart
+                SaveChartToDatabase(chartName, chartDescription);
+
+                System.Windows.MessageBox.Show(
+                    "Chart saved successfully!",
+                    "Save Success",
+                    System.Windows.MessageBoxButton.OK,
+                    System.Windows.MessageBoxImage.Information);
+            }
+            catch (Exception ex)
+            {
+                System.Windows.MessageBox.Show(
+                    $"Error saving chart: {ex.Message}",
+                    "Save Error",
+                    System.Windows.MessageBoxButton.OK,
+                    System.Windows.MessageBoxImage.Error);
+            }
+        }
+
+        private string GetChartNameFromUser()
+        {
+            // Create a new Window for the dialog
+            var dialog = new Window
+            {
+                Title = "Chart Name",
+                Width = 300,
+                Height = 150,
+                WindowStartupLocation = WindowStartupLocation.CenterScreen,
+                ResizeMode = ResizeMode.NoResize,
+                WindowStyle = WindowStyle.ToolWindow
+            };
+
+            // Create input TextBox
+            var inputDialog = new System.Windows.Controls.TextBox
+            {
+                Text = DiagrammName,
+                Margin = new Thickness(10),
+                VerticalAlignment = VerticalAlignment.Top
+            };
+
+            // Create button panel
+            var buttonPanel = new System.Windows.Controls.StackPanel
+            {
+                Orientation = System.Windows.Controls.Orientation.Horizontal,
+                HorizontalAlignment = System.Windows.HorizontalAlignment.Center
+            };
+
+            var okButton = new System.Windows.Controls.Button
+            {
+                Content = "OK",
+                Width = 75,
+                Margin = new Thickness(10)
+            };
+
+            var cancelButton = new System.Windows.Controls.Button
+            {
+                Content = "Cancel",
+                Width = 75,
+                Margin = new Thickness(10)
+            };
+
+            // Wire up button events
+            okButton.Click += (s, e) => { dialog.DialogResult = true; };
+            cancelButton.Click += (s, e) => { dialog.DialogResult = false; };
+
+            buttonPanel.Children.Add(okButton);
+            buttonPanel.Children.Add(cancelButton);
+
+            // Create main layout panel
+            var mainPanel = new System.Windows.Controls.StackPanel();
+            mainPanel.Margin = new Thickness(10);
+            mainPanel.Children.Add(new System.Windows.Controls.TextBlock
+            {
+                Text = "Enter chart name:",
+                Margin = new Thickness(0, 0, 0, 5)
+            });
+            mainPanel.Children.Add(inputDialog);
+            mainPanel.Children.Add(new System.Windows.Controls.TextBlock { Height = 10 });  // Spacer
+            mainPanel.Children.Add(buttonPanel);
+
+            // Set dialog content
+            dialog.Content = mainPanel;
+
+            // Show dialog and get result
+            bool? result = dialog.ShowDialog();
+            return result == true ? inputDialog.Text : null;
+        }
+
+        private string GetChartDescriptionFromUser()
+        {
+            // Create a new Window for the dialog
+            var dialog = new Window
+            {
+                Title = "Chart Description (Optional)",
+                Width = 400,
+                Height = 250,
+                WindowStartupLocation = WindowStartupLocation.CenterScreen,
+                ResizeMode = ResizeMode.NoResize,
+                WindowStyle = WindowStyle.ToolWindow
+            };
+
+            // Create input TextBox
+            var inputDialog = new System.Windows.Controls.TextBox
+            {
+                Text = DiagrammDescription,
+                AcceptsReturn = true,
+                TextWrapping = System.Windows.TextWrapping.Wrap,
+                Height = 100,
+                Margin = new Thickness(10),
+                VerticalAlignment = VerticalAlignment.Top
+            };
+
+            // Create button panel
+            var buttonPanel = new System.Windows.Controls.StackPanel
+            {
+                Orientation = System.Windows.Controls.Orientation.Horizontal,
+                HorizontalAlignment = System.Windows.HorizontalAlignment.Center
+            };
+
+            var okButton = new System.Windows.Controls.Button
+            {
+                Content = "OK",
+                Width = 75,
+                Margin = new Thickness(10)
+            };
+
+            var cancelButton = new System.Windows.Controls.Button
+            {
+                Content = "Cancel",
+                Width = 75,
+                Margin = new Thickness(10)
+            };
+
+            // Wire up button events
+            okButton.Click += (s, e) => { dialog.DialogResult = true; };
+            cancelButton.Click += (s, e) => { dialog.DialogResult = false; };
+
+            buttonPanel.Children.Add(okButton);
+            buttonPanel.Children.Add(cancelButton);
+
+            // Create main layout panel
+            var mainPanel = new System.Windows.Controls.StackPanel();
+            mainPanel.Margin = new Thickness(10);
+            mainPanel.Children.Add(new System.Windows.Controls.TextBlock
+            {
+                Text = "Enter chart description (optional):",
+                Margin = new Thickness(0, 0, 0, 5)
+            });
+            mainPanel.Children.Add(inputDialog);
+            mainPanel.Children.Add(new System.Windows.Controls.TextBlock { Height = 10 });  // Spacer
+            mainPanel.Children.Add(buttonPanel);
+
+            // Set dialog content
+            dialog.Content = mainPanel;
+
+            // Show dialog and get result
+            bool? result = dialog.ShowDialog();
+            return result == true ? inputDialog.Text : "";
+        }
+
+        private void SaveChartToDatabase(string chartName, string chartDescription)
+        {
+            // Create a new DiagrammRepository instance
+            var diagrammRepository = new DiagrammRepository();
+
+            // Get selected item IDs
+            List<int> selectedItemIDs = new List<int>();
+
+            if (IsBevetelekKiadasokTabIsSelected)
+            {
+                selectedItemIDs = _selectedBevetelekKiadasok.Select(x => x.ID).ToList();
+            }
+            else
+            {
+                selectedItemIDs = _selectedKotelezettsegekKovetelesek.Select(x => x.ID).ToList();
+            }
+
+            // Serialize filter settings
+            var filterSettings = new Dictionary<string, object>
+    {
+        { "SearchQuery", SearchQuery },
+        { "SelectedYear", SelectedYear },
+        { "StartingDate", StartingDate },
+        { "EndDate", EndDate },
+        { "IsValidStartDateExists", IsValidStartDateExists },
+        { "IsValidEndDateExists", IsValidEndDateExists },
+        { "CheckboxStatuses", checkboxStatuses }
+    };
+            string[] cimkekArray = SelectedCimkek.ToArray();
+            string[] adatsorokArray = SelectedAdatsorok.ToArray();
+
+            // 1. FIXED: Put grouping settings in the proper place
+            // Serialize groupby settings
+            var groupBySettings = new Dictionary<string, object>
+    {
+        { "GroupByPenznem", GroupByPenznemCheckBoxIsChecked },
+        { "GroupByBeKiKod", GroupByBeKiKodCheckBoxIsChecked },
+        { "GroupByKifizetett", GroupByKifizetettCheckBoxIsChecked },
+        { "GroupByMonth", GroupByMonthCheckBoxIsChecked },
+        { "GroupByYear", GroupByYearCheckBoxIsChecked },
+        { "GroupByDate", GroupByDateCheckBoxIsChecked },
+        { "SelectedCimkek", cimkekArray },
+        { "SelectedAdatsorok", adatsorokArray },
+        { "SelectedDataStatistics", SelectedDataStatistics },
+        { "InnerRadius", InnerRadius }
+    };
+
+            string filterSettingsJson = Newtonsoft.Json.JsonConvert.SerializeObject(
+        filterSettings,
+        Newtonsoft.Json.Formatting.Indented
+    );
+
+            string groupBySettingsJson = Newtonsoft.Json.JsonConvert.SerializeObject(
+                groupBySettings,
+                Newtonsoft.Json.Formatting.Indented
+            );
+
+            // Create a serializable representation of GroupBySelections
+            var serializableGroupBySelections = GroupBySelections.Select(g => new
+            {
+                Name = g.Name,
+                Color = new
+                {
+                    A = g.Color.Color.A,
+                    R = g.Color.Color.R,
+                    G = g.Color.Color.G,
+                    B = g.Color.Color.B
+                },
+                IsSelected = g.IsSelected
+            }).ToList();
+
+            string seriesGroupBySelectionsJson = Newtonsoft.Json.JsonConvert.SerializeObject(
+             serializableGroupBySelections,
+             Newtonsoft.Json.Formatting.Indented
+         );
+
+            // Create the model
+            var diagrammModel = new Diagramm
+            {
+                ID = DiagrammID, // Assuming 0 for new chart
+                Name = chartName,
+                Description = chartDescription,
+                ChartType = SeriesType,
+                DataSource = IsBevetelekKiadasokTabIsSelected ? "Koltsegvetes" : "KotelezettsegKoveteles",
+                FilterSettings = filterSettingsJson,
+                GroupBySettings = groupBySettingsJson,
+                SeriesGroupBySelection = seriesGroupBySelectionsJson,
+                SelectedItemsIDs = string.Join(",", selectedItemIDs),
+                DataStatistic = SelectedDataStatistics,
+                CreatedDate = DateTime.Now,
+                CreatedByUserID = Mediator.NotifyGetUserID() // Implement this method based on your authentication system
+            };
+
+            // Save to database
+            diagrammRepository.SaveDiagramm(diagrammModel);
+        }
+
+        public void LoadDiagram(Diagramm diagramm)
+        {
+            DiagrammID = diagramm.ID;
+            DiagrammName = diagramm.Name;
+            DiagrammDescription = diagramm.Description;
+            IsChartModifying = true;
+            // Load basic properties
+            SeriesType = diagramm.ChartType;
+            SelectedDataStatistics = diagramm.DataStatistic;
+            // Now load the selected data
+            if (diagramm.DataSource == "Koltsegvetes")
+            {
+                IsBevetelekKiadasokTabIsSelected = true;
+                SetSelectedBevetelekKiadasok(diagramm.SelectedItemsIDs);
+            }
+            else
+            {
+                IsBevetelekKiadasokTabIsSelected = false;
+                // Your equivalent method for KotelezettsegKoveteles if you have one
+            }
+
+            // Deserialize filter and groupby settings
+            var filterSettings = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, object>>(diagramm.FilterSettings);
+            var groupBySettings = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, object>>(diagramm.GroupBySettings);
+            // If CheckboxStatuses was saved, restore it
+       
+            // Apply settings (example)
+            SearchQuery = filterSettings["SearchQuery"]?.ToString();
+            SelectedYear = filterSettings["SelectedYear"] != null ? Convert.ToInt32(filterSettings["SelectedYear"]) : 0;
+            StartingDate = filterSettings["StartingDate"] != null ? filterSettings["StartingDate"].ToString() : "";
+            EndDate = filterSettings["EndDate"] != null ? filterSettings["EndDate"].ToString() : "";
+            IsValidEndDateExists = (bool)filterSettings["IsValidEndDateExists"];
+            IsValidStartDateExists = (bool)filterSettings["IsValidStartDateExists"];
+            GroupByPenznemCheckBoxIsChecked = (bool)groupBySettings["GroupByPenznem"];
+            GroupByBeKiKodCheckBoxIsChecked = (bool)groupBySettings["GroupByBeKiKod"];
+            GroupByKifizetettCheckBoxIsChecked = (bool)groupBySettings["GroupByKifizetett"];
+            GroupByMonthCheckBoxIsChecked = (bool)groupBySettings["GroupByMonth"];
+            GroupByDateCheckBoxIsChecked = (bool)groupBySettings["GroupByDate"];
+            GroupByYearCheckBoxIsChecked = (bool)groupBySettings["GroupByYear"];
+            if (filterSettings.ContainsKey("CheckboxStatuses"))
+            {
+                try
+                {
+                    // Convert the JObject to a proper Dictionary
+                    var savedCheckboxStatuses = ((Newtonsoft.Json.Linq.JObject)filterSettings["CheckboxStatuses"]).ToObject<Dictionary<string, bool>>();
+
+                    // Update the current checkboxStatuses
+                    foreach (var key in savedCheckboxStatuses.Keys)
+                    {
+                        if (checkboxStatuses.ContainsKey(key))
+                        {
+                            checkboxStatuses[key] = savedCheckboxStatuses[key];
+                        }
+                    }
+                    // Notify the view to update checkbox states
+                    Mediator.NotifyUpdateCheckboxStates(savedCheckboxStatuses);
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"Error restoring checkbox statuses: {ex.Message}");
+                }
+            }
+            SelectedAdatsorok = ((Newtonsoft.Json.Linq.JArray)groupBySettings["SelectedAdatsorok"]).ToObject<ObservableCollection<string>>();
+            SelectedCimkek = ((Newtonsoft.Json.Linq.JArray)groupBySettings["SelectedCimkek"]).ToObject<ObservableCollection<string>>();
+            InnerRadius = (double)groupBySettings["InnerRadius"];
+            SetSeries();
+            // Load GroupBySelections
+            if (!string.IsNullOrEmpty(diagramm.SeriesGroupBySelection))
+            {
+                try
+                {
+                    // Deserialize the GroupBySelections
+                    var serializedSelections = Newtonsoft.Json.JsonConvert.DeserializeObject<List<dynamic>>(diagramm.SeriesGroupBySelection);
+
+                    // Clear existing selections
+                    GroupBySelections.Clear();
+
+                    // Recreate the GroupBySelections from the serialized data
+                    foreach (var item in serializedSelections)
+                    {
+                        string name = item.Name;
+                        bool isSelected = item.IsSelected;
+
+                        // Recreate color from ARGB values
+                        byte a = (byte)item.Color.A;
+                        byte r = (byte)item.Color.R;
+                        byte g = (byte)item.Color.G;
+                        byte b = (byte)item.Color.B;
+
+                        Color color = Color.FromArgb(a, r, g, b);
+                        SolidColorBrush brush = new SolidColorBrush(color);
+
+                        GroupBySelections.Add(new GroupBySelection(name, isSelected, brush));
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"Error restoring group by selections: {ex.Message}");
+                }
+            }
+        }
+
+        private void SetSelectedBevetelekKiadasok(string selectedDataIDS)
+        {
+            List<int> ids = selectedDataIDS.Split(',').Select(int.Parse).ToList();
+            ObservableCollection<BevetelKiadas> selectedItems= new ObservableCollection<BevetelKiadas>();
+            foreach(var id in ids)
+            {
+                var item = BevetelekKiadasok.FirstOrDefault(x => x.ID == id);
+                if (item != null)
+                {
+                    item.IsSelected = true;
+                    SelectedBevetelekKiadasok.Add(item);
+                    selectedItems.Add(item);
+                }
+            }
+            // Set selected collection
+            SelectedBevetelekKiadasok = selectedItems;
+
+            // Notify that these properties have changed
+            OnPropertyChanged(nameof(SelectedBevetelekKiadasok));
+            OnPropertyChanged(nameof(BevetelekKiadasok));
+            IsEnabledChangerOnTabItems();
         }
     }
 }

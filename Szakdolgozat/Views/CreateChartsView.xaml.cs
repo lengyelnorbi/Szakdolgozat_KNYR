@@ -1,4 +1,5 @@
 ﻿using LiveCharts.Wpf;
+using Microsoft.Xaml.Behaviors.Core;
 using Org.BouncyCastle.Bcpg;
 using Org.BouncyCastle.Tls;
 using Org.BouncyCastle.Utilities;
@@ -47,7 +48,7 @@ namespace Szakdolgozat.Views
                 viewModel._selectionDeleted = ChangeSelection_Click;
                 viewModel._deleteAllSelections = deleteAllDataSelection_Click;
                 viewModel.BuildAndSetContextMenu();
-
+                Mediator.UpdateCheckboxStates += UpdateCheckboxStates;
 
                 Mediator.GetSpecificChartRequest += GetSpecificChart;
             }
@@ -98,7 +99,77 @@ namespace Szakdolgozat.Views
             GroupByMonthCB.Checked += GroupByCheckBox_Checked;
             GroupByMonthCB.Unchecked += GroupByCheckBox_Unchecked;
         }
+        // Add this method to the CreateChartsView class:
+        private void UpdateCheckboxStates(Dictionary<string, bool> checkboxStatuses)
+        {
+            // Update all the checkboxes based on their saved states
+            foreach (var kvp in checkboxStatuses)
+            {
 
+                switch (kvp.Key)
+                {
+                    // Koltsegvetes checkboxes
+                    case "koltsegvetes_mindCB":
+                        koltsegvetes_mindCB.IsChecked = kvp.Value;
+                        break;
+                    case "koltsegvetes_idCB":
+                        koltsegvetes_idCB.IsChecked = kvp.Value;
+                        break;
+                    case "koltsegvetes_osszegCB":
+                        koltsegvetes_osszegCB.IsChecked = kvp.Value;
+                        break;
+                    case "koltsegvetes_penznemCB":
+                        koltsegvetes_penznemCB.IsChecked = kvp.Value;
+                        break;
+                    case "koltsegvetes_bekikodCB":
+                        koltsegvetes_bekikodCB.IsChecked = kvp.Value;
+                        break;
+                    case "koltsegvetes_teljesitesiDatumCB":
+                        koltsegvetes_teljesitesiDatumCB.IsChecked = kvp.Value;
+                        break;
+                    case "koltsegvetes_kotelKovetIDCB":
+                        koltsegvetes_kotelKovetIDCB.IsChecked = kvp.Value;
+                        break;
+                    case "koltsegvetes_partnerIDCB":
+                        koltsegvetes_partnerIDCB.IsChecked = kvp.Value;
+                        break;
+
+                    // KotelKovet checkboxes
+                    case "kotelKovet_mindCB":
+                        kotelKovet_mindCB.IsChecked = kvp.Value;
+                        break;
+                    case "kotelKovet_idCB":
+                        kotelKovet_idCB.IsChecked = kvp.Value;
+                        break;
+                    case "kotelKovet_osszegCB":
+                        kotelKovet_osszegCB.IsChecked = kvp.Value;
+                        break;
+                    case "kotelKovet_penznemCB":
+                        kotelKovet_penznemCB.IsChecked = kvp.Value;
+                        break;
+                    case "kotelKovet_tipusCB":
+                        kotelKovet_tipusCB.IsChecked = kvp.Value;
+                        break;
+                    case "kotelKovet_kifizetesHataridejeCB":
+                        kotelKovet_kifizetesHataridejeCB.IsChecked = kvp.Value;
+                        break;
+                    case "kotelKovet_kifizetettCB":
+                        kotelKovet_kifizetettCB.IsChecked = kvp.Value;
+                        break;
+                }
+            }
+            // Update GroupBy checkboxes
+            if (DataContext is CreateChartsViewModel viewModel)
+            {
+                GroupByPenznemCB.IsChecked = viewModel.GroupByPenznemCheckBoxIsChecked;
+                GroupByBeKiKodCB.IsChecked = viewModel.GroupByBeKiKodCheckBoxIsChecked;
+                GroupByKifizetettCB.IsChecked = viewModel.GroupByKifizetettCheckBoxIsChecked;
+                GroupByMonthCB.IsChecked = viewModel.GroupByMonthCheckBoxIsChecked;
+                GroupByYearCB.IsChecked = viewModel.GroupByYearCheckBoxIsChecked;
+                GroupByDateCB.IsChecked = viewModel.GroupByDateCheckBoxIsChecked;
+            }
+        }
+       
         private UIElement GetSpecificChart(string chartName)
         {
             switch (chartName)
@@ -235,7 +306,7 @@ namespace Szakdolgozat.Views
                     {
                         case "GroupByPenznemCB":
                             createChartsView.GroupByPenznemCheckBoxIsChecked = true;
-                            if(createChartsView.SeriesType == "RowSeries" || createChartsView.SeriesType == "BasicColumnSeries" || createChartsView.SeriesType == "StackedColumnSeries")
+                            if (createChartsView.SeriesType == "RowSeries" || createChartsView.SeriesType == "BasicColumnSeries" || createChartsView.SeriesType == "StackedColumnSeries")
                             {
                                 GroupByMonthCB.IsEnabled = false;
                                 GroupByMonthYearsCB.IsEnabled = false;
@@ -776,12 +847,15 @@ namespace Szakdolgozat.Views
                             GroupByDateCB.Visibility = Visibility.Collapsed;
                         }
 
-                        GroupByPenznemCB.IsChecked = false;
-                        GroupByKifizetettCB.IsChecked = false;
-                        GroupByMonthCB.IsChecked = false;
-                        GroupByDateCB.IsChecked = false;
-                        GroupByBeKiKodCB.IsChecked = false;
-                        GroupByYearCB.IsChecked = false;
+                        if (!viewModel.IsChartModifying)
+                        {
+                            GroupByPenznemCB.IsChecked = false;
+                            GroupByKifizetettCB.IsChecked = false;
+                            GroupByMonthCB.IsChecked = false;
+                            GroupByDateCB.IsChecked = false;
+                            GroupByBeKiKodCB.IsChecked = false;
+                            GroupByYearCB.IsChecked = false;
+                        }
                     }
                 }
             }
@@ -794,6 +868,8 @@ namespace Szakdolgozat.Views
                 Mediator.GetTabControl -= () => chartsTabControl;
                 Mediator.SetSeriesVisibility -= SetDiagramsVisibility;
                 createChartsViewModel.UnCheckAllSelections();
+                Mediator.UpdateCheckboxStates -= UpdateCheckboxStates;
+                Mediator.GetSpecificChartRequest -= GetSpecificChart;
             }
         }
 

@@ -12,21 +12,27 @@ namespace Szakdolgozat.Repositories
 {
     public class UserRepository : RepositoryBase, IUserRepository
     {
-        public bool AuthenticateUser(NetworkCredential credential)
+        public (bool,int) AuthenticateUser(NetworkCredential credential)
         {
             using (MySqlConnection connection = GetConnection())
             {
                 connection.Open();
 
-                string query = "SELECT COUNT(*) FROM felhasznalok WHERE felhasznalo_nev = @username AND jelszo = @password";
+                string query = "SELECT id FROM felhasznalok WHERE felhasznalo_nev = @username AND jelszo = @password";
                 using (MySqlCommand command = new MySqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@username", credential.UserName);
                     command.Parameters.AddWithValue("@password", credential.Password);
 
-                    int count = Convert.ToInt32(command.ExecuteScalar());
+                    object result = command.ExecuteScalar();
 
-                    return count > 0;
+                    if (result != null && result != DBNull.Value)
+                    {
+                        int userId = Convert.ToInt32(result);
+                        return (true, userId);
+                    }
+
+                    return (false, 0);
                 }
             }
         }

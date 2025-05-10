@@ -10,7 +10,7 @@ namespace Szakdolgozat.Models
 {
     public interface IUserRepository
     {
-        bool AuthenticateUser(NetworkCredential credential);
+        (bool,int) AuthenticateUser(NetworkCredential credential);
         Felhasznalo GetUserById(int id);
         Felhasznalo GetUserByUsername(string username);
         ObservableCollection<string> GetColumnNamesForTables(string tableName);

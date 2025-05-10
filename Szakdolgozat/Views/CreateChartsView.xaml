@@ -435,9 +435,23 @@
                             --><!--<Button Grid.Column="0" Margin="5,0,5,5" x:Name="cellSelectionTrue" Click="ChangeSelection_Click" Content="Kiválaszt"></Button>
                             <Button Grid.Column="1" Margin="5,0,5,5" x:Name="cellSelectionFalse" Click="ChangeSelection_Click" Content="Töröl"></Button>--><!--
                         </Grid>-->
-                        <Button x:Name="deleteAllDataSelection" Margin="5,5,5,0" Click="deleteAllDataSelection_Click" Content="Összes jelölés törlése"></Button>
-                        <Button x:Name="addDataToChart" Margin="5,5,5,0" Click="AddDataToChart_Click" Content="Adatok Hozzáadása"></Button>
-                        <Button Content="Export" Command="{Binding ExportChartAsImageCommand}"></Button>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <Button Grid.Row="0" Grid.Column="0" x:Name="deleteAllDataSelection" Margin="5,5,5,0" Click="deleteAllDataSelection_Click" Content="Összes jelölés törlése"></Button>
+                            <Button Grid.Row="0" Grid.Column="1" x:Name="addDataToChart" Margin="5,5,5,0" Click="AddDataToChart_Click" Content="Adatok Hozzáadása"></Button>
+                            <Button Grid.Row="1" Grid.Column="0" Content="Export" Command="{Binding ExportChartAsImageCommand}"></Button>
+                            <Button Grid.Row="1" Grid.Column="1" Content="Save Chart" 
+                                Command="{Binding SaveChartCommand}" 
+                                Margin="5" 
+                                Padding="5,2" />            
+                        </Grid>
                     </StackPanel>
                     <Grid Grid.Row="1">
                         <DataGrid ItemsSource="{Binding GroupBySelections}" AutoGenerateColumns="False" HeadersVisibility="Column" Margin="10">

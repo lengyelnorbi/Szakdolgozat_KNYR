@@ -5,45 +5,299 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Szakdolgozat.Views"
              mc:Ignorable="d" 
+             xmlns:converters="clr-namespace:Szakdolgozat.Converters"
+             xmlns:userControl="clr-namespace:Szakdolgozat.Views"
              d:DesignHeight="400" d:DesignWidth="900">
+    <UserControl.Resources>
+        <converters:BoolToInverseVisibilityConverter x:Key="BoolToInverseVisibilityConverter" />
+        <converters:BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+    </UserControl.Resources>
     <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-        <WrapPanel>
-            <StackPanel Margin="0" Width="300" Height="200" Background="White">
-                <TextBlock Text="Létező diagrammok content" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="15">
+        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+            <ItemsControl ItemsSource="{Binding Diagrams}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel Orientation="Horizontal" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
 
-                </TextBlock>
-            </StackPanel>
-            <StackPanel Margin="0" Width="300" Height="200" Background="Beige">
-                <TextBlock Text="Létező diagrammok content" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="15">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <!-- Card Container -->
+                        <Border Width="320" Height="380" Margin="20" Background="Transparent">
+                            <!-- 3D Card Environment -->
+                            <Viewport3D Width="300" Height="360">
+                                <Viewport3D.Camera>
+                                    <PerspectiveCamera Position="0,0,4" />
+                                </Viewport3D.Camera>
 
-                </TextBlock>
-            </StackPanel>
-            <StackPanel Margin="0" Width="300" Height="200" Background="AliceBlue">
-                <TextBlock Text="Létező diagrammok content" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="15">
+                                <!-- Main card visual -->
+                                <Viewport2DVisual3D x:Name="CardVisual">
+                                    <Viewport2DVisual3D.Transform>
+                                        <RotateTransform3D>
+                                            <RotateTransform3D.Rotation>
+                                                <AxisAngleRotation3D x:Name="CardRotation" Angle="0" Axis="0,1,0" />
+                                            </RotateTransform3D.Rotation>
+                                        </RotateTransform3D>
+                                    </Viewport2DVisual3D.Transform>
 
-                </TextBlock>
-            </StackPanel>
-            <StackPanel Margin="0" Width="300" Height="200" Background="Black">
-                <TextBlock Text="Létező diagrammok content" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="15">
+                                    <Viewport2DVisual3D.Geometry>
+                                        <MeshGeometry3D Positions="-1,1.35,0 -1,-1.35,0 1,-1.35,0 1,1.35,0" 
+                                                   TextureCoordinates="0,0 0,1 1,1 1,0"
+                                                   TriangleIndices="0 1 2 0 2 3" />
+                                    </Viewport2DVisual3D.Geometry>
 
-                </TextBlock>
-            </StackPanel>
-            <StackPanel Margin="0" Width="300" Height="200" Background="White">
-                <TextBlock Text="Létező diagrammok content" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="15">
+                                    <Viewport2DVisual3D.Material>
+                                        <DiffuseMaterial Viewport2DVisual3D.IsVisualHostMaterial="True" Brush="White" />
+                                    </Viewport2DVisual3D.Material>
 
-                </TextBlock>
-            </StackPanel>
-            <StackPanel Margin="0" Width="300" Height="200" Background="Beige">
-                <TextBlock Text="Létező diagrammok content" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="15">
+                                    <!-- The togglebutton that represents the card -->
+                                    <ToggleButton x:Name="FlipCardToggle" Cursor="Hand">
+                                        <ToggleButton.Style>
+                                            <Style TargetType="ToggleButton">
+                                                <Setter Property="Template">
+                                                    <Setter.Value>
+                                                        <ControlTemplate TargetType="ToggleButton">
+                                                            <Border x:Name="border" BorderThickness="0">
+                                                                <ContentPresenter />
+                                                            </Border>
+                                                        </ControlTemplate>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Style>
+                                        </ToggleButton.Style>
 
-                </TextBlock>
-            </StackPanel>
-        </WrapPanel>
+                                        <!-- Card Content -->
+                                        <ToggleButton.Content>
+                                            <Grid Width="300" Height="360">
+                                                <!-- Front Side -->
+                                                <Border x:Name="FrontSide" Background="White" CornerRadius="8" 
+                                                   BorderBrush="Gray" BorderThickness="1">
+                                                    <Grid>
+                                                        <Grid.RowDefinitions>
+                                                            <RowDefinition Height="Auto"/>
+                                                            <RowDefinition Height="*"/>
+                                                        </Grid.RowDefinitions>
+
+                                                        <!-- Chart Title -->
+                                                        <TextBlock Grid.Row="0" Text="{Binding Name}" 
+                                                             FontWeight="Bold" FontSize="18" 
+                                                             HorizontalAlignment="Center" 
+                                                             Margin="15,20,15,10"/>
+
+                                                        <!-- Chart Preview -->
+                                                        <Border Grid.Row="1" Background="LightGray" Margin="20,5,20,20" CornerRadius="5">
+                                                            <TextBlock Text="Chart Preview" 
+                                                                 FontStyle="Italic" 
+                                                                 HorizontalAlignment="Center" 
+                                                                 VerticalAlignment="Center"
+                                                                 Foreground="Gray"/>
+                                                        </Border>
+                                                    </Grid>
+                                                </Border>
+
+                                                <!-- Back Side -->
+                                                <Border x:Name="BackSide" Background="#F5F5F5" CornerRadius="8" 
+                                                   BorderBrush="Gray" BorderThickness="1" Visibility="Hidden">
+                                                    <Grid Margin="15">
+                                                        <Grid.RowDefinitions>
+                                                            <RowDefinition Height="Auto"/>
+                                                            <RowDefinition Height="*"/>
+                                                            <RowDefinition Height="Auto"/>
+                                                        </Grid.RowDefinitions>
+
+                                                        <!-- Card Title -->
+                                                        <TextBlock Grid.Row="0" Text="{Binding Name}" 
+                                                             FontWeight="Bold" FontSize="18" 
+                                                             HorizontalAlignment="Center" 
+                                                             Margin="0,5,0,15"/>
+
+                                                        <!-- Description and Details -->
+                                                        <StackPanel Grid.Row="1">
+                                                            <TextBlock Text="{Binding Description}" 
+                                                                 TextWrapping="Wrap" 
+                                                                 Margin="0,0,0,15"/>
+
+                                                            <TextBlock Text="Típus:" FontWeight="Bold" Margin="0,5,0,3"/>
+                                                            <TextBlock Text="{Binding ChartType}" Margin="10,0,0,10"/>
+
+                                                            <TextBlock Text="Létrehozva:" FontWeight="Bold" Margin="0,5,0,3"/>
+                                                            <TextBlock Text="{Binding CreatedDate, StringFormat=yyyy.MM.dd}" Margin="10,0,0,10"/>
+
+                                                            <TextBlock Text="Készítette:" FontWeight="Bold" Margin="0,5,0,3"/>
+                                                            <TextBlock Text="{Binding CreatorName}" Margin="10,0,0,0"/>
+                                                        </StackPanel>
+
+                                                        <!-- Action Buttons -->
+                                                        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,15,0,5">
+                                                            <Button Content="Szerkesztés" 
+                                                              Width="120" Height="35" Margin="0,0,10,0"
+                                                              Command="{Binding DataContext.OpenDiagramCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                              CommandParameter="{Binding}"/>
+
+                                                            <Button Content="Törlés" 
+                                                              Width="120" Height="35"
+                                                              Command="{Binding DataContext.DeleteDiagramCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                              CommandParameter="{Binding}"/>
+                                                        </StackPanel>
+                                                    </Grid>
+                                                </Border>
+                                            </Grid>
+                                        </ToggleButton.Content>
+
+                                        <!-- Flip Animations -->
+                                        <ToggleButton.Triggers>
+                                            <!-- When checked (flipping to back) -->
+                                            <!-- When checked (flipping to back) -->
+                                            <EventTrigger RoutedEvent="ToggleButton.Checked">
+                                                <BeginStoryboard>
+                                                    <Storyboard>
+                                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="FrontSide" 
+                       Storyboard.TargetProperty="Visibility">
+                                                            <DiscreteObjectKeyFrame KeyTime="0:0:0.5" Value="{x:Static Visibility.Hidden}"/>
+                                                        </ObjectAnimationUsingKeyFrames>
+                                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="BackSide" 
+                       Storyboard.TargetProperty="Visibility">
+                                                            <DiscreteObjectKeyFrame KeyTime="0:0:0.5" Value="{x:Static Visibility.Visible}"/>
+                                                        </ObjectAnimationUsingKeyFrames>
+                                                    </Storyboard>
+                                                </BeginStoryboard>
+                                                <BeginStoryboard>
+                                                    <Storyboard>
+                                                        <!-- First half of flip -->
+                                                        <DoubleAnimation 
+                                                            Storyboard.TargetName="CardRotation"
+                                                            Storyboard.TargetProperty="Angle"
+                                                            From="0" 
+                                                            To="90" 
+                                                            Duration="0:0:0.5">
+                                                            <DoubleAnimation.EasingFunction>
+                                                                <QuadraticEase EasingMode="EaseOut"/>
+                                                            </DoubleAnimation.EasingFunction>
+                                                        </DoubleAnimation>
+                                                        <!-- Second half of flip -->
+                                                        <DoubleAnimation Storyboard.TargetName="CardRotation"
+                                                                        Storyboard.TargetProperty="Angle"
+                                                                        From="-90" 
+                                                                        To="0" 
+                                                                        BeginTime="0:0:0.5"
+                                                                        Duration="0:0:0.5">
+                                                            <DoubleAnimation.EasingFunction>
+                                                                <QuadraticEase EasingMode="EaseIn"/>
+                                                            </DoubleAnimation.EasingFunction>
+                                                        </DoubleAnimation>
+                                                    </Storyboard>
+
+                                                </BeginStoryboard>
+                                                <BeginStoryboard>
+                                                    <Storyboard>
+                                                        <DoubleAnimation Storyboard.TargetName="FrontSide"
+                                                                         Storyboard.TargetProperty="Opacity"
+                                                                         BeginTime="0:0:0.5"
+                                                                         Duration="0:0:0"
+                                                                         From="1.0"
+                                                                         To="0.0"/>
+                                                    </Storyboard>
+                                                </BeginStoryboard>
+
+                                                <BeginStoryboard>
+                                                    <Storyboard>
+                                                        <DoubleAnimation Storyboard.TargetName="BackSide"
+                                                                         Storyboard.TargetProperty="Opacity"
+                                                                         BeginTime="0:0:0.5"
+                                                                         Duration="0:0:0"
+                                                                         From="0.0"
+                                                                         To="1.0"/>
+                                                    </Storyboard>
+                                                </BeginStoryboard>
+
+
+                                            </EventTrigger>
+                                            <!-- When unchecked (flipping to front) -->
+
+                                            <EventTrigger RoutedEvent="ToggleButton.Unchecked">
+                                                <BeginStoryboard>
+                                                    <Storyboard>
+                                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="BackSide" 
+                      Storyboard.TargetProperty="Visibility">
+                                                            <DiscreteObjectKeyFrame KeyTime="0:0:0.5" Value="{x:Static Visibility.Hidden}"/>
+                                                        </ObjectAnimationUsingKeyFrames>
+                                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="FrontSide" 
+                      Storyboard.TargetProperty="Visibility">
+                                                            <DiscreteObjectKeyFrame KeyTime="0:0:0.5" Value="{x:Static Visibility.Visible}"/>
+                                                        </ObjectAnimationUsingKeyFrames>
+                                                    </Storyboard>
+                                                </BeginStoryboard>
+                                                <BeginStoryboard>
+                                                    <Storyboard>
+                                                        <!-- First half of flip -->
+                                                        <DoubleAnimation 
+            Storyboard.TargetName="CardRotation"
+            Storyboard.TargetProperty="Angle"
+            From="0" 
+            To="-90" 
+            Duration="0:0:0.5">
+                                                            <DoubleAnimation.EasingFunction>
+                                                                <QuadraticEase EasingMode="EaseOut"/>
+                                                            </DoubleAnimation.EasingFunction>
+                                                        </DoubleAnimation>
+                                                        <!-- Second half of flip -->
+                                                        <DoubleAnimation 
+            Storyboard.TargetName="CardRotation"
+            Storyboard.TargetProperty="Angle"
+            From="90" 
+            To="0" 
+            BeginTime="0:0:0.5"
+            Duration="0:0:0.5">
+                                                            <DoubleAnimation.EasingFunction>
+                                                                <QuadraticEase EasingMode="EaseIn"/>
+                                                            </DoubleAnimation.EasingFunction>
+                                                        </DoubleAnimation>
+                                                    </Storyboard>
+                                                </BeginStoryboard>
+                                                <BeginStoryboard>
+                                                    <Storyboard>
+                                                        <DoubleAnimation Storyboard.TargetName="BackSide"
+                Storyboard.TargetProperty="Opacity"
+BeginTime="0:0:0.5"
+Duration="0:0:0"
+From="1.0"
+To="0.0"/>
+                                                    </Storyboard>
+                                                </BeginStoryboard>
+
+
+                                                <BeginStoryboard>
+                                                    <Storyboard>
+                                                        <DoubleAnimation Storyboard.TargetName="FrontSide"
+                                Storyboard.TargetProperty="Opacity"
+                                BeginTime="0:0:0.5"
+                                Duration="0:0:0"
+                                From="0.0"
+                                To="1.0"/>
+                                                    </Storyboard>
+                                                </BeginStoryboard>
+
+
+
+
+
+                                            </EventTrigger>
+                                        </ToggleButton.Triggers>
+                                    </ToggleButton>
+                                </Viewport2DVisual3D>
+
+                                <!-- Add lighting for the 3D scene -->
+                                <ModelVisual3D>
+                                    <ModelVisual3D.Content>
+                                        <DirectionalLight Color="White" Direction="0,0,-1"/>
+                                    </ModelVisual3D.Content>
+                                </ModelVisual3D>
+                            </Viewport3D>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
     </Grid>
 </UserControl>
