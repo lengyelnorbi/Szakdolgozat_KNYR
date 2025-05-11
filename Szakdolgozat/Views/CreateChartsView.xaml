@@ -20,9 +20,6 @@
         <viewModels:CreateChartsViewModel/>
     </Window.DataContext>
     <Window.Resources>
-        <DataTemplate DataType="{x:Type viewModels:AddOptionsToNewChartViewModel}">
-            <views:AddOptionsToNewChartView/>
-        </DataTemplate>
         <BooleanToVisibilityConverter x:Key="BoolToVis" />
         <converters:BrushToColorConverter x:Key="BrushToColorConverter" />
     </Window.Resources>

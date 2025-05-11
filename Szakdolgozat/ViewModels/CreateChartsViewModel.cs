@@ -28,6 +28,7 @@ using LiveCharts.Configurations;
 using Xceed.Wpf.Toolkit.Panels;
 using System.IO;
 using System.Windows.Media.Imaging;
+using DocumentFormat.OpenXml.Wordprocessing;
 
 namespace Szakdolgozat.ViewModels
 {
@@ -628,7 +629,6 @@ namespace Szakdolgozat.ViewModels
         public Dictionary<string, bool> checkboxStatuses = new Dictionary<string, bool>();
 
         public ICommand ShowSelectDataForNewChartViewCommand { get; }
-        public ICommand ShowAddOptionToNewChartViewCommand { get; }
         public ICommand AddGroupByToAdatsorokCommand { get; }
         public ICommand AddGroupByToCimkekCommand { get; }
         public ICommand ExportChartAsImageCommand { get; }
@@ -666,7 +666,6 @@ namespace Szakdolgozat.ViewModels
             Mediator.DataRequest += ReturnRequestedData;
 
             ShowSelectDataForNewChartViewCommand = new ViewModelCommand(ExecuteShowSelectDataForNewChartViewCommand);
-            ShowAddOptionToNewChartViewCommand = new ViewModelCommand(ExecuteShowAddOptionToNewChartViewCommand);
             AddGroupByToAdatsorokCommand = new ViewModelCommand(ExecuteAddGroupByToAdatsorokCommand);
             AddGroupByToCimkekCommand = new ViewModelCommand(ExecuteAddGroupByToCimkekCommand);
             ExportChartAsImageCommand = new ViewModelCommand(ExecuteExportChartAsImageCommand);
@@ -6094,11 +6093,6 @@ namespace Szakdolgozat.ViewModels
             SelectedAdatsorok.Remove(SelectedAdatsor);
         }
 
-        private void ExecuteShowAddOptionToNewChartViewCommand(object obj)
-        {
-            CurrentChildView = new AddOptionsToNewChartViewModel(SelectedRows);
-        }
-
         private void ExecuteExportChartAsImageCommand(object obj)
         {
             ExportSpecificChart(SeriesType);
@@ -6418,6 +6412,73 @@ namespace Szakdolgozat.ViewModels
              Newtonsoft.Json.Formatting.Indented
          );
 
+            IEnumerable<dynamic> serializableDataChartValues;
+            switch (SeriesType)
+            {
+                case "DoughnutSeries":
+                    serializableDataChartValues = PieSeries.Where(g => g is PieSeries pieSeries && pieSeries.Visibility == Visibility.Visible)
+                        .Select(g => new
+                        {
+                            Title = ((PieSeries)g).Title,
+                            Name = ((PieSeries)g).Name,
+                            DataLabels = ((PieSeries)g).DataLabels,
+                            Values = ((PieSeries)g).Values.Cast<ObservableValue>().Select(v => v.Value).ToList(),
+                            Fill = ((PieSeries)g).Fill,
+                        }).ToList();
+                    break;
+                    
+                case "LineSeries":
+                    serializableDataChartValues = LineSeries.Where(g => g is LineSeries lineSeries && lineSeries.Visibility == Visibility.Visible)
+                        .Select(g => new
+                        {
+                            Title = ((LineSeries)g).Title,
+                            Name = ((LineSeries)g).Name,
+                            DataLabels = ((LineSeries)g).DataLabels,
+                            Values = ((LineSeries)g).Values,
+                        }).ToList();
+                    break;
+                case "RowSeries":
+                    serializableDataChartValues = RowSeries.Where(g => g is RowSeries rowSeries && rowSeries.Visibility == Visibility.Visible)
+                        .Select(g => new
+                        {
+                            Title = ((RowSeries)g).Title,
+                            Name = ((RowSeries)g).Name,
+                            DataLabels = ((RowSeries)g).DataLabels,
+                            Values = ((RowSeries)g).Values,
+                            Fill = ((RowSeries)g).Fill,
+                        }).ToList();
+                    break;
+                   
+                case "BasicColumnSeries":
+                    serializableDataChartValues = ColumnSeries.Where(g => g is ColumnSeries columnSeries && columnSeries.Visibility == Visibility.Visible)
+                       .Select(g => new
+                       {
+                           Title = ((ColumnSeries)g).Title,
+                           Name = ((ColumnSeries)g).Name,
+                           DataLabels = ((ColumnSeries)g).DataLabels,
+                           Values = ((ColumnSeries)g).Values,
+                       }).ToList();
+                    break;
+                case "StackedColumnSeries":
+                    serializableDataChartValues = StackedColumnSeries.Where(g => g is StackedColumnSeries stackedColumnSeries && stackedColumnSeries.Visibility == Visibility.Visible)
+                        .Select(g => new
+                        {
+                            Title = ((StackedColumnSeries)g).Title,
+                            Name = ((StackedColumnSeries)g).Name,
+                            DataLabels = ((StackedColumnSeries)g).DataLabels,
+                            Values = ((StackedColumnSeries)g).Values,
+                        }).ToList();
+                    break;
+                default:
+                    serializableDataChartValues = new List<dynamic>();
+                    break;
+            }
+
+            string seriesDataChartValuesJson = Newtonsoft.Json.JsonConvert.SerializeObject(
+             serializableDataChartValues,
+             Newtonsoft.Json.Formatting.Indented
+         );
+
             // Create the model
             var diagrammModel = new Diagramm
             {
@@ -6426,6 +6487,7 @@ namespace Szakdolgozat.ViewModels
                 Description = chartDescription,
                 ChartType = SeriesType,
                 DataSource = IsBevetelekKiadasokTabIsSelected ? "Koltsegvetes" : "KotelezettsegKoveteles",
+                DataChartValues = seriesDataChartValuesJson,
                 FilterSettings = filterSettingsJson,
                 GroupBySettings = groupBySettingsJson,
                 SeriesGroupBySelection = seriesGroupBySelectionsJson,
@@ -6528,7 +6590,7 @@ namespace Szakdolgozat.ViewModels
                         byte g = (byte)item.Color.G;
                         byte b = (byte)item.Color.B;
 
-                        Color color = Color.FromArgb(a, r, g, b);
+                        System.Windows.Media.Color color = System.Windows.Media.Color.FromArgb(a, r, g, b);
                         SolidColorBrush brush = new SolidColorBrush(color);
 
                         GroupBySelections.Add(new GroupBySelection(name, isSelected, brush));

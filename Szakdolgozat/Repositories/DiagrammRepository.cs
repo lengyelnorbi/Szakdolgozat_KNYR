@@ -29,11 +29,11 @@ namespace Szakdolgozat.Repositories
                     {
                         command.CommandText = @"
                         INSERT INTO diagrammok (
-                            nev, leiras, diagramm_tipus, adathalmaz, 
+                            nev, leiras, diagramm_tipus, adathalmaz, diagram_ertekek_adat,
                             szuresi_beallitasok, csoportositasi_beallitasok, kijelolt_diagram_csoportositasok, kijelolt_elemek_ids, 
                             adat_statisztika, letrehozasi_datum, letrehozo_id
                         ) VALUES (
-                            @name, @description, @chartType, @dataSource, 
+                            @name, @description, @chartType, @dataSource, @dataChartValues, 
                             @filterSettings, @groupbySettings, @seriesGroupBySelection, @selectedItemsIDs, 
                             @dataStatistic, @createdDate, @createdByUserID
                         )";
@@ -47,6 +47,7 @@ namespace Szakdolgozat.Repositories
                             leiras = @description, 
                             diagramm_tipus = @chartType, 
                             adathalmaz = @dataSource, 
+                            diagram_ertekek_adat = @dataChartValues,
                             szuresi_beallitasok = @filterSettings, 
                             csoportositasi_beallitasok = @groupbySettings, 
                             kijelolt_diagram_csoportositasok = @seriesGroupBySelection,
@@ -64,6 +65,7 @@ namespace Szakdolgozat.Repositories
                     command.Parameters.Add("@description", MySqlDbType.Text).Value = diagramm.Description ?? (object)DBNull.Value;
                     command.Parameters.Add("@chartType", MySqlDbType.VarChar).Value = diagramm.ChartType;
                     command.Parameters.Add("@dataSource", MySqlDbType.VarChar).Value = diagramm.DataSource;
+                    command.Parameters.Add("@dataChartValues", MySqlDbType.LongText).Value = diagramm.DataChartValues;
                     command.Parameters.Add("@filterSettings", MySqlDbType.Text).Value = diagramm.FilterSettings;
                     command.Parameters.Add("@groupbySettings", MySqlDbType.Text).Value = diagramm.GroupBySettings;
                     command.Parameters.Add("@seriesGroupBySelection", MySqlDbType.Text).Value = diagramm.SeriesGroupBySelection;
@@ -107,6 +109,7 @@ namespace Szakdolgozat.Repositories
                                 Description = reader["leiras"] != DBNull.Value ? reader["leiras"].ToString() : null,
                                 ChartType = reader["diagramm_tipus"].ToString(),
                                 DataSource = reader["adathalmaz"].ToString(),
+                                DataChartValues = reader["diagram_ertekek_adat"].ToString(),
                                 FilterSettings = reader["szuresi_beallitasok"].ToString(),
                                 GroupBySettings = reader["csoportositasi_beallitasok"].ToString(),
                                 SeriesGroupBySelection = reader["kijelolt_diagram_csoportositasok"].ToString(),
@@ -149,6 +152,7 @@ namespace Szakdolgozat.Repositories
                                 Description = reader["leiras"] != DBNull.Value ? reader["leiras"].ToString() : null,
                                 ChartType = reader["diagramm_tipus"].ToString(),
                                 DataSource = reader["adathalmaz"].ToString(),
+                                DataChartValues = reader["diagram_ertekek_adat"].ToString(),
                                 FilterSettings = reader["szuresi_beallitasok"].ToString(),
                                 GroupBySettings = reader["csoportositasi_beallitasok"].ToString(),
                                 SeriesGroupBySelection = reader["kijelolt_diagram_csoportositasok"].ToString(),
@@ -158,6 +162,7 @@ namespace Szakdolgozat.Repositories
                                 CreatedByUserID = reader["letrehozo_id"] != DBNull.Value ?
                                     Convert.ToInt32(reader["letrehozo_id"]) : (int?)null
                             });
+                           
                         }
                     }
                 }

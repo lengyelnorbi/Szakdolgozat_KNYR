@@ -1,6 +1,9 @@
-﻿using System;
+﻿using LiveCharts;
+using LiveCharts.Wpf;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO.Ports;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -34,6 +37,105 @@ namespace Szakdolgozat.ViewModels
             DeleteDiagramCommand = new ViewModelCommand(ExecuteDeleteDiagramCommand);
 
             Diagrams = new ObservableCollection<Diagramm>(_diagrammRepository.GetAllDiagramms());
+            foreach(var diagramm in Diagrams)
+            {
+                var values = GetSeriesValues(diagramm.DataChartValues);
+                diagramm.PreviewChart = new SeriesCollection();
+                diagramm.PreviewPieChart = new SeriesCollection();
+                var groupBySettings = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, object>>(diagramm.GroupBySettings);
+                foreach (var value in values)
+                {
+                    switch (diagramm.ChartType)
+                    {
+                        case "DoughnutSeries":
+                            diagramm.PreviewPieChart.Add(new LiveCharts.Wpf.PieSeries
+                            {
+                                Values = value.Values,
+                                Title = value.Name,
+                                Name = value.Name,
+                                DataLabels = false,
+                                Fill = value.Fill,
+                            });
+                            diagramm.InnerRadius = groupBySettings["InnerRadius"] != null ? (double)groupBySettings["InnerRadius"] : 0.0;
+                            break;
+                        case "RowSeries":
+                            diagramm.PreviewChart.Add(new RowSeries
+                            {
+                                Values = value.Values,
+                                Title = value.Name,
+                                Name = value.Name,
+                                DataLabels = false,
+                                Fill = value.Fill,
+                            });
+                            break;
+                        case "StackedColumnSeries":
+                            diagramm.PreviewChart.Add(new LiveCharts.Wpf.StackedColumnSeries
+                            {
+                                Values = value.Values,
+                                Title = value.Name,
+                                Name = value.Name,
+                                DataLabels = false,
+                                Fill = value.Fill,
+                            });
+                            break;
+                        case "BasicColumnSeries":
+                            diagramm.PreviewChart.Add(new LiveCharts.Wpf.ColumnSeries
+                            {
+                                Values = value.Values,
+                                Title = value.Name,
+                                Name = value.Name,
+                                DataLabels = false,
+                                Fill = value.Fill,
+                            });
+                            break;
+                        case "LineSeries":
+                            diagramm.PreviewChart.Add(new LiveCharts.Wpf.LineSeries
+                            {
+                                Values = value.Values,
+                                Title = value.Name,
+                                DataLabels = false,
+                                PointGeometry = null // Hide points for cleaner preview
+                            });
+                            break;
+                        default:
+                            System.Diagnostics.Debug.WriteLine($"Unsupported chart type: {diagramm.ChartType}");
+                            break;
+                    }
+                }
+            }
+        }
+        private List<SeriesItem> GetSeriesValues(string values)
+        {
+            var result = new List<SeriesItem>();
+
+            if (string.IsNullOrWhiteSpace(values))
+                return result;
+
+            try
+            {
+                // Deserialize the JSON into a list of SeriesItem objects
+                var seriesItems = Newtonsoft.Json.JsonConvert.DeserializeObject<List<SeriesItem>>(values);
+
+                if (seriesItems != null)
+                {
+                    foreach (var item in seriesItems)
+                    {
+                        // Convert each SeriesItem into a SeriesData object
+                        result.Add(new SeriesItem
+                        {
+                            Name = item.Name,
+                            Values = new ChartValues<double>(item.Values)
+                        });
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log or handle the exception as needed
+                System.Diagnostics.Debug.WriteLine($"Error deserializing DataChartValues: {ex.Message}");
+            }
+
+            return result;
         }
 
         private void ExecuteOpenDiagramCommand(object parameter)

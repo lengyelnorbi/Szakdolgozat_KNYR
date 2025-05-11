@@ -57,7 +57,7 @@
             </Grid.ColumnDefinitions>
 
             <Grid Grid.Column="0">
-                <Grid.RowDefinitions>
+                <!--<Grid.RowDefinitions>
                     <RowDefinition Height="80"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
@@ -86,9 +86,10 @@
                             </MenuItem>
                         </Menu>
                     </Grid>
-                </Grid>
+                </Grid>-->
 
-                <Grid Grid.Row="1">
+                <!--Grid.Row="1"-->
+                <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition />
                         <ColumnDefinition />

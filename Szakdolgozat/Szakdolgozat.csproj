@@ -187,6 +187,7 @@
     <Compile Include="Converters\BoolToSelectionModeConverter.cs" />
     <Compile Include="Converters\BoolToStringConverter.cs" />
     <Compile Include="Converters\BrushToColorConverter .cs" />
+    <Compile Include="Converters\ChartTypeToVisibilityConverter.cs" />
     <Compile Include="Converters\EnumToBooleanToVisibilityConverter.cs" />
     <Compile Include="Converters\TinyIntToYesNoConverter.cs" />
     <Compile Include="CustomControls\BindablePasswordBox.xaml.cs">
@@ -211,6 +212,7 @@
     <Compile Include="Models\Penznem.cs" />
     <Compile Include="Models\Role.cs" />
     <Compile Include="Models\Felhasznalo.cs" />
+    <Compile Include="Models\SeriesItem.cs" />
     <Compile Include="Repositories\DiagrammRepository.cs" />
     <Compile Include="Repositories\DolgozoRepository.cs" />
     <Compile Include="Repositories\GazdalkodoSzervezetRepository.cs" />
@@ -223,7 +225,6 @@
     <Compile Include="Specials\DateTimeParser.cs" />
     <Compile Include="Specials\EnumBindingSourceExtension.cs" />
     <Compile Include="Specials\WindowHelper.cs" />
-    <Compile Include="ViewModels\AddOptionsToNewChartViewModel.cs" />
     <Compile Include="ViewModels\CreateChartsViewModel.cs" />
     <Compile Include="ViewModels\DolgozokModifyOrAddViewModel.cs" />
     <Compile Include="ViewModels\DolgozoViewModel.cs" />
@@ -243,12 +244,6 @@
     <Compile Include="ViewModels\KoltsegvetesViewModel.cs" />
     <Compile Include="ViewModels\ViewModelBase.cs" />
     <Compile Include="ViewModels\ViewModelCommand.cs" />
-    <Compile Include="Views\AddOptionsToNewChartView.xaml.cs">
-      <DependentUpon>AddOptionsToNewChartView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\BackSide.xaml.cs">
-      <DependentUpon>BackSide.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Views\CreateChartsView.xaml.cs">
       <DependentUpon>CreateChartsView.xaml</DependentUpon>
     </Compile>
@@ -260,9 +255,6 @@
     </Compile>
     <Compile Include="Views\ElozmenyekView.xaml.cs">
       <DependentUpon>ElozmenyekView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\FrontSide.xaml.cs">
-      <DependentUpon>FrontSide.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\GazdalkodoSzervezetModifyOrAddView.xaml.cs">
       <DependentUpon>GazdalkodoSzervezetModifyOrAddView.xaml</DependentUpon>
@@ -357,14 +349,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\AddOptionsToNewChartView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\BackSide.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Views\CreateChartsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -378,10 +362,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\ElozmenyekView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\FrontSide.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
