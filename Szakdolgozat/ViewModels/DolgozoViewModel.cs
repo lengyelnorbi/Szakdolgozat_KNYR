@@ -429,8 +429,11 @@ namespace Szakdolgozat.ViewModels
         }
         private void ExecuteDeleteDolgozoCommand(object obj)
         {
-            System.Windows.MessageBox.Show(SelectedRow.ID.ToString() + SelectedRow.Vezeteknev);
-            DeleteDolgozo(SelectedRow.ID);
+            var temp = new ObservableCollection<Dolgozo>(SelectedItems);
+            foreach (var item in temp)
+            {
+                DeleteDolgozo(item.ID);
+            }
         }
 
         private bool CanExecuteOpenDolgozoModifyOrAddWindowCommand(object obj)

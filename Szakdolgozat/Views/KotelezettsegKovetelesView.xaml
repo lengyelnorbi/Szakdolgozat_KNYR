@@ -5,10 +5,14 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Szakdolgozat.Views"
              xmlns:dContext="clr-namespace:Szakdolgozat.ViewModels"
+             xmlns:converters="clr-namespace:Szakdolgozat.Converters"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis" />
+        <converters:BoolToSelectionModeConverter x:Key="BoolToSelectionModeConverter" />
+        <converters:BoolToStringConverter x:Key="BoolToStringConverter" />
+        <converters:BoolToInverseVisibilityConverter x:Key="BoolToInverseVisibilityConverter" />
     </UserControl.Resources>
     <UserControl.DataContext>
         <dContext:KotelezettsegKovetelesViewModel />
@@ -81,11 +85,26 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition x:Name="dataGridColumnDef"></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <DataGrid Grid.Column="0" x:Name="dataGrid" CanUserResizeColumns="True" ColumnWidth="*" AutoGenerateColumns="True" AutoGeneratingColumn="dataGrid_AutoGeneratingColumn" ItemsSource="{Binding FilteredKotelezettsegekKovetelesek,Mode=TwoWay, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}" IsReadOnly="True" SelectionUnit="FullRow" SelectedItem="{Binding SelectedRow, Mode=TwoWay}" Grid.ColumnSpan="2">
+            <DataGrid Grid.Column="0" 
+x:Name="dataGrid"
+SelectionMode="Extended"
+SelectionChanged="DataGrid_SelectionChanged"
+CanUserResizeColumns="True" 
+ColumnWidth="*" 
+AutoGenerateColumns="True" 
+ItemsSource="{Binding FilteredKotelezettsegekKovetelesek, Mode=TwoWay, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}" 
+IsReadOnly="True" 
+SelectionUnit="FullRow" 
+SelectedItem="{Binding SelectedRow, Mode=TwoWay}" 
+Grid.ColumnSpan="2"
+ContextMenuOpening="DataGrid_ContextMenuOpening">
                 <DataGrid.ContextMenu>
                     <ContextMenu>
                         <MenuItem Header="Törlés" Command="{Binding DeleteKotelezettsegKovetelesCommand}"/>
-                        <MenuItem Header="Módosítás" Command="{Binding OpenKotelezettsegKovetelesModifyOrAddWindowCommand}" CommandParameter="Modify"/>
+                        <MenuItem Header="Módosítás" 
+    Command="{Binding OpenKotelezettsegKovetelesModifyOrAddWindowCommand}" 
+    CommandParameter="Modify"
+    Visibility="{Binding IsSingleRowSelected, Converter={StaticResource BoolToVis}}"/>
                     </ContextMenu>
                 </DataGrid.ContextMenu>
             </DataGrid>
@@ -99,6 +118,34 @@
                     CommandParameter="Add"
                     Width="100">
                 </Button>
+                <Button Content="Összes adat exportálása" 
+Command="{Binding ExportAllDataToExcelCommand}" 
+Margin="5" 
+Padding="5,2" />
+
+                <Button Content="Szűrt adatok exportálása" 
+Command="{Binding ExportFilteredDataToExcelCommand}" 
+Margin="5" 
+Padding="5,2" />
+
+                <!-- This button toggles multi-selection mode -->
+                <Button Content="{Binding IsMultiSelectionMode, Converter={StaticResource BoolToStringConverter}, ConverterParameter='Enable Multi-Select|Disable Multi-Select'}" 
+Command="{Binding ToggleMultiSelectionModeCommand}" 
+Margin="5" 
+Padding="5,2" />
+
+                <!-- This button is visible only in multi-selection mode -->
+                <Button Content="Kijelölt sorok exportálása" 
+Command="{Binding ExportMultiSelectedItemsCommand}" 
+Margin="5" 
+Padding="5,2"
+Visibility="{Binding IsMultiSelectionMode, Converter={StaticResource BoolToVis}}" />
+                <!-- Optional: Display count of selected items -->
+                <TextBlock Text="{Binding SelectedItems.Count, StringFormat='Kijelölt sorok: {0}'}" 
+   VerticalAlignment="Center"
+   Margin="5,0,0,0"
+   Foreground="White"
+   Visibility="{Binding IsMultiSelectionMode, Converter={StaticResource BoolToVis}}" />
             </StackPanel>
         </Grid>
     </Grid>
