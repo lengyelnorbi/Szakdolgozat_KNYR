@@ -111,7 +111,7 @@
 
                     <ScrollViewer Grid.Row="1" HorizontalAlignment="Stretch" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Hidden">
                         <StackPanel>
-                            <StackPanel>
+                            <!--<StackPanel>
                                 <RadioButton GroupName="Content" Style="{StaticResource menuButton}"
                                  Tag="#E285DE"
                                  IsChecked="True"
@@ -120,7 +120,7 @@
                                         <TextBlock Text="Előzmények" Style="{StaticResource menuButtonText}" Margin="20,0,0,0"/>
                                     </StackPanel>
                                 </RadioButton>
-                            </StackPanel>
+                            </StackPanel>-->
                             <Expander x:Name="ExpanderMenuAdatok" Header="Adatok" IsExpanded="False" Width="250" Background="{x:Null}" Foreground="White" FontSize="13.5" HorizontalAlignment="Center">
                                 <StackPanel>
                                     <RadioButton GroupName="Content" Style="{StaticResource menuButton}"
@@ -211,13 +211,12 @@
             </Grid>
             <Grid Grid.Column="1">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="80"/>
+                    <RowDefinition Height="30"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
                 <Grid Grid.Row="0">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="30"></RowDefinition>
-                        <RowDefinition Height="*"></RowDefinition>
                     </Grid.RowDefinitions>
                     <Grid Grid.Row="0">
                         <StackPanel x:Name="pnlControlBar"

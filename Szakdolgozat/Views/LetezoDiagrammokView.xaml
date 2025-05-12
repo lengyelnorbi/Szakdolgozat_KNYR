@@ -14,14 +14,14 @@
         <converters:BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
         <converters:ChartTypeToVisibilityConverter x:Key="ChartTypeToVisibilityConverter" />
     </UserControl.Resources>
-    <Grid>
+    <Grid Background="#34425E">
         <Grid.RowDefinitions>
             <RowDefinition Height="50" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <Grid Grid.Row="0">
-            <StackPanel Background="White">
-                <CheckBox Foreground="Black" Content="Csak Saját Diagrammok Mutatása" IsChecked="{Binding IsOnlyOwnDiagramsVisible, Mode=TwoWay, NotifyOnSourceUpdated=True}"/>
+            <StackPanel Background="Transparent" Width="200" Height="20">
+                <CheckBox Foreground="White" Content="Csak Saját Diagrammok Mutatása" IsChecked="{Binding IsOnlyOwnDiagramsVisible, Mode=TwoWay, NotifyOnSourceUpdated=True}"/>
             </StackPanel>
         </Grid>
         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
@@ -92,7 +92,7 @@
 
                                                         <!-- Chart Title -->
                                                         <TextBlock Grid.Row="0" Text="{Binding Name}" 
-                                                             FontWeight="Bold" FontSize="18" 
+                                                             FontWeight="Bold" FontSize="20" 
                                                              HorizontalAlignment="Center" 
                                                              Margin="15,20,15,10"/>
 
@@ -122,22 +122,22 @@
 
                                                         <!-- Card Title -->
                                                         <TextBlock Grid.Row="0" Text="{Binding Name}" 
-                                                             FontWeight="Bold" FontSize="18" 
+                                                             FontWeight="Bold" FontSize="20" 
                                                              HorizontalAlignment="Center" 
                                                              Margin="0,5,0,15"/>
 
                                                         <!-- Description and Details -->
                                                         <StackPanel Grid.Row="1">
-                                                            <TextBlock Text="Leírás:" FontWeight="Bold" Margin="0,5,0,3"/>
-                                                            <TextBlock Text="{Binding Description}" 
+                                                            <TextBlock Text="Leírás:" FontSize="17" FontWeight="Bold" Margin="0,5,0,3"/>
+                                                            <TextBlock Text="{Binding Description}" FontSize="16"
                                                                  TextWrapping="Wrap" 
                                                                  Margin="0,0,0,15"/>
 
-                                                            <TextBlock Text="Létrehozva:" FontWeight="Bold" Margin="0,5,0,3"/>
-                                                            <TextBlock Text="{Binding CreatedDate, StringFormat=yyyy.MM.dd}" Margin="10,0,0,10"/>
+                                                            <TextBlock Text="Létrehozva:" FontSize="17" FontWeight="Bold" Margin="0,5,0,3"/>
+                                                            <TextBlock Text="{Binding CreatedDate, StringFormat=yyyy.MM.dd}" Margin="10,0,0,10" FontSize="16"/>
 
-                                                            <TextBlock Text="Készítette:" FontWeight="Bold" Margin="0,5,0,3"/>
-                                                            <TextBlock Text="{Binding CreatorName}" Margin="10,0,0,0"/>
+                                                            <TextBlock Text="Készítette:" FontSize="17" FontWeight="Bold" Margin="0,5,0,3"/>
+                                                            <TextBlock Text="{Binding CreatorName}" Margin="10,0,0,0" FontSize="16"/>
                                                         </StackPanel>
 
                                                         <!-- Action Buttons -->

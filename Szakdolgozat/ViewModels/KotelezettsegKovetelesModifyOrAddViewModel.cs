@@ -62,9 +62,9 @@ namespace Szakdolgozat.ViewModels
             {
                 _editMode = value;
                 if (_editMode == EditMode.Add)
-                    Title = "Új Bevétel/Kiadás Létrehozása";
+                    Title = "Új Kötelezettség/Követelés Létrehozása";
                 else if (_editMode == EditMode.Modify)
-                    Title = "Bevétel/Kiadás Módosítása";
+                    Title = "Kötelezettség/Követelés Módosítása";
             }
         }
         public string OblClaimType
@@ -125,7 +125,7 @@ namespace Szakdolgozat.ViewModels
             {
                 _completed = value;
                 OnPropertyChanged(nameof(Completed));
-                MessageBox.Show($"SelectedOption set to: {_completed}");
+                //MessageBox.Show($"SelectedOption set to: {_completed}");
             }
         }
 

@@ -31,7 +31,19 @@ namespace Szakdolgozat.Views
                 viewModel.RequestClose += () => this.Close();
             }
         }
+        private void btnMinimize_Click(object sender, RoutedEventArgs e)
+        {
+            WindowState = WindowState.Minimized;
+        }
 
+        private void btnClose_Click(object sender, RoutedEventArgs e)
+        {
+            if (DataContext is GazdalkodoSzervezetModifyOrAddViewModel viewModel)
+            {
+                viewModel.RequestClose -= () => this.Close();
+            }
+            this.Close();
+        }
         public GazdalkodoSzervezetModifyOrAddView(EditMode mode, GazdalkodoSzervezet modifiableGazdalkodoSzervezet)
         {
             InitializeComponent();

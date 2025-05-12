@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using Szakdolgozat.Models;
 using Szakdolgozat.ViewModels;
+using static Org.BouncyCastle.Crypto.Engines.SM2Engine;
 
 namespace Szakdolgozat.Views
 {
@@ -30,6 +31,20 @@ namespace Szakdolgozat.Views
                 viewModel.EditMode = mode;
                 viewModel.RequestClose += () => this.Close();
             }
+        }
+
+        private void btnMinimize_Click(object sender, RoutedEventArgs e)
+        {
+            WindowState = WindowState.Minimized;
+        }
+
+        private void btnClose_Click(object sender, RoutedEventArgs e)
+        {
+            if (DataContext is DolgozokModifyOrAddViewModel viewModel)
+            {
+                viewModel.RequestClose -= () => this.Close();
+            }
+            this.Close();
         }
 
         public DolgozokModifyOrAddView(EditMode mode, Dolgozo modifiableDolgozo)

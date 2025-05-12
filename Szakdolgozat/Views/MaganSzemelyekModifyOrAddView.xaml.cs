@@ -32,7 +32,18 @@ namespace Szakdolgozat.Views
                 viewModel.RequestClose += () => this.Close();
             }
         }
-
+        private void btnClose_Click(object sender, RoutedEventArgs e)
+        {
+            if (DataContext is MaganSzemelyekModifyOrAddViewModel viewModel)
+            {
+                viewModel.RequestClose -= () => this.Close();
+            }
+            this.Close();
+        }
+        private void btnMinimize_Click(object sender, RoutedEventArgs e)
+        {
+            WindowState = WindowState.Minimized;
+        }
         public MaganSzemelyekModifyOrAddView(EditMode mode, MaganSzemely modifiableMaganSzemely)
         {
             InitializeComponent();
