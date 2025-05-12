@@ -569,7 +569,7 @@ namespace Szakdolgozat.ViewModels
                         SelectedDataStatistics = "Összeg";
                         break;
                     case "StackedColumnSeries":
-                        DataStatisticsCB = new ObservableCollection<string> { "Nincs Kiválasztva", "Összeg", "Átlag", "Értékek Szórása", "Mértani Közép", "Minimum Érték", "Maximum Érték" };
+                        DataStatisticsCB = new ObservableCollection<string> { "Összeg", "Átlag", "Értékek Szórása", "Mértani Közép", "Minimum Érték", "Maximum Érték" };
                         break;
                     case "BasicColumnSeries":
                         DataStatisticsCB = new ObservableCollection<string> { "Összeg", "Átlag", "Értékek Szórása", "Mértani Közép", "Minimum Érték", "Maximum Érték" };
@@ -5748,9 +5748,9 @@ namespace Szakdolgozat.ViewModels
             {
                 for (int i = 0; i < BevetelekKiadasok.Count; i++)
                 {
-                    BevetelekKiadasok.ElementAt(i).IsSelected = true;
-                    _selectedBevetelekKiadasok = new ObservableCollection<BevetelKiadas>(BevetelekKiadasok);
+                    FilteredBevetelekKiadasok.ElementAt(i).IsSelected = true;
                 }
+                _selectedBevetelekKiadasok = new ObservableCollection<BevetelKiadas>(FilteredBevetelekKiadasok);
                 if (GroupByMonthCheckBoxIsChecked)
                 {
                     Years = new ObservableCollection<int>(
@@ -5765,9 +5765,9 @@ namespace Szakdolgozat.ViewModels
             {
                 for (int i = 0; i < KotelKovetelesek.Count; i++)
                 {
-                    KotelKovetelesek.ElementAt(i).IsSelected = true;
-                    _selectedKotelezettsegekKovetelesek = new ObservableCollection<KotelezettsegKoveteles>(KotelKovetelesek);
+                    FilteredKotelKovetelesek.ElementAt(i).IsSelected = true;
                 }
+                _selectedKotelezettsegekKovetelesek = new ObservableCollection<KotelezettsegKoveteles>(KotelKovetelesek);
                 if (GroupByMonthCheckBoxIsChecked)
                 {
                     Years = new ObservableCollection<int>(

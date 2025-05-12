@@ -1,17 +1,21 @@
-﻿using System;
+﻿using DocumentFormat.OpenXml.Wordprocessing;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Input;
 using Szakdolgozat.Models;
 using Szakdolgozat.Repositories;
+using Szakdolgozat.Specials;
 
 namespace Szakdolgozat.ViewModels
 {
-    public class KotelezettsegKovetelesModifyOrAddViewModel : ViewModelBase
+    public class KotelezettsegKovetelesModifyOrAddViewModel : ViewModelBase, IDataErrorInfo
     {
         public event Action RequestClose;
         //Obligation - kötelezettség, Claim - követelés
@@ -128,12 +132,35 @@ namespace Szakdolgozat.ViewModels
                 //MessageBox.Show($"SelectedOption set to: {_completed}");
             }
         }
+        public string this[string columnName]
+        {
+            get
+            {
+                string error = null;
+                switch (columnName)
+                {
+                    case nameof(OblClaimType):
+                        if (string.IsNullOrWhiteSpace(OblClaimType))
+                            error = "Kötelezettség és követelés típus nem lehet üres.";
+                        break;
+                    case nameof(Amount):
+                        if (string.IsNullOrWhiteSpace(Amount.ToString()) && Amount == 0)
+                            error = "Összeg nem lehet üres és 0.";
+                        break;
+                }
+                return error;
+            }
+        }
+
+        public string Error => null;
 
         public ICommand SaveCommand { get; }
+        public ICommand ResetEditCommand { get; }
 
         public KotelezettsegKovetelesModifyOrAddViewModel()
         {
             SaveCommand = new ViewModelCommand(ExecuteSaveCommand);
+            ResetEditCommand = new ViewModelCommand(ExecuteResetEditCommand);
         }
 
         public BevetelKiadas NotificationAboutAddedBevetelKiadas()
@@ -153,11 +180,26 @@ namespace Szakdolgozat.ViewModels
                     break;
             }
         }
-
+        private void ExecuteResetEditCommand(object parameter)
+        {
+            if (this.EditMode == EditMode.Modify)
+            {
+                Amount = ModifiableKotelezettsegKoveteles.Osszeg;
+                Currency = ModifiableKotelezettsegKoveteles.Penznem;
+                Completed = ModifiableKotelezettsegKoveteles.Kifizetett;
+                PaymentDeadline= ModifiableKotelezettsegKoveteles.KifizetesHatarideje;
+                OblClaimType = ModifiableKotelezettsegKoveteles.Tipus;
+            }
+        }
         private void AddKotelezettsegKoveteles()
         {
             try
             {
+                if (HasValidationErrors())
+                {
+                    System.Windows.MessageBox.Show("Kérjük, javítsa ki a hibákat a mentés előtt.", "Hiba", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
                 if (Amount != null && PaymentDeadline != null && OblClaimType != null)
                 {
                     KotelezettsegKoveteles kotelezettsegKoveteles = new KotelezettsegKoveteles(OblClaimType, Amount, Currency, PaymentDeadline, Completed);
@@ -176,6 +218,11 @@ namespace Szakdolgozat.ViewModels
         {
             try
             {
+                if (HasValidationErrors())
+                {
+                    System.Windows.MessageBox.Show("Kérjük, javítsa ki a hibákat a mentés előtt.", "Hiba", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
                 if (Amount != null && OblClaimType != null && PaymentDeadline != null)
                 {
                     KotelezettsegKoveteles kotelezettsegKoveteles = new KotelezettsegKoveteles(ModifiableKotelezettsegKoveteles.ID, OblClaimType, Amount, Currency, PaymentDeadline, Completed);
@@ -188,6 +235,11 @@ namespace Szakdolgozat.ViewModels
             {
                 throw new Exception(e.Message, e);
             }
+        }
+        private bool HasValidationErrors()
+        {
+            return !string.IsNullOrEmpty(this[nameof(OblClaimType)]) ||
+                   !string.IsNullOrEmpty(this[nameof(Amount)]);
         }
         private void CloseWindow()
         {

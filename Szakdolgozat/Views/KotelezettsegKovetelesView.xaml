@@ -89,6 +89,7 @@
 x:Name="dataGrid"
 SelectionMode="Extended"
 SelectionChanged="DataGrid_SelectionChanged"
+AutoGeneratingColumn="dataGrid_AutoGeneratingColumn"
 CanUserResizeColumns="True" 
 ColumnWidth="*" 
 AutoGenerateColumns="True" 

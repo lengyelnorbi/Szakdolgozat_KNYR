@@ -31,6 +31,11 @@ namespace Szakdolgozat.Views
                 viewModel.EditMode = mode;
                 viewModel.RequestClose += () => this.Close();
             }
+            if(mode == EditMode.Add)
+            {
+                resetButton.Visibility = Visibility.Collapsed;
+                Grid.SetColumnSpan(saveButton, 2);
+            }
         }
 
         private void btnMinimize_Click(object sender, RoutedEventArgs e)

@@ -1,15 +1,18 @@
-﻿using System;
+﻿using DocumentFormat.OpenXml.Wordprocessing;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 using Szakdolgozat.Models;
 using Szakdolgozat.Repositories;
 
 namespace Szakdolgozat.ViewModels
 {
-    public class MaganSzemelyekModifyOrAddViewModel : ViewModelBase
+    public class MaganSzemelyekModifyOrAddViewModel : ViewModelBase, IDataErrorInfo
     {
         public event Action RequestClose;
         private string _name;
@@ -110,12 +113,64 @@ namespace Szakdolgozat.ViewModels
                 OnPropertyChanged(nameof(Phonenumber));
             }
         }
+        public string this[string columnName]
+        {
+            get
+            {
+                string error = null;
+                switch (columnName)
+                {
+                    case nameof(Name):
+                        if (string.IsNullOrWhiteSpace(Name))
+                            error = "Név nem lehet üres.";
+                        break;
+                    case nameof(HomeAddress):
+                        if (string.IsNullOrWhiteSpace(HomeAddress))
+                            error = "Lakcím nem lehet üres.";
+                        break;
+                    case nameof(Email):
+                        if (string.IsNullOrWhiteSpace(Email))
+                            error = "Email nem lehet üres.";
+                        else if (!IsValidEmail(Email))
+                            error = "Érvénytelen email formátum.";
+                        break;
+                    case nameof(Phonenumber):
+                        if (string.IsNullOrWhiteSpace(Phonenumber))
+                            error = "Telefonszám nem lehet üres.";
+                        else if (!IsValidPhoneNumber(Phonenumber))
+                            error = "Érvénytelen telefonszám formátum.";
+                        break;
+                }
+                return error;
+            }
+        }
 
+        public string Error => null;
+
+        private bool IsValidEmail(string email)
+        {
+            try
+            {
+                var addr = new System.Net.Mail.MailAddress(email);
+                return addr.Address == email;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        private bool IsValidPhoneNumber(string phoneNumber)
+        {
+            return phoneNumber.All(char.IsDigit) && phoneNumber.Length >= 8 && phoneNumber.Length <= 15;
+        }
         public ICommand SaveCommand { get; }
+        public ICommand ResetEditCommand { get; }
 
         public MaganSzemelyekModifyOrAddViewModel()
         {
             SaveCommand = new ViewModelCommand(ExecuteSaveCommand);
+            ResetEditCommand = new ViewModelCommand(ExecuteResetEditCommand);
         }
 
         public MaganSzemely NotificationAboutAddedMaganSzemely()
@@ -135,11 +190,25 @@ namespace Szakdolgozat.ViewModels
                     break;
             }
         }
-
+        private void ExecuteResetEditCommand(object parameter)
+        {
+            if (this.EditMode == EditMode.Modify)
+            {
+                Name = ModifiableMaganSzemely.Nev;
+                HomeAddress = ModifiableMaganSzemely.Lakcim;
+                Email = ModifiableMaganSzemely.Email;
+                Phonenumber = ModifiableMaganSzemely.Telefonszam;
+            }
+        }
         private void AddMaganSzemely()
         {
             try
             {
+                if (HasValidationErrors())
+                {
+                    MessageBox.Show("Kérjük, javítsa ki a hibákat a mentés előtt.", "Hiba", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
                 if (Name != null && HomeAddress != null && Email != null && Phonenumber != null)
                 {
                     MaganSzemely maganSzemely = new MaganSzemely(Name, HomeAddress, Email, Phonenumber);
@@ -158,6 +227,11 @@ namespace Szakdolgozat.ViewModels
         {
             try
             {
+                if (HasValidationErrors())
+                {
+                    MessageBox.Show("Kérjük, javítsa ki a hibákat a mentés előtt.", "Hiba", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
                 if (Name != null && HomeAddress != null && Email != null && Phonenumber != null)
                 {
                     MaganSzemely maganSzemely = new MaganSzemely(ModifiableMaganSzemely.ID, Name, HomeAddress, Email, Phonenumber);
@@ -170,6 +244,13 @@ namespace Szakdolgozat.ViewModels
             {
                 throw new Exception(e.Message, e);
             }
+        }
+        private bool HasValidationErrors()
+        {
+            return !string.IsNullOrEmpty(this[nameof(Name)]) ||
+                   !string.IsNullOrEmpty(this[nameof(HomeAddress)]) ||
+                   !string.IsNullOrEmpty(this[nameof(Email)]) ||
+                   !string.IsNullOrEmpty(this[nameof(Phonenumber)]);
         }
         private void CloseWindow()
         {

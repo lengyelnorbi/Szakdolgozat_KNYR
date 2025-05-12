@@ -130,9 +130,9 @@ namespace Szakdolgozat.ViewModels
             checkboxStatuses.Add("kotelKovetIDCB", true);
             checkboxStatuses.Add("partnerIDCB", true);
             BevetelekKiadasok = _koltsegvetesRepository.GetKoltsegvetesek();
-            FilteredBevetelekKiadasok = new ObservableCollection<BevetelKiadas>(BevetelekKiadasok);
+
             FilteredBevetelekKiadasok = new ObservableCollection<BevetelKiadas>(
-               BevetelekKiadasok.Select(d => new BevetelKiadas(d.ID, d.Osszeg, d.Penznem, d.BeKiKod, d.TeljesitesiDatum, d.KotelKovetID, d.KotelKovetID)).ToList()
+               BevetelekKiadasok.Select(d => new BevetelKiadas(d.ID, d.Osszeg, d.Penznem, d.BeKiKod, d.TeljesitesiDatum, d.KotelKovetID, d.PartnerID)).ToList()
            );
             DeleteBevetelKiadasCommand = new ViewModelCommand(ExecuteDeleteBevetelKiadasCommand, CanExecuteDeleteBevetelKiadasCommand);
 

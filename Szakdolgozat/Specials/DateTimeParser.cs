@@ -32,5 +32,4 @@ namespace Szakdolgozat.Specials
             return null; // Return null if parsing failed
         }
     }
-
 }

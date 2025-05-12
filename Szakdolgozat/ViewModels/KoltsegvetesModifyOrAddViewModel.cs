@@ -1,16 +1,20 @@
-﻿using System;
+﻿using DocumentFormat.OpenXml.Wordprocessing;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Input;
 using Szakdolgozat.Models;
 using Szakdolgozat.Repositories;
+using Szakdolgozat.Specials;
 
 namespace Szakdolgozat.ViewModels
 {
-    public class KoltsegvetesModifyOrAddViewModel : ViewModelBase
+    public class KoltsegvetesModifyOrAddViewModel : ViewModelBase, IDataErrorInfo
     {
         public event Action RequestClose;
         private int _amount;
@@ -141,12 +145,35 @@ namespace Szakdolgozat.ViewModels
                 OnPropertyChanged(nameof(PartnerID));
             }
         }
+        public string this[string columnName]
+        {
+            get
+            {
+                string error = null;
+                switch (columnName)
+                {
+                    case nameof(PartnerID):
+                        if (string.IsNullOrWhiteSpace(PartnerID.ToString()) && PartnerID == 0)
+                            error = "Szükséges megadni partner id-t.";
+                        break;
+                    case nameof(Amount):
+                        if (string.IsNullOrWhiteSpace(Amount.ToString()) && Amount == 0)
+                            error = "Telefonszám nem lehet üres és 0.";
+                        break;
+                }
+                return error;
+            }
+        }
+
+        public string Error => null;
 
         public ICommand SaveCommand { get; }
+        public ICommand ResetEditCommand { get; }
 
         public KoltsegvetesModifyOrAddViewModel()
         {
             SaveCommand = new ViewModelCommand(ExecuteSaveCommand);
+            ResetEditCommand = new ViewModelCommand(ExecuteResetEditCommand);
         }
 
         public BevetelKiadas NotificationAboutAddedBevetelKiadas()
@@ -166,11 +193,27 @@ namespace Szakdolgozat.ViewModels
                     break;
             }
         }
-
+        private void ExecuteResetEditCommand(object parameter)
+        {
+            if (this.EditMode == EditMode.Modify)
+            {
+                Amount = ModifiableKoltsegvetes.Osszeg;
+                Currency = ModifiableKoltsegvetes.Penznem;
+                IncExpID = ModifiableKoltsegvetes.BeKiKod;
+                CompletionDate = ModifiableKoltsegvetes.TeljesitesiDatum;
+                OblClaimID = ModifiableKoltsegvetes.KotelKovetID;
+                PartnerID = ModifiableKoltsegvetes.PartnerID;
+            }
+        }
         private void AddBevetelKiadas()
         {
             try
             {
+                if (HasValidationErrors())
+                {
+                    System.Windows.MessageBox.Show("Kérjük, javítsa ki a hibákat a mentés előtt.", "Hiba", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
                 if (Amount != null && IncExpID != null && Currency != null && CompletionDate != null)
                 {
                     BevetelKiadas bevetelKiadas = new BevetelKiadas(Amount, Currency, IncExpID, CompletionDate, OblClaimID, PartnerID);
@@ -189,6 +232,11 @@ namespace Szakdolgozat.ViewModels
         {
             try
             {
+                if (HasValidationErrors())
+                {
+                    System.Windows.MessageBox.Show("Kérjük, javítsa ki a hibákat a mentés előtt.", "Hiba", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
                 if (Amount != null && IncExpID != null && Currency != null && CompletionDate != null)
                 {
                     BevetelKiadas bevetelKiadas = new BevetelKiadas(ModifiableKoltsegvetes.ID, Amount, Currency, IncExpID, CompletionDate, OblClaimID, PartnerID);
@@ -201,6 +249,11 @@ namespace Szakdolgozat.ViewModels
             {
                 throw new Exception(e.Message, e);
             }
+        }
+        private bool HasValidationErrors()
+        {
+            return !string.IsNullOrEmpty(this[nameof(Amount)]) ||
+                   !string.IsNullOrEmpty(this[nameof(PartnerID)]);
         }
         private void CloseWindow()
         {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,7 +11,7 @@ using Szakdolgozat.Repositories;
 
 namespace Szakdolgozat.ViewModels
 {
-    public class DolgozokModifyOrAddViewModel : ViewModelBase
+    public class DolgozokModifyOrAddViewModel : ViewModelBase, IDataErrorInfo
     {
         public event Action RequestClose;
         private string _lastname;
@@ -111,12 +112,64 @@ namespace Szakdolgozat.ViewModels
                 OnPropertyChanged(nameof(Phonenumber));
             }
         }
-        
-        public ICommand SaveCommand { get;}
+        public string this[string columnName]
+        {
+            get
+            {
+                string error = null;
+                switch (columnName)
+                {
+                    case nameof(Lastname):
+                        if (string.IsNullOrWhiteSpace(Lastname))
+                            error = "Vezetéknév nem lehet üres.";
+                        break;
+                    case nameof(Firstname):
+                        if (string.IsNullOrWhiteSpace(Firstname))
+                            error = "Keresztnév nem lehet üres.";
+                        break;
+                    case nameof(Email):
+                        if (string.IsNullOrWhiteSpace(Email))
+                            error = "Email nem lehet üres.";
+                        else if (!IsValidEmail(Email))
+                            error = "Érvénytelen email formátum.";
+                        break;
+                    case nameof(Phonenumber):
+                        if (string.IsNullOrWhiteSpace(Phonenumber))
+                            error = "Telefonszám nem lehet üres.";
+                        else if (!IsValidPhoneNumber(Phonenumber))
+                            error = "Érvénytelen telefonszám formátum.";
+                        break;
+                }
+                return error;
+            }
+        }
+
+        public string Error => null;
+
+        private bool IsValidEmail(string email)
+        {
+            try
+            {
+                var addr = new System.Net.Mail.MailAddress(email);
+                return addr.Address == email;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        private bool IsValidPhoneNumber(string phoneNumber)
+        {
+            return phoneNumber.All(char.IsDigit) && phoneNumber.Length >= 8 && phoneNumber.Length <= 15;
+        }
+        public ICommand SaveCommand { get; }
+        public ICommand ResetEditCommand { get; }
 
         public DolgozokModifyOrAddViewModel()
         {
             SaveCommand = new ViewModelCommand(ExecuteSaveCommand);
+            ResetEditCommand = new ViewModelCommand(ExecuteResetEditCommand);
         }
 
         public Dolgozo NotificationAboutAddedDolgozo()
@@ -136,22 +189,34 @@ namespace Szakdolgozat.ViewModels
                     break;
             }
         }
-
+        private void ExecuteResetEditCommand(object parameter)
+        {
+            if (this.EditMode == EditMode.Modify)
+            {
+                Lastname = ModifiableDolgozo.Vezeteknev;
+                Firstname = ModifiableDolgozo.Keresztnev;
+                Email = ModifiableDolgozo.Email;
+                Phonenumber = ModifiableDolgozo.Telefonszam;
+            }
+        }
         private void AddDolgozo()
         {
             try
             {
-                if (Lastname != null && Firstname != null && Email != null && Phonenumber != null)
+                if (HasValidationErrors())
                 {
-                    Dolgozo dolgozo = new Dolgozo(Lastname, Firstname, Email, Phonenumber);
-                    _dolgozoRepository.AddDolgozo(dolgozo);
-                    Mediator.NotifyNewDolgozoAdded(dolgozo);
-                    CloseWindow();
+                    MessageBox.Show("Kérjük, javítsa ki a hibákat a mentés előtt.", "Hiba", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
                 }
+
+                Dolgozo dolgozo = new Dolgozo(Lastname, Firstname, Email, Phonenumber);
+                _dolgozoRepository.AddDolgozo(dolgozo);
+                Mediator.NotifyNewDolgozoAdded(dolgozo);
+                CloseWindow();
             }
             catch (Exception e)
             {
-                throw new Exception(e.Message, e);
+                MessageBox.Show($"Hiba történt a dolgozó hozzáadása során: {e.Message}", "Hiba", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -159,24 +224,33 @@ namespace Szakdolgozat.ViewModels
         {
             try
             {
-                if (Lastname != null && Firstname != null && Email != null && Phonenumber != null)
+                if (HasValidationErrors())
                 {
-                    Dolgozo dolgozo = new Dolgozo(ModifiableDolgozo.ID, Lastname, Firstname, Email, Phonenumber);
-                    _dolgozoRepository.ModifyDolgozo(dolgozo);
-                    Mediator.NotifyModifiedDolgozo(dolgozo);
-                    CloseWindow();
+                    MessageBox.Show("Kérjük, javítsa ki a hibákat a mentés előtt.", "Hiba", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
                 }
+
+                Dolgozo dolgozo = new Dolgozo(ModifiableDolgozo.ID, Lastname, Firstname, Email, Phonenumber);
+                _dolgozoRepository.ModifyDolgozo(dolgozo);
+                Mediator.NotifyModifiedDolgozo(dolgozo);
+                CloseWindow();
             }
             catch (Exception e)
             {
-                throw new Exception(e.Message, e);
+                MessageBox.Show($"Hiba történt a dolgozó módosítása során: {e.Message}", "Hiba", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
+
+        private bool HasValidationErrors()
+        {
+            return !string.IsNullOrEmpty(this[nameof(Lastname)]) ||
+                   !string.IsNullOrEmpty(this[nameof(Firstname)]) ||
+                   !string.IsNullOrEmpty(this[nameof(Email)]) ||
+                   !string.IsNullOrEmpty(this[nameof(Phonenumber)]);
         }
         private void CloseWindow()
         {
             RequestClose?.Invoke();
         }
-
-
     }
 }

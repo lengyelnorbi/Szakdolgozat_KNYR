@@ -234,27 +234,36 @@ namespace Szakdolgozat.Views
                             createChartsView.GroupByPenznemCheckBoxIsChecked = false;
                             if (createChartsView.SeriesType == "RowSeries" || createChartsView.SeriesType == "BasicColumnSeries" || createChartsView.SeriesType == "StackedColumnSeries")
                             {
-                                GroupByMonthCB.IsEnabled = true;
-                                GroupByMonthYearsCB.IsEnabled = true;
-                                GroupByYearCB.IsEnabled = true;
+                                if(createChartsView.GroupByBeKiKodCheckBoxIsChecked == false && createChartsView.GroupByKifizetettCheckBoxIsChecked == false)
+                                {
+                                    GroupByMonthCB.IsEnabled = true;
+                                    GroupByMonthYearsCB.IsEnabled = true;
+                                    GroupByYearCB.IsEnabled = true;
+                                }
                             }
                             break;
                         case "GroupByBeKiKodCB":
                             createChartsView.GroupByBeKiKodCheckBoxIsChecked = false;
                             if (createChartsView.SeriesType == "RowSeries" || createChartsView.SeriesType == "BasicColumnSeries" || createChartsView.SeriesType == "StackedColumnSeries")
                             {
-                                GroupByMonthCB.IsEnabled = true;
-                                GroupByMonthYearsCB.IsEnabled = true;
-                                GroupByYearCB.IsEnabled = true;
+                                if (createChartsView.GroupByPenznemCheckBoxIsChecked == false && createChartsView.GroupByKifizetettCheckBoxIsChecked == false)
+                                {
+                                    GroupByMonthCB.IsEnabled = true;
+                                    GroupByMonthYearsCB.IsEnabled = true;
+                                    GroupByYearCB.IsEnabled = true;
+                                }
                             }
                             break;
                         case "GroupByKifizetettCB":
                             createChartsView.GroupByKifizetettCheckBoxIsChecked = false;
                             if (createChartsView.SeriesType == "RowSeries" || createChartsView.SeriesType == "BasicColumnSeries" || createChartsView.SeriesType == "StackedColumnSeries")
                             {
-                                GroupByMonthCB.IsEnabled = true;
-                                GroupByMonthYearsCB.IsEnabled = true;
-                                GroupByYearCB.IsEnabled = true;
+                                if (createChartsView.GroupByPenznemCheckBoxIsChecked == false && createChartsView.GroupByBeKiKodCheckBoxIsChecked == false)
+                                {
+                                    GroupByMonthCB.IsEnabled = true;
+                                    GroupByMonthYearsCB.IsEnabled = true;
+                                    GroupByYearCB.IsEnabled = true;
+                                }
                             }
                             break;
                         case "GroupByDateCB":
@@ -264,9 +273,12 @@ namespace Szakdolgozat.Views
                             createChartsView.GroupByYearCheckBoxIsChecked = false;
                             if (createChartsView.SeriesType == "RowSeries" || createChartsView.SeriesType == "BasicColumnSeries" || createChartsView.SeriesType == "StackedColumnSeries")
                             {
-                                GroupByKifizetettCB.IsEnabled = true;
-                                GroupByPenznemCB.IsEnabled = true;
-                                GroupByBeKiKodCB.IsEnabled = true;
+                                if (createChartsView.GroupByMonthCheckBoxIsChecked == false)
+                                {
+                                    GroupByKifizetettCB.IsEnabled = true;
+                                    GroupByPenznemCB.IsEnabled = true;
+                                    GroupByBeKiKodCB.IsEnabled = true;
+                                }
                             }
                             else
                             {
@@ -278,9 +290,12 @@ namespace Szakdolgozat.Views
                             createChartsView.GroupByMonthCheckBoxIsChecked = false;
                             if (createChartsView.SeriesType == "RowSeries" || createChartsView.SeriesType == "BasicColumnSeries" || createChartsView.SeriesType == "StackedColumnSeries")
                             {
-                                GroupByKifizetettCB.IsEnabled = true;
-                                GroupByPenznemCB.IsEnabled = true;
-                                GroupByBeKiKodCB.IsEnabled = true;
+                                if (createChartsView.GroupByYearCheckBoxIsChecked == false)
+                                {
+                                    GroupByKifizetettCB.IsEnabled = true;
+                                    GroupByPenznemCB.IsEnabled = true;
+                                    GroupByBeKiKodCB.IsEnabled = true;
+                                }
                             }
                             else
                             {

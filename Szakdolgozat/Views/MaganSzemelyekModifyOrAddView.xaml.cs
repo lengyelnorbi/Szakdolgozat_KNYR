@@ -14,6 +14,7 @@ using System.Windows.Shapes;
 using static Org.BouncyCastle.Crypto.Engines.SM2Engine;
 using Szakdolgozat.Models;
 using Szakdolgozat.ViewModels;
+using System.Windows.Controls.Primitives;
 
 namespace Szakdolgozat.Views
 {
@@ -30,6 +31,11 @@ namespace Szakdolgozat.Views
             {
                 viewModel.EditMode = mode;
                 viewModel.RequestClose += () => this.Close();
+            }
+            if (mode == EditMode.Add)
+            {
+                resetButton.Visibility = Visibility.Collapsed;
+                Grid.SetColumnSpan(saveButton, 2);
             }
         }
         private void btnClose_Click(object sender, RoutedEventArgs e)
