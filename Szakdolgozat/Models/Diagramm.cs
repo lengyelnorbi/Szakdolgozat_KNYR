@@ -9,6 +9,62 @@ namespace Szakdolgozat.Models
 {
     public class Diagramm
     {
+        public Diagramm(int iD, string name, string description, string chartType, string dataSource, string dataChartValues, string filterSettings, string groupBySettings, string seriesGroupBySelection, string selectedItemsIDs, string dataStatistic, DateTime createdDate, int? createdByUserID, string creatorName, SeriesCollection previewChart, SeriesCollection previewPieChart, double innerRadius)
+        {
+            ID = iD;
+            Name = name;
+            Description = description;
+            ChartType = chartType;
+            DataSource = dataSource;
+            DataChartValues = dataChartValues;
+            FilterSettings = filterSettings;
+            GroupBySettings = groupBySettings;
+            SeriesGroupBySelection = seriesGroupBySelection;
+            SelectedItemsIDs = selectedItemsIDs;
+            DataStatistic = dataStatistic;
+            CreatedDate = createdDate;
+            CreatedByUserID = createdByUserID;
+            CreatorName = creatorName;
+            PreviewChart = previewChart;
+            PreviewPieChart = previewPieChart;
+            InnerRadius = innerRadius;
+        }
+        public Diagramm(int iD, string name, string description, string chartType, string dataSource, string dataChartValues, string filterSettings, string groupBySettings, string seriesGroupBySelection, string selectedItemsIDs, string dataStatistic, DateTime createdDate, int? createdByUserID, string creatorName)
+        {
+            ID = iD;
+            Name = name;
+            Description = description;
+            ChartType = chartType;
+            DataSource = dataSource;
+            DataChartValues = dataChartValues;
+            FilterSettings = filterSettings;
+            GroupBySettings = groupBySettings;
+            SeriesGroupBySelection = seriesGroupBySelection;
+            SelectedItemsIDs = selectedItemsIDs;
+            DataStatistic = dataStatistic;
+            CreatedDate = createdDate;
+            CreatedByUserID = createdByUserID;
+            CreatorName = creatorName;
+        }
+        public Diagramm(int iD, string name, string description, string chartType, string dataSource, string dataChartValues, string filterSettings, string groupBySettings, string seriesGroupBySelection, string selectedItemsIDs, string dataStatistic, DateTime createdDate, int? createdByUserID)
+        {
+            ID = iD;
+            Name = name;
+            Description = description;
+            ChartType = chartType;
+            DataSource = dataSource;
+            DataChartValues = dataChartValues;
+            FilterSettings = filterSettings;
+            GroupBySettings = groupBySettings;
+            SeriesGroupBySelection = seriesGroupBySelection;
+            SelectedItemsIDs = selectedItemsIDs;
+            DataStatistic = dataStatistic;
+            CreatedDate = createdDate;
+            CreatedByUserID = createdByUserID;
+        }
+        public Diagramm()
+        {
+        }
         public int ID { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }

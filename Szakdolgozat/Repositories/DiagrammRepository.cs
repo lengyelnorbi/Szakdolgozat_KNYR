@@ -139,7 +139,7 @@ namespace Szakdolgozat.Repositories
                 using (var command = new MySqlCommand())
                 {
                     command.Connection = connection;
-                    command.CommandText = "SELECT diagrammok.*, felhasznalok.felhasznalo_nev as CreatorName FROM diagrammok INNER JOIN felhasznalok on diagrammok.letrehozo_id = felhasznalok.id ORDER BY letrehozasi_datum DESC";
+                    command.CommandText = "SELECT diagrammok.*, dolgozok.vezeteknev, dolgozok.keresztnev FROM diagrammok INNER JOIN felhasznalok on diagrammok.letrehozo_id = felhasznalok.id INNER JOIN dolgozok ON felhasznalok.dolgozo_id = dolgozok.id ORDER BY letrehozasi_datum DESC";
 
                     using (var reader = command.ExecuteReader())
                     {
@@ -161,7 +161,8 @@ namespace Szakdolgozat.Repositories
                                 CreatedDate = Convert.ToDateTime(reader["letrehozasi_datum"]),
                                 CreatedByUserID = reader["letrehozo_id"] != DBNull.Value ?
                                     Convert.ToInt32(reader["letrehozo_id"]) : (int?)null,
-                                CreatorName = reader["CreatorName"] != DBNull.Value ? reader["CreatorName"].ToString() : "Unknown",
+                                CreatorName = (reader["vezeteknev"] != DBNull.Value && reader["keresztnev"] != DBNull.Value) ?
+                            $"{reader["vezeteknev"]} {reader["keresztnev"]}" : "Unknown",
                             });
                            
                         }

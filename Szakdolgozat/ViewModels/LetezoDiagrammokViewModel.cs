@@ -27,6 +27,36 @@ namespace Szakdolgozat.ViewModels
             }
         }
 
+        private ObservableCollection<Diagramm> _filteredDiagramms;
+        public ObservableCollection<Diagramm> FilteredDiagrams
+        {
+            get { return _filteredDiagramms; }
+            set
+            {
+                _filteredDiagramms = value;
+                OnPropertyChanged(nameof(FilteredDiagrams));
+            }
+        }
+
+        private bool _isOnlyOwnDiagramsVisible = false;
+        public bool IsOnlyOwnDiagramsVisible
+        {
+            get { return _isOnlyOwnDiagramsVisible; }
+            set
+            {
+                _isOnlyOwnDiagramsVisible = value;
+                OnPropertyChanged(nameof(IsOnlyOwnDiagramsVisible));
+                if(value)
+                {
+                    FilterDiagrams();
+                }
+                else
+                {
+                    FilteredDiagrams = new ObservableCollection<Diagramm>(Diagrams.ToList());
+                }
+            }
+        }
+
         public ICommand OpenDiagramCommand { get; }
         public ICommand DeleteDiagramCommand { get; }
         private DiagrammRepository _diagrammRepository { get; set; } = new DiagrammRepository();
@@ -101,6 +131,22 @@ namespace Szakdolgozat.ViewModels
                             System.Diagnostics.Debug.WriteLine($"Unsupported chart type: {diagramm.ChartType}");
                             break;
                     }
+                }
+            }
+            FilteredDiagrams = new ObservableCollection<Diagramm>(
+                Diagrams.Select(d => new Diagramm(d.ID, d.Name, d.Description, d.ChartType, d.DataSource, d.DataChartValues, d.FilterSettings, d.GroupBySettings, d.SeriesGroupBySelection, d.SelectedItemsIDs, d.DataStatistic, d.CreatedDate,
+                d.CreatedByUserID, d.CreatorName, d.PreviewChart, d.PreviewPieChart, d.InnerRadius)).ToList()
+            );
+        }
+
+        public void FilterDiagrams()
+        {
+            FilteredDiagrams.Clear();
+            foreach (var diagram in Diagrams)
+            {
+                if(diagram.CreatedByUserID == Mediator.NotifyGetUserID())
+                {
+                    FilteredDiagrams.Add(diagram);
                 }
             }
         }

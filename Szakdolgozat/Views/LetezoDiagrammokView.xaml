@@ -16,14 +16,16 @@
     </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="100" />
+            <RowDefinition Height="50" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <Grid Grid.Row="0">
-            
+            <StackPanel Background="White">
+                <CheckBox Foreground="Black" Content="Csak Saját Diagrammok Mutatása" IsChecked="{Binding IsOnlyOwnDiagramsVisible, Mode=TwoWay, NotifyOnSourceUpdated=True}"/>
+            </StackPanel>
         </Grid>
         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-            <ItemsControl ItemsSource="{Binding Diagrams}" VerticalAlignment="Center" HorizontalAlignment="Center">
+            <ItemsControl ItemsSource="{Binding FilteredDiagrams}" VerticalAlignment="Center" HorizontalAlignment="Center">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <WrapPanel Orientation="Horizontal"/>
@@ -126,12 +128,10 @@
 
                                                         <!-- Description and Details -->
                                                         <StackPanel Grid.Row="1">
+                                                            <TextBlock Text="Leírás:" FontWeight="Bold" Margin="0,5,0,3"/>
                                                             <TextBlock Text="{Binding Description}" 
                                                                  TextWrapping="Wrap" 
                                                                  Margin="0,0,0,15"/>
-
-                                                            <TextBlock Text="Típus:" FontWeight="Bold" Margin="0,5,0,3"/>
-                                                            <TextBlock Text="{Binding ChartType}" Margin="10,0,0,10"/>
 
                                                             <TextBlock Text="Létrehozva:" FontWeight="Bold" Margin="0,5,0,3"/>
                                                             <TextBlock Text="{Binding CreatedDate, StringFormat=yyyy.MM.dd}" Margin="10,0,0,10"/>

@@ -873,6 +873,14 @@ namespace Szakdolgozat.Views
             }
         }
 
+        private void selectAllDataSelection_Click(object sender, RoutedEventArgs e)
+        {
+            if (DataContext is CreateChartsViewModel createChartsViewModel)
+            {
+                createChartsViewModel.CheckAllSelections();
+            }
+        }
+
         private void pnlControlBar_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
         {
             this.MaxHeight = SystemParameters.MaximizedPrimaryScreenHeight;

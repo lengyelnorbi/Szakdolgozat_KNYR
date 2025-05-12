@@ -5721,18 +5721,64 @@ namespace Szakdolgozat.ViewModels
 
         public void UnCheckAllSelections()
         {
-            _selectedBevetelekKiadasok.Clear();
-            for (int i = 0; i < BevetelekKiadasok.Count; i++)
+            if (IsBevetelekKiadasokTabIsSelected)
             {
-                BevetelekKiadasok.ElementAt(i).IsSelected = false;
+                _selectedBevetelekKiadasok.Clear();
+                for (int i = 0; i < BevetelekKiadasok.Count; i++)
+                {
+                    BevetelekKiadasok.ElementAt(i).IsSelected = false;
+                }
             }
-            for (int i = 0; i < KotelKovetelesek.Count; i++)
+            else
             {
-                BevetelekKiadasok.ElementAt(i).IsSelected = false;
+                SelectedKotelezettsegekKovetelesek.Clear();
+                for (int i = 0; i < KotelKovetelesek.Count; i++)
+                {
+                    KotelKovetelesek.ElementAt(i).IsSelected = false;
+                }
             }
             UpdateSearch(SearchQuery);
-            SelectedKotelezettsegekKovetelesek.Clear();
             Years.Clear();
+            IsEnabledChangerOnTabItems();
+        }
+
+        public void CheckAllSelections()
+        {
+            if(IsBevetelekKiadasokTabIsSelected)
+            {
+                for (int i = 0; i < BevetelekKiadasok.Count; i++)
+                {
+                    BevetelekKiadasok.ElementAt(i).IsSelected = true;
+                    _selectedBevetelekKiadasok = new ObservableCollection<BevetelKiadas>(BevetelekKiadasok);
+                }
+                if (GroupByMonthCheckBoxIsChecked)
+                {
+                    Years = new ObservableCollection<int>(
+                                _selectedBevetelekKiadasok
+                                .Select(x => x.TeljesitesiDatum.Year)
+                                .Distinct()
+                                .OrderBy(year => year)
+                            );
+                }
+            }
+            else
+            {
+                for (int i = 0; i < KotelKovetelesek.Count; i++)
+                {
+                    KotelKovetelesek.ElementAt(i).IsSelected = true;
+                    _selectedKotelezettsegekKovetelesek = new ObservableCollection<KotelezettsegKoveteles>(KotelKovetelesek);
+                }
+                if (GroupByMonthCheckBoxIsChecked)
+                {
+                    Years = new ObservableCollection<int>(
+                                _selectedKotelezettsegekKovetelesek
+                                .Select(x => x.KifizetesHatarideje.Year)
+                                .Distinct()
+                                .OrderBy(year => year)
+                            );
+                }
+            }
+            UpdateSearch(SearchQuery);
             IsEnabledChangerOnTabItems();
         }
 

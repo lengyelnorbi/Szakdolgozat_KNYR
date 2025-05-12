@@ -433,21 +433,33 @@
                             <Button Grid.Column="1" Margin="5,0,5,5" x:Name="cellSelectionFalse" Click="ChangeSelection_Click" Content="Töröl"></Button>--><!--
                         </Grid>-->
                         <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
+                    
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="*"/>
                                 <RowDefinition Height="*"/>
                             </Grid.RowDefinitions>
-                            <Button Grid.Row="0" Grid.Column="0" x:Name="deleteAllDataSelection" Margin="5,5,5,0" Click="deleteAllDataSelection_Click" Content="Összes jelölés törlése"></Button>
-                            <Button Grid.Row="0" Grid.Column="1" x:Name="addDataToChart" Margin="5,5,5,0" Click="AddDataToChart_Click" Content="Adatok Hozzáadása"></Button>
-                            <Button Grid.Row="1" Grid.Column="0" Content="Export" Command="{Binding ExportChartAsImageCommand}"></Button>
-                            <Button Grid.Row="1" Grid.Column="1" Content="Save Chart" 
-                                Command="{Binding SaveChartCommand}" 
-                                Margin="5" 
-                                Padding="5,2" />            
+                            <Grid Grid.Row="0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Button Grid.Column="1" Margin="5,0,5,0" x:Name="deleteAllDataSelection" Click="deleteAllDataSelection_Click" Content="Összes jelölés törlése"></Button>
+                                <Button Grid.Column="0" Margin="5,0,5,0" x:Name="selectAll" Click="selectAllDataSelection_Click" Content="Összes kijelölése"></Button>
+                            </Grid>
+                            <Grid Grid.Row="1">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Button Grid.Column="0" x:Name="addDataToChart" Margin="5,0,5,0" Click="AddDataToChart_Click" Content="Előnézet"></Button>
+                                <Button Grid.Column="1" Content="Export" Command="{Binding ExportChartAsImageCommand}"></Button>
+                                <Button Grid.Column="2" Content="Mentés" 
+    Command="{Binding SaveChartCommand}" 
+    Margin="5" 
+    Padding="5,2" />
+                            </Grid>
+                                    
                         </Grid>
                     </StackPanel>
                     <Grid Grid.Row="1">
