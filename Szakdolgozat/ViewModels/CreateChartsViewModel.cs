@@ -6153,15 +6153,51 @@ namespace Szakdolgozat.ViewModels
             ExportSpecificChart(SeriesType);
         }
 
-        public void ExportChartAsImage(UIElement chart, string folderPath)
+        public void ExportSpecificChart(string chartName)
+        {
+            UIElement chart = Mediator.NotifyGetSpecificChart(chartName);
+            if (chart != null)
+            {
+                // Create save file dialog
+                var saveFileDialog = new Microsoft.Win32.SaveFileDialog
+                {
+                    Filter = "PNG Image|*.png",
+                    Title = "Save Chart Image",
+                    FileName = $"Chart_{DateTime.Now:yyyyMMdd_HHmmss}.png",
+                    DefaultExt = ".png"
+                };
+
+                // Show dialog and get result
+                if (saveFileDialog.ShowDialog() == true)
+                {
+                    string filePath = saveFileDialog.FileName;
+                    string directoryPath = Path.GetDirectoryName(filePath);
+
+                    // Ensure directory exists
+                    if (!Directory.Exists(directoryPath))
+                    {
+                        Directory.CreateDirectory(directoryPath);
+                    }
+
+                    // Export chart to the selected location
+                    ExportChartAsImage(chart, directoryPath, Path.GetFileName(filePath));
+                }
+            }
+        }
+
+        // Modified to accept specific filename
+        public void ExportChartAsImage(UIElement chart, string folderPath, string fileName = null)
         {
             if (!Directory.Exists(folderPath))
             {
                 Directory.CreateDirectory(folderPath);
             }
 
-            // Generate a unique file name based on date/time
-            string fileName = $"Chart_{DateTime.Now:yyyyMMdd_HHmmss}.png";
+            // Use provided filename or generate a default one
+            if (string.IsNullOrEmpty(fileName))
+            {
+                fileName = $"Chart_{DateTime.Now:yyyyMMdd_HHmmss}.png";
+            }
 
             // Combine folder path and file name
             string filePath = Path.Combine(folderPath, fileName);
@@ -6205,17 +6241,8 @@ namespace Szakdolgozat.ViewModels
             }
         }
 
-        public void ExportSpecificChart(string chartName)
-        {
-            UIElement chart = Mediator.NotifyGetSpecificChart(chartName);
-            if (chart != null)
-            {
-                ExportChartAsImage(chart, "C:\\Users\\NorbiPC\\Downloads\\teszt\\");
-            }
-        }
 
-
-
+        private bool SavingClosed = false;
 
 
 
@@ -6226,25 +6253,52 @@ namespace Szakdolgozat.ViewModels
             {
                 // Prompt for chart name and description
                 string chartName = GetChartNameFromUser();
-                if (string.IsNullOrEmpty(chartName))
+                if (SavingClosed)
+                {
+                    SavingClosed = false;
                     return; // User cancelled
+                }
+                if (string.IsNullOrEmpty(chartName))
+                {
+                    System.Windows.MessageBox.Show(
+                        "Nem lehet a diagramm neve üres!",
+                        "A mentés sikertelen!",
+                        System.Windows.MessageBoxButton.OK,
+                        System.Windows.MessageBoxImage.Error);
+                    return;
+                }
 
                 string chartDescription = GetChartDescriptionFromUser();
 
-                // Create and save the chart
-                SaveChartToDatabase(chartName, chartDescription);
+                if(!SavingClosed)
+                {
+                    SavingClosed = false;
+                    if(!string.IsNullOrEmpty(chartDescription))
+                    {
+                        // Create and save the chart
+                        SaveChartToDatabase(chartName, chartDescription);
 
-                System.Windows.MessageBox.Show(
-                    "Chart saved successfully!",
-                    "Save Success",
-                    System.Windows.MessageBoxButton.OK,
-                    System.Windows.MessageBoxImage.Information);
+                        System.Windows.MessageBox.Show(
+                        "Diagramm mentése sikeres!",
+                        "Mentés sikeres",
+                        System.Windows.MessageBoxButton.OK,
+                        System.Windows.MessageBoxImage.Information);
+                    }
+                    else
+                    {
+                        System.Windows.MessageBox.Show(
+                        "Nem lehet a leírás üres!",
+                        "A mentés sikertelen!",
+                        System.Windows.MessageBoxButton.OK,
+                        System.Windows.MessageBoxImage.Error);
+                    }
+                }
             }
             catch (Exception ex)
             {
                 System.Windows.MessageBox.Show(
-                    $"Error saving chart: {ex.Message}",
-                    "Save Error",
+                    $"Hiba a diagramm mentése során: {ex.Message}",
+                    "Mentési hiba",
                     System.Windows.MessageBoxButton.OK,
                     System.Windows.MessageBoxImage.Error);
             }
@@ -6255,9 +6309,9 @@ namespace Szakdolgozat.ViewModels
             // Create a new Window for the dialog
             var dialog = new Window
             {
-                Title = "Chart Name",
+                Title = "Diagramm neve",
                 Width = 300,
-                Height = 150,
+                Height = 200,
                 WindowStartupLocation = WindowStartupLocation.CenterScreen,
                 ResizeMode = ResizeMode.NoResize,
                 WindowStyle = WindowStyle.ToolWindow
@@ -6287,14 +6341,25 @@ namespace Szakdolgozat.ViewModels
 
             var cancelButton = new System.Windows.Controls.Button
             {
-                Content = "Cancel",
-                Width = 75,
+                Content = "Megszakítás",
+                Width = 120,
                 Margin = new Thickness(10)
             };
 
             // Wire up button events
             okButton.Click += (s, e) => { dialog.DialogResult = true; };
             cancelButton.Click += (s, e) => { dialog.DialogResult = false; };
+
+            dialog.Closing += (s, e) => {
+                SavingClosed = true;
+                if (dialog.DialogResult.HasValue)
+                {
+                    if (dialog.DialogResult.Value == true)
+                    {
+                        SavingClosed = false;
+                    }
+                }
+            };
 
             buttonPanel.Children.Add(okButton);
             buttonPanel.Children.Add(cancelButton);
@@ -6304,7 +6369,7 @@ namespace Szakdolgozat.ViewModels
             mainPanel.Margin = new Thickness(10);
             mainPanel.Children.Add(new System.Windows.Controls.TextBlock
             {
-                Text = "Enter chart name:",
+                Text = "Adja meg a diagramm nevét:",
                 Margin = new Thickness(0, 0, 0, 5)
             });
             mainPanel.Children.Add(inputDialog);
@@ -6324,9 +6389,9 @@ namespace Szakdolgozat.ViewModels
             // Create a new Window for the dialog
             var dialog = new Window
             {
-                Title = "Chart Description (Optional)",
+                Title = "Diagramm leírása",
                 Width = 400,
-                Height = 250,
+                Height = 270,
                 WindowStartupLocation = WindowStartupLocation.CenterScreen,
                 ResizeMode = ResizeMode.NoResize,
                 WindowStyle = WindowStyle.ToolWindow
@@ -6359,14 +6424,25 @@ namespace Szakdolgozat.ViewModels
 
             var cancelButton = new System.Windows.Controls.Button
             {
-                Content = "Cancel",
-                Width = 75,
+                Content = "Megszakítás",
+                Width = 120,
                 Margin = new Thickness(10)
             };
 
             // Wire up button events
             okButton.Click += (s, e) => { dialog.DialogResult = true; };
             cancelButton.Click += (s, e) => { dialog.DialogResult = false; };
+
+            dialog.Closing += (s, e) => {
+                SavingClosed = true;
+                if (dialog.DialogResult.HasValue)
+                {
+                    if (dialog.DialogResult.Value == true)
+                    {
+                        SavingClosed = false;
+                    }
+                }
+            };
 
             buttonPanel.Children.Add(okButton);
             buttonPanel.Children.Add(cancelButton);
@@ -6376,7 +6452,7 @@ namespace Szakdolgozat.ViewModels
             mainPanel.Margin = new Thickness(10);
             mainPanel.Children.Add(new System.Windows.Controls.TextBlock
             {
-                Text = "Enter chart description (optional):",
+                Text = "Adja meg a diagramm leírását:",
                 Margin = new Thickness(0, 0, 0, 5)
             });
             mainPanel.Children.Add(inputDialog);
@@ -6490,6 +6566,7 @@ namespace Szakdolgozat.ViewModels
                             Name = ((LineSeries)g).Name,
                             DataLabels = ((LineSeries)g).DataLabels,
                             Values = ((LineSeries)g).Values,
+                            Fill = ((LineSeries)g).Stroke,
                         }).ToList();
                     break;
                 case "RowSeries":
@@ -6512,6 +6589,7 @@ namespace Szakdolgozat.ViewModels
                            Name = ((ColumnSeries)g).Name,
                            DataLabels = ((ColumnSeries)g).DataLabels,
                            Values = ((ColumnSeries)g).Values,
+                           Fill = ((ColumnSeries)g).Fill,
                        }).ToList();
                     break;
                 case "StackedColumnSeries":
@@ -6522,6 +6600,7 @@ namespace Szakdolgozat.ViewModels
                             Name = ((StackedColumnSeries)g).Name,
                             DataLabels = ((StackedColumnSeries)g).DataLabels,
                             Values = ((StackedColumnSeries)g).Values,
+                            Fill = ((StackedColumnSeries)g).Fill,
                         }).ToList();
                     break;
                 default:
@@ -6554,6 +6633,7 @@ namespace Szakdolgozat.ViewModels
 
             // Save to database
             diagrammRepository.SaveDiagramm(diagrammModel);
+            LoadDiagram(diagrammModel);
         }
 
         public void LoadDiagram(Diagramm diagramm)

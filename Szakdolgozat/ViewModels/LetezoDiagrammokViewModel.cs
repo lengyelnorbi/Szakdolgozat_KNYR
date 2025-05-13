@@ -3,11 +3,13 @@ using LiveCharts.Wpf;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO.Ports;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using System.Windows.Media;
 using Szakdolgozat.Models;
 using Szakdolgozat.Repositories;
 using Szakdolgozat.Views;
@@ -94,14 +96,21 @@ namespace Szakdolgozat.ViewModels
 
                 if (seriesItems != null)
                 {
-                    foreach (var item in seriesItems)
+                    try
                     {
-                        // Convert each SeriesItem into a SeriesData object
-                        result.Add(new SeriesItem
+                        foreach (var series in seriesItems)
                         {
-                            Name = item.Name,
-                            Values = new ChartValues<double>(item.Values)
-                        });
+                            result.Add(new SeriesItem
+                            {
+                                Name = series.Name,
+                                Values = new ChartValues<double>(series.Values),
+                                Fill = series.Fill,
+                            });
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine($"Error restoring group by selections: {ex.Message}");
                     }
                 }
             }
@@ -211,7 +220,9 @@ namespace Szakdolgozat.ViewModels
                                 Values = value.Values,
                                 Title = value.Name,
                                 DataLabels = false,
-                                PointGeometry = null // Hide points for cleaner preview
+                                PointGeometry = null, // Hide points for cleaner preview
+                                PointForeground = value.Fill,
+                                Stroke = value.Fill,
                             });
                             break;
                         default:
