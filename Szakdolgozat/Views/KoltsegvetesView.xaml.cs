@@ -32,7 +32,8 @@ namespace Szakdolgozat.Views
             beKiKodCB.Checked += CheckBox_Checked;
             teljesitesiDatumCB.Checked += CheckBox_Checked;
             kotelKovetIDCB.Checked += CheckBox_Checked;
-            partnerIDCB.Checked += CheckBox_Checked;
+            gazdalkodoSzervIDCB.Checked += CheckBox_Checked;
+            maganSzemelyIDCB.Checked += CheckBox_Checked;
             mindCB.Unchecked += Checkbox_Unchecked;
             idCB.Unchecked += Checkbox_Unchecked;
             osszegCB.Unchecked += Checkbox_Unchecked;
@@ -40,7 +41,8 @@ namespace Szakdolgozat.Views
             beKiKodCB.Unchecked += Checkbox_Unchecked;
             teljesitesiDatumCB.Unchecked += Checkbox_Unchecked;
             kotelKovetIDCB.Unchecked += Checkbox_Unchecked;
-            partnerIDCB.Unchecked += Checkbox_Unchecked;
+            gazdalkodoSzervIDCB.Unchecked += Checkbox_Unchecked;
+            maganSzemelyIDCB.Unchecked += Checkbox_Unchecked;
         }
         private void CheckBox_Checked(object sender, RoutedEventArgs e)
         {
@@ -66,8 +68,10 @@ namespace Szakdolgozat.Views
                                 teljesitesiDatumCB.IsChecked = true;
                                 koltsegvetesViewModel.checkboxStatuses["kotelKovetIDCB"] = true;
                                 kotelKovetIDCB.IsChecked = true;
-                                koltsegvetesViewModel.checkboxStatuses["partnerIDCB"] = true;
-                                partnerIDCB.IsChecked = true;
+                                koltsegvetesViewModel.checkboxStatuses["gazdalkodoSzervIDCB"] = true;
+                                gazdalkodoSzervIDCB.IsChecked = true;
+                                koltsegvetesViewModel.checkboxStatuses["maganSzemelyIDCB"] = true;
+                                maganSzemelyIDCB.IsChecked = true;
                                 break;
                             case "idCB":
                                 koltsegvetesViewModel.checkboxStatuses["idCB"] = true;
@@ -90,8 +94,11 @@ namespace Szakdolgozat.Views
                             case "kotelKovetIDCB":
                                 koltsegvetesViewModel.checkboxStatuses["kotelKovetIDCB"] = true;
                                 break;
-                            case "partnerIDCB":
-                                koltsegvetesViewModel.checkboxStatuses["partnerIDCB"] = true;
+                            case "gazdalkodoSzervIDCB":
+                                koltsegvetesViewModel.checkboxStatuses["gazdalkodoSzervIDCB"] = true;
+                                break;
+                            case "maganSzemelyIDCB":
+                                koltsegvetesViewModel.checkboxStatuses["maganSzemelyIDCB"] = true;
                                 break;
                             default:
                                 break;
@@ -139,8 +146,11 @@ namespace Szakdolgozat.Views
                         case "kotelKovetIDCB":
                             koltsegvetesViewModel.checkboxStatuses["kotelKovetIDCB"] = false;
                             break;
-                        case "partnerIDCB":
-                            koltsegvetesViewModel.checkboxStatuses["partnerIDCB"] = false;
+                        case "gazdalkodoSzervIDCB":
+                            koltsegvetesViewModel.checkboxStatuses["gazdalkodoSzervIDCB"] = false;
+                            break;
+                        case "maganSzemelyIDCB":
+                            koltsegvetesViewModel.checkboxStatuses["maganSzemelyIDCB"] = false;
                             break;
                         default:
                             break;

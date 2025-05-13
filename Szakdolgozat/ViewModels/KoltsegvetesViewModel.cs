@@ -128,11 +128,12 @@ namespace Szakdolgozat.ViewModels
             checkboxStatuses.Add("beKiKodCB", true);
             checkboxStatuses.Add("teljesitesiDatumCB", true);
             checkboxStatuses.Add("kotelKovetIDCB", true);
-            checkboxStatuses.Add("partnerIDCB", true);
+            checkboxStatuses.Add("gazdalkodoSzervIDCB", true);
+            checkboxStatuses.Add("maganSzemelyIDCB", true);
             BevetelekKiadasok = _koltsegvetesRepository.GetKoltsegvetesek();
 
             FilteredBevetelekKiadasok = new ObservableCollection<BevetelKiadas>(
-               BevetelekKiadasok.Select(d => new BevetelKiadas(d.ID, d.Osszeg, d.Penznem, d.BeKiKod, d.TeljesitesiDatum, d.KotelKovetID, d.PartnerID)).ToList()
+               BevetelekKiadasok.Select(d => new BevetelKiadas(d.ID, d.Osszeg, d.Penznem, d.BeKiKod, d.TeljesitesiDatum, d.KotelKovetID, d.GazdalkodasiSzervID, d.MaganSzemelyID)).ToList()
            );
             DeleteBevetelKiadasCommand = new ViewModelCommand(ExecuteDeleteBevetelKiadasCommand, CanExecuteDeleteBevetelKiadasCommand);
 
@@ -357,9 +358,17 @@ namespace Szakdolgozat.ViewModels
                             continue;
                         }
                     }
-                    if (checkboxStatuses["partnerIDCB"] == true)
+                    if (checkboxStatuses["gazdalkodoSzervIDCB"] == true)
                     {
-                        if (d.PartnerID.ToString().Contains(searchQuery))
+                        if (d.GazdalkodasiSzervID.ToString().Contains(searchQuery))
+                        {
+                            FilteredBevetelekKiadasok.Add(d);
+                            continue;
+                        }
+                    }
+                    if (checkboxStatuses["maganSzemelyIDCB"] == true)
+                    {
+                        if (d.MaganSzemelyID.ToString().Contains(searchQuery))
                         {
                             FilteredBevetelekKiadasok.Add(d);
                             continue;
@@ -427,6 +436,24 @@ namespace Szakdolgozat.ViewModels
             }
         }
 
+        /// <summary>
+        /// Shows a confirmation dialog for deletion with cascade information
+        /// </summary>
+        /// <param name="message">Primary message to display</param>
+        /// <param name="affectedData">Description of data that will be affected</param>
+        /// <returns>True if user confirms deletion, false otherwise</returns>
+        private bool ConfirmCascadeDelete(string message, string affectedData)
+        {
+            var result = System.Windows.MessageBox.Show(
+                $"{message}\n\nA következő kapcsolódó adatok is törlésre kerülnek:\n{affectedData}",
+                "Megerősítés szükséges",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Warning);
+
+            return result == MessageBoxResult.Yes;
+        }
+
+
         private bool CanExecuteOpenBevetelKiadasModifyOrAddWindowCommand(object obj)
         {
             if ((string)obj == "Modify")
@@ -488,7 +515,8 @@ namespace Szakdolgozat.ViewModels
                     BevetelekKiadasok.ElementAt(i).BeKiKod = bevetelKiadas.BeKiKod;
                     BevetelekKiadasok.ElementAt(i).TeljesitesiDatum = bevetelKiadas.TeljesitesiDatum;
                     BevetelekKiadasok.ElementAt(i).KotelKovetID = bevetelKiadas.KotelKovetID;
-                    BevetelekKiadasok.ElementAt(i).PartnerID = bevetelKiadas.PartnerID;
+                    BevetelekKiadasok.ElementAt(i).GazdalkodasiSzervID = bevetelKiadas.GazdalkodasiSzervID;
+                    BevetelekKiadasok.ElementAt(i).MaganSzemelyID = bevetelKiadas.MaganSzemelyID;
                     break;
                 }
             }

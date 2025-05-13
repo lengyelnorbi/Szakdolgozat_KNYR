@@ -228,7 +228,6 @@
     <Compile Include="ViewModels\CreateChartsViewModel.cs" />
     <Compile Include="ViewModels\DolgozokModifyOrAddViewModel.cs" />
     <Compile Include="ViewModels\DolgozoViewModel.cs" />
-    <Compile Include="ViewModels\ElozmenyekViewModel.cs" />
     <Compile Include="ViewModels\GazdalkodoSzervezetModifyOrAddViewModel.cs" />
     <Compile Include="ViewModels\GazdalkodoSzervezetViewModel.cs" />
     <Compile Include="ViewModels\KoltsegvetesModifyOrAddViewModel.cs" />

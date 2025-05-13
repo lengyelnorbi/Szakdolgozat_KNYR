@@ -13,5 +13,7 @@ namespace Szakdolgozat.Models
         bool ModifyDolgozo(Dolgozo dolgozo);
         bool DeleteDolgozo(int id);
         bool AddDolgozo(Dolgozo dolgozo);
+        bool CheckForRelatedRecords(int id, out string relatedInfo);
+        bool DeleteDolgozo(int id, bool confirmCascade = true);
     }
 }

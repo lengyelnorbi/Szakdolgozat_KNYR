@@ -361,22 +361,76 @@ namespace Szakdolgozat.ViewModels
         {
             FilterData(searchQuery);
         }
+        //public void DeleteGazdalkodoSzervezet(int id)
+        //{
+        //    try
+        //    {
+        //        _gazdalkodoSzervezetRepository.DeleteGazdalkodoSzervezet(id);
+        //        for (int i = 0; i < FilteredGazdalkodoSzervezetek.Count; i++)
+        //        {
+        //            if (FilteredGazdalkodoSzervezetek.ElementAt(i).ID == id)
+        //                FilteredGazdalkodoSzervezetek.RemoveAt(i);
+        //        }
+
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        throw new Exception(e.Message);
+        //    }
+        //}
+
         public void DeleteGazdalkodoSzervezet(int id)
         {
             try
             {
-                _gazdalkodoSzervezetRepository.DeleteGazdalkodoSzervezet(id);
-                for (int i = 0; i < FilteredGazdalkodoSzervezetek.Count; i++)
+                // Check for related records and get information about them
+                var hasRelatedRecords = _gazdalkodoSzervezetRepository.CheckForRelatedRecords(id, out string relatedInfo);
+
+                // If there are related records, ask for confirmation
+                bool shouldDelete = true;
+                if (hasRelatedRecords)
                 {
-                    if (FilteredGazdalkodoSzervezetek.ElementAt(i).ID == id)
-                        FilteredGazdalkodoSzervezetek.RemoveAt(i);
+                    shouldDelete = ConfirmCascadeDelete(
+                        "Biztosan törölni szeretné ezt a gazdálkodási szervezetet?",
+                        relatedInfo);
                 }
 
+                if (shouldDelete)
+                {
+                    _gazdalkodoSzervezetRepository.DeleteGazdalkodoSzervezet(id, true);
+
+                    // Remove from filtered collections
+                    for (int i = 0; i < FilteredGazdalkodoSzervezetek.Count; i++)
+                    {
+                        if (FilteredGazdalkodoSzervezetek.ElementAt(i).ID == id)
+                            FilteredGazdalkodoSzervezetek.RemoveAt(i);
+                    }
+                }
             }
             catch (Exception e)
             {
-                throw new Exception(e.Message);
+                System.Windows.MessageBox.Show(
+                    $"Hiba történt a törlés során: {e.Message}",
+                    "Hiba",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
             }
+        }
+        /// <summary>
+        /// Shows a confirmation dialog for deletion with cascade information
+        /// </summary>
+        /// <param name="message">Primary message to display</param>
+        /// <param name="affectedData">Description of data that will be affected</param>
+        /// <returns>True if user confirms deletion, false otherwise</returns>
+        private bool ConfirmCascadeDelete(string message, string affectedData)
+        {
+            var result = System.Windows.MessageBox.Show(
+                $"{message}\n\nA következő kapcsolódó adatok is törlésre kerülnek:\n{affectedData}",
+                "Megerősítés szükséges",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Warning);
+
+            return result == MessageBoxResult.Yes;
         }
         public ICommand DeleteGazdalkodoSzervezetCommand { get; }
         public ICommand ExportAllDataToExcelCommand { get; }

@@ -28,7 +28,69 @@ namespace Szakdolgozat.Repositories
                 }
             }
         }
+        public bool DeleteGazdalkodoSzervezet(int id, bool confirmCascade = true)
+        {
+            // First check if there are related records in bevetelek_kiadasok
+            List<string> relatedRecords = new List<string>();
+            int count = 0;
 
+            using (MySqlConnection connection = GetConnection())
+            {
+                connection.Open();
+
+                // Check for related records
+                string checkQuery = "SELECT COUNT(*) FROM bevetelek_kiadasok WHERE gazdalkodo_szerv_id = @id";
+                using (MySqlCommand command = new MySqlCommand(checkQuery, connection))
+                {
+                    command.Parameters.AddWithValue("@id", id);
+                    count = Convert.ToInt32(command.ExecuteScalar());
+
+                    if (count > 0)
+                    {
+                        relatedRecords.Add($"Költségvetés bejegyzések: {count} db");
+                    }
+                }
+
+                // If there are related records and confirmation is needed, return false
+                if (relatedRecords.Count > 0 && confirmCascade == false)
+                {
+                    return false;
+                }
+
+                // Perform the delete with CASCADE option or manually delete related records
+                using (MySqlTransaction transaction = connection.BeginTransaction())
+                {
+                    try
+                    {
+                        // First delete related records
+                        if (count > 0)
+                        {
+                            string deleteRelatedQuery = "DELETE FROM bevetelek_kiadasok WHERE gazdalkodo_szerv_id = @id";
+                            using (MySqlCommand command = new MySqlCommand(deleteRelatedQuery, connection, transaction))
+                            {
+                                command.Parameters.AddWithValue("@id", id);
+                                command.ExecuteNonQuery();
+                            }
+                        }
+
+                        // Then delete the main record
+                        string deleteQuery = "DELETE FROM gazdalkodo_szervezetek WHERE id = @id";
+                        using (MySqlCommand command = new MySqlCommand(deleteQuery, connection, transaction))
+                        {
+                            command.Parameters.AddWithValue("@id", id);
+                            int result = command.ExecuteNonQuery();
+                            transaction.Commit();
+                            return result > 0;
+                        }
+                    }
+                    catch (Exception)
+                    {
+                        transaction.Rollback();
+                        throw;
+                    }
+                }
+            }
+        }
         public bool AddGazdalkodoSzervezet(GazdalkodoSzervezet gazdalkodoSzervezet)
         {
             using (MySqlConnection connection = GetConnection())
@@ -101,6 +163,35 @@ namespace Szakdolgozat.Repositories
                     return count > 0;
                 }
             }
+        }
+
+        public bool CheckForRelatedRecords(int id, out string relatedInfo)
+        {
+            List<string> relatedRecords = new List<string>();
+
+            using (MySqlConnection connection = GetConnection())
+            {
+                connection.Open();
+
+                // Check for related records in bevetelek_kiadasok (via partner_id)
+                string checkBevetelekQuery = "SELECT COUNT(*) FROM bevetelek_kiadasok WHERE gazdalkodo_szerv_id = @id";
+                using (MySqlCommand command = new MySqlCommand(checkBevetelekQuery, connection))
+                {
+                    command.Parameters.AddWithValue("@id", id);
+                    int count = Convert.ToInt32(command.ExecuteScalar());
+
+                    if (count > 0)
+                    {
+                        relatedRecords.Add($"• Költségvetés bejegyzések: {count} db");
+                    }
+                }
+
+                // Check for related records in other tables as needed
+                // For example, if other tables reference magan_szemelyek
+            }
+
+            relatedInfo = string.Join("\n", relatedRecords);
+            return relatedRecords.Count > 0;
         }
     }
 }

@@ -39,7 +39,6 @@ namespace Szakdolgozat.ViewModels
 
         public ICommand ShowUjDiagrammokViewCommand { get; }
         public ICommand ShowLetezoDiagrammokViewCommand { get; }
-        public ICommand ShowElozmenyekViewCommand { get; }
         public ICommand ShowKoltsegvetesViewCommand { get; }
         public ICommand ShowMaganSzemelyekViewCommand { get; }
         public ICommand ShowDolgozoViewCommand { get; }
@@ -51,14 +50,14 @@ namespace Szakdolgozat.ViewModels
             //Initialize commands
             ShowUjDiagrammokViewCommand = new ViewModelCommand(ExecuteShowUjDiagrammokViewCommand);
             ShowLetezoDiagrammokViewCommand = new ViewModelCommand(ExecuteShowLetezoDiagrammokViewCommand);
-            ShowElozmenyekViewCommand = new ViewModelCommand(ExecuteShowElozmenyekViewCommand);
             ShowKoltsegvetesViewCommand = new ViewModelCommand(ExecuteShowKoltsegvetesViewCommand);
             ShowMaganSzemelyekViewCommand = new ViewModelCommand(ExecuteShowMaganSzemelyekViewCommand);
             ShowDolgozoViewCommand = new ViewModelCommand(ExecuteShowDolgozoViewCommand);
             ShowKotelezettsegKovetelesViewCommand = new ViewModelCommand(ExecuteShowKotelezettsegKovetelesViewCommand);
             ShowGazdalkodasiSzervezetekViewCommand = new ViewModelCommand(ExecuteShowGazdalkodasiSzervezetekViewCommand);
             //Default view
-            ExecuteShowElozmenyekViewCommand(null);
+
+            ExecuteShowKoltsegvetesViewCommand(null);
         }
 
         private void ExecuteShowUjDiagrammokViewCommand(object obj)
@@ -68,10 +67,6 @@ namespace Szakdolgozat.ViewModels
         private void ExecuteShowLetezoDiagrammokViewCommand(object obj)
         {
             CurrentChildView = new LetezoDiagrammokViewModel();
-        }
-        private void ExecuteShowElozmenyekViewCommand(object obj)
-        {
-            CurrentChildView = new ElozmenyekViewModel();
         }
         private void ExecuteShowKoltsegvetesViewCommand(object obj)
         {
@@ -94,16 +89,16 @@ namespace Szakdolgozat.ViewModels
             CurrentChildView = new GazdalkodoSzervezetViewModel();
         }
 
-        public ObservableCollection<CustomMenuItemViewModel> MenuItems { get; } = new ObservableCollection<CustomMenuItemViewModel>
-        {
-            new CustomMenuItemViewModel { Header = "Option 1" },
-            // Add more sub-menu items as needed
-        };
+        //public ObservableCollection<CustomMenuItemViewModel> MenuItems { get; } = new ObservableCollection<CustomMenuItemViewModel>
+        //{
+        //    new CustomMenuItemViewModel { Header = "Option 1" },
+        //    // Add more sub-menu items as needed
+        //};
 
-        public ObservableCollection<CustomMenuItemViewModel> HelpItems { get; } = new ObservableCollection<CustomMenuItemViewModel>
-        {
-            new CustomMenuItemViewModel { Header = "Help Option 1" },
-            // Add more sub-menu items for Help
-        };
+        //public ObservableCollection<CustomMenuItemViewModel> HelpItems { get; } = new ObservableCollection<CustomMenuItemViewModel>
+        //{
+        //    new CustomMenuItemViewModel { Header = "Help Option 1" },
+        //    // Add more sub-menu items for Help
+        //};
     }
 }

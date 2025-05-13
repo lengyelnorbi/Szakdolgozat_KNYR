@@ -375,24 +375,76 @@ namespace Szakdolgozat.ViewModels
             FilterData(searchQuery);
         }
 
+        //public void DeleteKotelezettsegKoveteles(int id)
+        //{
+        //    try
+        //    {
+        //        _kotelezettsegKovetelesRepository.DeleteKotelezettsegKoveteles(id);
+        //        for (int i = 0; i < FilteredKotelezettsegekKovetelesek.Count; i++)
+        //        {
+        //            if (FilteredKotelezettsegekKovetelesek.ElementAt(i).ID == id)
+        //                FilteredKotelezettsegekKovetelesek.RemoveAt(i);
+        //        }
+
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        throw new Exception(e.Message);
+        //    }
+        //}
         public void DeleteKotelezettsegKoveteles(int id)
         {
             try
             {
-                _kotelezettsegKovetelesRepository.DeleteKotelezettsegKoveteles(id);
-                for (int i = 0; i < FilteredKotelezettsegekKovetelesek.Count; i++)
+                // Check for related records and get information about them
+                var hasRelatedRecords = _kotelezettsegKovetelesRepository.CheckForRelatedRecords(id, out string relatedInfo);
+
+                // If there are related records, ask for confirmation
+                bool shouldDelete = true;
+                if (hasRelatedRecords)
                 {
-                    if (FilteredKotelezettsegekKovetelesek.ElementAt(i).ID == id)
-                        FilteredKotelezettsegekKovetelesek.RemoveAt(i);
+                    shouldDelete = ConfirmCascadeDelete(
+                        "Biztosan törölni szeretné ezt a kötelezettséget/követelést?",
+                        relatedInfo);
                 }
 
+                if (shouldDelete)
+                {
+                    _kotelezettsegKovetelesRepository.DeleteKotelezettsegKoveteles(id, true);
+
+                    // Remove from filtered collections
+                    for (int i = 0; i < FilteredKotelezettsegekKovetelesek.Count; i++)
+                    {
+                        if (FilteredKotelezettsegekKovetelesek.ElementAt(i).ID == id)
+                            FilteredKotelezettsegekKovetelesek.RemoveAt(i);
+                    }
+                }
             }
             catch (Exception e)
             {
-                throw new Exception(e.Message);
+                System.Windows.MessageBox.Show(
+                    $"Hiba történt a törlés során: {e.Message}",
+                    "Hiba",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
             }
         }
+        /// <summary>
+        /// Shows a confirmation dialog for deletion with cascade information
+        /// </summary>
+        /// <param name="message">Primary message to display</param>
+        /// <param name="affectedData">Description of data that will be affected</param>
+        /// <returns>True if user confirms deletion, false otherwise</returns>
+        private bool ConfirmCascadeDelete(string message, string affectedData)
+        {
+            var result = System.Windows.MessageBox.Show(
+                $"{message}\n\nA következő kapcsolódó adatok is törlésre kerülnek:\n{affectedData}",
+                "Megerősítés szükséges",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Warning);
 
+            return result == MessageBoxResult.Yes;
+        }
         public ICommand DeleteKotelezettsegKovetelesCommand { get; }
 
         public ICommand ExportAllDataToExcelCommand { get; }

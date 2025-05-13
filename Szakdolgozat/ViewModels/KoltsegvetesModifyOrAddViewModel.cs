@@ -24,7 +24,8 @@ namespace Szakdolgozat.ViewModels
         private DateTime _completionDate = DateTime.Now;
         //Obligation - kötelezettség, Claim - követelés
         private int? _oblClaimID;
-        private int? _partnerID;
+        private int? _companyID;
+        private int? _privatePersonID;
         private string _title;
         private EditMode _editMode;
         private BevetelKiadas _modifiableKoltsegvetes;
@@ -43,7 +44,8 @@ namespace Szakdolgozat.ViewModels
                 IncExpID = value.BeKiKod;
                 CompletionDate = value.TeljesitesiDatum;
                 OblClaimID = value.KotelKovetID;
-                PartnerID = value.PartnerID;
+                CompanyID = value.GazdalkodasiSzervID;
+                PrivatePersonID = value.MaganSzemelyID;
             }
         }
         public string Title
@@ -133,16 +135,28 @@ namespace Szakdolgozat.ViewModels
                 OnPropertyChanged(nameof(OblClaimID));
             }
         }
-        public int? PartnerID
+        public int? CompanyID
         {
             get
             {
-                return _partnerID;
+                return _companyID;
             }
             set
             {
-                _partnerID = value;
-                OnPropertyChanged(nameof(PartnerID));
+                _companyID = value;
+                OnPropertyChanged(nameof(CompanyID));
+            }
+        }
+        public int? PrivatePersonID
+        {
+            get
+            {
+                return _privatePersonID;
+            }
+            set
+            {
+                _privatePersonID = value;
+                OnPropertyChanged(nameof(PrivatePersonID));
             }
         }
         public string this[string columnName]
@@ -152,8 +166,12 @@ namespace Szakdolgozat.ViewModels
                 string error = null;
                 switch (columnName)
                 {
-                    case nameof(PartnerID):
-                        if (string.IsNullOrWhiteSpace(PartnerID.ToString()) && PartnerID == 0)
+                    case nameof(CompanyID):
+                        if ((string.IsNullOrWhiteSpace(CompanyID.ToString()) && CompanyID == 0) && (string.IsNullOrWhiteSpace(PrivatePersonID.ToString()) && PrivatePersonID == 0))
+                            error = "Szükséges megadni partner id-t.";
+                        break;
+                    case nameof(PrivatePersonID):
+                        if ((string.IsNullOrWhiteSpace(CompanyID.ToString()) && CompanyID == 0) && (string.IsNullOrWhiteSpace(PrivatePersonID.ToString()) && PrivatePersonID == 0))
                             error = "Szükséges megadni partner id-t.";
                         break;
                     case nameof(Amount):
@@ -202,7 +220,8 @@ namespace Szakdolgozat.ViewModels
                 IncExpID = ModifiableKoltsegvetes.BeKiKod;
                 CompletionDate = ModifiableKoltsegvetes.TeljesitesiDatum;
                 OblClaimID = ModifiableKoltsegvetes.KotelKovetID;
-                PartnerID = ModifiableKoltsegvetes.PartnerID;
+                PrivatePersonID = ModifiableKoltsegvetes.MaganSzemelyID;
+                CompanyID = ModifiableKoltsegvetes.GazdalkodasiSzervID;
             }
         }
         private void AddBevetelKiadas()
@@ -216,7 +235,7 @@ namespace Szakdolgozat.ViewModels
                 }
                 if (Amount != null && IncExpID != null && Currency != null && CompletionDate != null)
                 {
-                    BevetelKiadas bevetelKiadas = new BevetelKiadas(Amount, Currency, IncExpID, CompletionDate, OblClaimID, PartnerID);
+                    BevetelKiadas bevetelKiadas = new BevetelKiadas(Amount, Currency, IncExpID, CompletionDate, OblClaimID, CompanyID, PrivatePersonID);
                     _koltsegvetesRepository.AddKoltsegvetes(bevetelKiadas);
                     Mediator.NotifyNewBevetelKiadasAdded(bevetelKiadas);
                     CloseWindow();
@@ -239,7 +258,7 @@ namespace Szakdolgozat.ViewModels
                 }
                 if (Amount != null && IncExpID != null && Currency != null && CompletionDate != null)
                 {
-                    BevetelKiadas bevetelKiadas = new BevetelKiadas(ModifiableKoltsegvetes.ID, Amount, Currency, IncExpID, CompletionDate, OblClaimID, PartnerID);
+                    BevetelKiadas bevetelKiadas = new BevetelKiadas(ModifiableKoltsegvetes.ID, Amount, Currency, IncExpID, CompletionDate, OblClaimID, CompanyID, PrivatePersonID);
                     _koltsegvetesRepository.ModifyKoltsegvetes(bevetelKiadas);
                     Mediator.NotifyModifiedBevetelKiadas(bevetelKiadas);
                     CloseWindow();
@@ -253,7 +272,8 @@ namespace Szakdolgozat.ViewModels
         private bool HasValidationErrors()
         {
             return !string.IsNullOrEmpty(this[nameof(Amount)]) ||
-                   !string.IsNullOrEmpty(this[nameof(PartnerID)]);
+                   !string.IsNullOrEmpty(this[nameof(CompanyID)]) ||
+                   !string.IsNullOrEmpty(this[nameof(PrivatePersonID)]);
         }
         private void CloseWindow()
         {

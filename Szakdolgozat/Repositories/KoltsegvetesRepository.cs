@@ -18,7 +18,7 @@ namespace Szakdolgozat.Repositories
             {
                 connection.Open();
 
-                string query = "INSERT INTO `bevetelek_kiadasok` (`id`, `osszeg`, `penznem`, `be_ki_kod`, `teljesitesi_datum`, `kotel_kovet_id`, `partner_id`) VALUES (NULL, @osszeg, @penznem, @be_ki_kod, @teljesitesi_datum, @kotel_kovet_id, @partner_id);";
+                string query = "INSERT INTO `bevetelek_kiadasok` (`id`, `osszeg`, `penznem`, `be_ki_kod`, `teljesitesi_datum`, `kotel_kovet_id`, `gazdalkodo_szerv_id`, `magan_szemely_id`) VALUES (NULL, @osszeg, @penznem, @be_ki_kod, @teljesitesi_datum, @kotel_kovet_id, @gazdalkodo_szerv_id, @magan_szemely_id);";
                 using (MySqlCommand command = new MySqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@osszeg", bevetelKiadas.Osszeg);
@@ -26,7 +26,8 @@ namespace Szakdolgozat.Repositories
                     command.Parameters.AddWithValue("@be_ki_kod", bevetelKiadas.BeKiKod);
                     command.Parameters.AddWithValue("@teljesitesi_datum", bevetelKiadas.TeljesitesiDatum);
                     command.Parameters.AddWithValue("@kotel_kovet_id", bevetelKiadas.KotelKovetID);
-                    command.Parameters.AddWithValue("@partner_id", bevetelKiadas.PartnerID);
+                    command.Parameters.AddWithValue("@gazdalkodo_szerv_id", bevetelKiadas.GazdalkodasiSzervID);
+                    command.Parameters.AddWithValue("@magan_szemely_id", bevetelKiadas.MaganSzemelyID);
 
                     int count = Convert.ToInt32(command.ExecuteScalar());
 
@@ -98,17 +99,25 @@ namespace Szakdolgozat.Repositories
                             {
                                 kotelKovetID = 0;
                             }
-                            int partnerID;
-                            if (reader["partner_id"] != DBNull.Value)
+                            int gazdalkodoSzervID;
+                            if (reader["gazdalkodo_szerv_id"] != DBNull.Value)
                             {
-                                partnerID = Convert.ToInt32(reader["partner_id"]);
+                                gazdalkodoSzervID = Convert.ToInt32(reader["gazdalkodo_szerv_id"]);
                             }
                             else
                             {
-                                partnerID = 0;
+                                gazdalkodoSzervID = 0;
                             }
-
-                            BevetelKiadas item = new BevetelKiadas(id, osszeg, penznem, beKiKod, teljesitesiDatum, kotelKovetID, partnerID);
+                            int maganSzemelyID;
+                            if (reader["magan_szemely_id"] != DBNull.Value)
+                            {
+                                maganSzemelyID = Convert.ToInt32(reader["magan_szemely_id"]);
+                            }
+                            else
+                            {
+                                maganSzemelyID = 0;
+                            }
+                            BevetelKiadas item = new BevetelKiadas(id, osszeg, penznem, beKiKod, teljesitesiDatum, kotelKovetID, gazdalkodoSzervID, maganSzemelyID);
 
                             data.Add(item);
                         }
@@ -123,7 +132,7 @@ namespace Szakdolgozat.Repositories
             using (MySqlConnection connection = GetConnection())
             {
                 connection.Open();
-                string query = "UPDATE `bevetelek_kiadasok` SET `osszeg`=@osszeg,`penznem`=@penznem,`be_ki_kod`=@bekikod,`teljesitesi_datum`=@teljesitesiDatum,`kotel_kovet_id`=@kotelKovetID,`partner_id`=@partnerID WHERE `bevetelek_kiadasok`.`id` = @id";
+                string query = "UPDATE `bevetelek_kiadasok` SET `osszeg`=@osszeg,`penznem`=@penznem,`be_ki_kod`=@bekikod,`teljesitesi_datum`=@teljesitesiDatum,`kotel_kovet_id`=@kotelKovetID,`gazdalkodo_szerv_id`=@gazdalkodo_szerv_id, `magan_szemely_id`=@magan_szemely_id WHERE `bevetelek_kiadasok`.`id` = @id";
                 using (MySqlCommand command = new MySqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@osszeg", bevetelKiadas.Osszeg);
@@ -131,7 +140,8 @@ namespace Szakdolgozat.Repositories
                     command.Parameters.AddWithValue("@bekikod", bevetelKiadas.BeKiKod);
                     command.Parameters.AddWithValue("@teljesitesiDatum", bevetelKiadas.TeljesitesiDatum);
                     command.Parameters.AddWithValue("@kotelKovetID", bevetelKiadas.KotelKovetID);
-                    command.Parameters.AddWithValue("@partnerID", bevetelKiadas.PartnerID);
+                    command.Parameters.AddWithValue("@gazdalkodo_szerv_id", bevetelKiadas.GazdalkodasiSzervID);
+                    command.Parameters.AddWithValue("@magan_szemely_id", bevetelKiadas.MaganSzemelyID);
                     command.Parameters.AddWithValue("@id", bevetelKiadas.ID);
 
                     int count = Convert.ToInt32(command.ExecuteScalar());

@@ -651,7 +651,8 @@ namespace Szakdolgozat.ViewModels
             checkboxStatuses.Add("koltsegvetes_bekikodCB", true);
             checkboxStatuses.Add("koltsegvetes_teljesitesiDatumCB", true);
             checkboxStatuses.Add("koltsegvetes_kotelKovetIDCB", true);
-            checkboxStatuses.Add("koltsegvetes_partnerIDCB", true);
+            checkboxStatuses.Add("koltsegvetes_gazdalkodoSzervIDCB", true);
+            checkboxStatuses.Add("koltsegvetes_maganSzemelyIDCB", true);
 
             checkboxStatuses.Add("kotelKovet_mindCB", true);
             checkboxStatuses.Add("kotelKovet_idCB", true);
@@ -680,7 +681,7 @@ namespace Szakdolgozat.ViewModels
             BevetelekKiadasok = koltsegvetesRepository.GetKoltsegvetesek();
             //Deep Copy - to ensure that the FilteredDolgozok does not affect the Dolgozok collection, and vica versa
             FilteredBevetelekKiadasok = new ObservableCollection<BevetelKiadas>(
-                BevetelekKiadasok.Select(d => new BevetelKiadas(d.ID, d.Osszeg, d.Penznem, d.BeKiKod, d.TeljesitesiDatum, d.KotelKovetID, d.PartnerID)).ToList()
+                BevetelekKiadasok.Select(d => new BevetelKiadas(d.ID, d.Osszeg, d.Penznem, d.BeKiKod, d.TeljesitesiDatum, d.KotelKovetID, d.GazdalkodasiSzervID, d.MaganSzemelyID)).ToList()
             );
 
             KotelKovetelesek = kotelezettsegKovetelesRepository.GetKotelezettsegekKovetelesek();
@@ -761,9 +762,17 @@ namespace Szakdolgozat.ViewModels
                                     continue;
                                 }
                             }
-                            if (checkboxStatuses["koltsegvetes_partnerIDCB"] == true)
+                            if (checkboxStatuses["koltsegvetes_gazdalkodoSzervIDCB"] == true)
                             {
-                                if (d.PartnerID.ToString().ToLower().Contains(searchQuery.ToLower()))
+                                if (d.GazdalkodasiSzervID.ToString().ToLower().Contains(searchQuery.ToLower()))
+                                {
+                                    FilteredBevetelekKiadasok.Add(d);
+                                    continue;
+                                }
+                            }
+                            if (checkboxStatuses["koltsegvetes_maganSzemelyIDCB"] == true)
+                            {
+                                if (d.MaganSzemelyID.ToString().ToLower().Contains(searchQuery.ToLower()))
                                 {
                                     FilteredBevetelekKiadasok.Add(d);
                                     continue;
@@ -5746,7 +5755,7 @@ namespace Szakdolgozat.ViewModels
         {
             if(IsBevetelekKiadasokTabIsSelected)
             {
-                for (int i = 0; i < BevetelekKiadasok.Count; i++)
+                for (int i = 0; i < FilteredBevetelekKiadasok.Count; i++)
                 {
                     FilteredBevetelekKiadasok.ElementAt(i).IsSelected = true;
                 }
@@ -5763,11 +5772,11 @@ namespace Szakdolgozat.ViewModels
             }
             else
             {
-                for (int i = 0; i < KotelKovetelesek.Count; i++)
+                for (int i = 0; i < FilteredKotelKovetelesek.Count; i++)
                 {
                     FilteredKotelKovetelesek.ElementAt(i).IsSelected = true;
                 }
-                _selectedKotelezettsegekKovetelesek = new ObservableCollection<KotelezettsegKoveteles>(KotelKovetelesek);
+                _selectedKotelezettsegekKovetelesek = new ObservableCollection<KotelezettsegKoveteles>(FilteredKotelKovetelesek);
                 if (GroupByMonthCheckBoxIsChecked)
                 {
                     Years = new ObservableCollection<int>(

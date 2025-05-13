@@ -27,9 +27,6 @@
         <DataTemplate DataType="{x:Type viewModels:LetezoDiagrammokViewModel}">
             <views:LetezoDiagrammokView/>
         </DataTemplate>
-        <DataTemplate DataType="{x:Type viewModels:ElozmenyekViewModel}">
-            <views:ElozmenyekView/>
-        </DataTemplate>
         <DataTemplate DataType="{x:Type viewModels:KoltsegvetesViewModel}">
             <views:KoltsegvetesView/>
         </DataTemplate>
@@ -111,16 +108,6 @@
 
                     <ScrollViewer Grid.Row="1" HorizontalAlignment="Stretch" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Hidden">
                         <StackPanel>
-                            <!--<StackPanel>
-                                <RadioButton GroupName="Content" Style="{StaticResource menuButton}"
-                                 Tag="#E285DE"
-                                 IsChecked="True"
-                                             Command="{Binding ShowElozmenyekViewCommand}">
-                                    <StackPanel Orientation="Horizontal">
-                                        <TextBlock Text="Előzmények" Style="{StaticResource menuButtonText}" Margin="20,0,0,0"/>
-                                    </StackPanel>
-                                </RadioButton>
-                            </StackPanel>-->
                             <Expander x:Name="ExpanderMenuAdatok" Header="Adatok" IsExpanded="False" Width="250" Background="{x:Null}" Foreground="White" FontSize="13.5" HorizontalAlignment="Center">
                                 <StackPanel>
                                     <RadioButton GroupName="Content" Style="{StaticResource menuButton}"

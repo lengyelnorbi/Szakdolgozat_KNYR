@@ -34,6 +34,7 @@ namespace Szakdolgozat.Views
     /// </summary>
     public partial class CreateChartsView : Window
     {
+        private bool groupbyCheckboxSetter = true; 
         public CreateChartsView(string type)
         {
             InitializeComponent();
@@ -60,7 +61,8 @@ namespace Szakdolgozat.Views
             koltsegvetes_bekikodCB.Checked += CheckBox_Checked;
             koltsegvetes_teljesitesiDatumCB.Checked += CheckBox_Checked;
             koltsegvetes_kotelKovetIDCB.Checked += CheckBox_Checked;
-            koltsegvetes_partnerIDCB.Checked += CheckBox_Checked;
+            koltsegvetes_gazdalkodoSzervIDCB.Checked += CheckBox_Checked;
+            koltsegvetes_maganSzemelyIDCB.Checked += CheckBox_Checked;
             koltsegvetes_mindCB.Unchecked += Checkbox_Unchecked;
             koltsegvetes_idCB.Unchecked += Checkbox_Unchecked;
             koltsegvetes_osszegCB.Unchecked += Checkbox_Unchecked;
@@ -68,7 +70,8 @@ namespace Szakdolgozat.Views
             koltsegvetes_bekikodCB.Unchecked += Checkbox_Unchecked;
             koltsegvetes_teljesitesiDatumCB.Unchecked += Checkbox_Unchecked;
             koltsegvetes_kotelKovetIDCB.Unchecked += Checkbox_Unchecked;
-            koltsegvetes_partnerIDCB.Unchecked += Checkbox_Unchecked;
+            koltsegvetes_gazdalkodoSzervIDCB.Unchecked += Checkbox_Unchecked;
+            koltsegvetes_maganSzemelyIDCB.Unchecked += Checkbox_Unchecked;
 
 
             kotelKovet_mindCB.Checked += CheckBox_Checked;
@@ -130,8 +133,11 @@ namespace Szakdolgozat.Views
                     case "koltsegvetes_kotelKovetIDCB":
                         koltsegvetes_kotelKovetIDCB.IsChecked = kvp.Value;
                         break;
-                    case "koltsegvetes_partnerIDCB":
-                        koltsegvetes_partnerIDCB.IsChecked = kvp.Value;
+                    case "koltsegvetes_gazdalkodoSzervIDCB":
+                        koltsegvetes_gazdalkodoSzervIDCB.IsChecked = kvp.Value;
+                        break;
+                    case "koltsegvetes_maganSzemelyIDCB":
+                        koltsegvetes_maganSzemelyIDCB.IsChecked = kvp.Value;
                         break;
 
                     // KotelKovet checkboxes
@@ -590,8 +596,10 @@ namespace Szakdolgozat.Views
                                     koltsegvetes_teljesitesiDatumCB.IsChecked = true;
                                     createChartsView.checkboxStatuses["koltsegvetes_kotelKovetIDCB"] = true;
                                     koltsegvetes_kotelKovetIDCB.IsChecked = true;
-                                    createChartsView.checkboxStatuses["koltsegvetes_partnerIDCB"] = true;
-                                    koltsegvetes_partnerIDCB.IsChecked = true;
+                                    createChartsView.checkboxStatuses["koltsegvetes_gazdalkodoSzervIDCB"] = true;
+                                    koltsegvetes_gazdalkodoSzervIDCB.IsChecked = true;
+                                    createChartsView.checkboxStatuses["koltsegvetes_maganSzemelyIDCB"] = true;
+                                    koltsegvetes_maganSzemelyIDCB.IsChecked = true;
                                     break;
                                 case "koltsegvetes_idCB":
                                     createChartsView.checkboxStatuses["koltsegvetes_idCB"] = true;
@@ -611,8 +619,11 @@ namespace Szakdolgozat.Views
                                 case "koltsegvetes_kotelKovetIDCB":
                                     createChartsView.checkboxStatuses["koltsegvetes_kotelKovetIDCB"] = true;
                                     break;
-                                case "koltsegvetes_partnerIDCB":
-                                    createChartsView.checkboxStatuses["koltsegvetes_partnerIDCB"] = true;
+                                case "koltsegvetes_gazdalkodoSzervIDCB":
+                                    createChartsView.checkboxStatuses["koltsegvetes_gazdalkodoSzervIDCB"] = true;
+                                    break;
+                                case "koltsegvetes_maganSzemelyIDCB":
+                                    createChartsView.checkboxStatuses["koltsegvetes_maganSzemelyIDCB"] = true;
                                     break;
                                 default:
                                     break;
@@ -701,8 +712,11 @@ namespace Szakdolgozat.Views
                             case "koltsegvetes_kotelKovetIDCB":
                                 createChartsView.checkboxStatuses["koltsegvetes_kotelKovetIDCB"] = false;
                                 break;
-                            case "koltsegvetes_partnerIDCB":
-                                createChartsView.checkboxStatuses["koltsegvetes_partnerIDCB"] = false;
+                            case "koltsegvetes_gazdalkodoSzervIDCB":
+                                createChartsView.checkboxStatuses["koltsegvetes_gazdalkodoSzervIDCB"] = false;
+                                break;
+                            case "koltsegvetes_maganSzemelyIDCB":
+                                createChartsView.checkboxStatuses["koltsegvetes_maganSzemelyIDCB"] = false;
                                 break;
                             default:
                                 break;
@@ -863,6 +877,19 @@ namespace Szakdolgozat.Views
                         }
 
                         if (!viewModel.IsChartModifying)
+                        {
+                            GroupByPenznemCB.IsChecked = false;
+                            GroupByKifizetettCB.IsChecked = false;
+                            GroupByMonthCB.IsChecked = false;
+                            GroupByDateCB.IsChecked = false;
+                            GroupByBeKiKodCB.IsChecked = false;
+                            GroupByYearCB.IsChecked = false;
+                        }
+                        else if (groupbyCheckboxSetter)
+                        {
+                            groupbyCheckboxSetter = false;
+                        }
+                        else if (!groupbyCheckboxSetter)
                         {
                             GroupByPenznemCB.IsChecked = false;
                             GroupByKifizetettCB.IsChecked = false;

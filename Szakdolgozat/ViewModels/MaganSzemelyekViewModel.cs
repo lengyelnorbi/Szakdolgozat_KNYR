@@ -128,7 +128,7 @@ namespace Szakdolgozat.ViewModels
             MaganSzemelyek = _maganSzemelyRepository.GetMaganSzemelyek();
             //Deep Copy - to ensure that the FilteredDolgozok does not affect the Dolgozok collection, and vica versa
             FilteredMaganSzemelyek = new ObservableCollection<MaganSzemely>(
-                MaganSzemelyek.Select(d => new MaganSzemely(d.ID, d.Nev, d.Lakcim, d.Email, d.Telefonszam)).ToList()
+                MaganSzemelyek.Select(d => new MaganSzemely(d.ID, d.Nev, d.Telefonszam, d.Email, d.Lakcim)).ToList()
             );
 
             DeleteMaganSzemelyCommand = new ViewModelCommand(ExecuteDeleteMaganSzemelyCommand, CanExecuteDeleteMaganSzemelyCommand);
@@ -362,24 +362,75 @@ namespace Szakdolgozat.ViewModels
             FilterData(searchQuery);
         }
 
+        //public void DeleteMaganSzemely(int id)
+        //{
+        //    try
+        //    {
+        //        _maganSzemelyRepository.DeleteMaganSzemely(id);
+        //        for (int i = 0; i < FilteredMaganSzemelyek.Count; i++)
+        //        {
+        //            if (FilteredMaganSzemelyek.ElementAt(i).ID == id)
+        //                FilteredMaganSzemelyek.RemoveAt(i);
+        //        }
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        throw new Exception(e.Message);
+        //    }
+        //}
         public void DeleteMaganSzemely(int id)
         {
             try
             {
-                _maganSzemelyRepository.DeleteMaganSzemely(id);
-                for (int i = 0; i < FilteredMaganSzemelyek.Count; i++)
+                // Check for related records and get information about them
+                var hasRelatedRecords = _maganSzemelyRepository.CheckForRelatedRecords(id, out string relatedInfo);
+
+                // If there are related records, ask for confirmation
+                bool shouldDelete = true;
+                if (hasRelatedRecords)
                 {
-                    if (FilteredMaganSzemelyek.ElementAt(i).ID == id)
-                        FilteredMaganSzemelyek.RemoveAt(i);
+                    shouldDelete = ConfirmCascadeDelete(
+                        "Biztosan törölni szeretné ezt a magán személyt?",
+                        relatedInfo);
                 }
 
+                if (shouldDelete)
+                {
+                    _maganSzemelyRepository.DeleteMaganSzemely(id, true);
+
+                    // Remove from filtered collections
+                    for (int i = 0; i < FilteredMaganSzemelyek.Count; i++)
+                    {
+                        if (FilteredMaganSzemelyek.ElementAt(i).ID == id)
+                            FilteredMaganSzemelyek.RemoveAt(i);
+                    }
+                }
             }
             catch (Exception e)
             {
-                throw new Exception(e.Message);
+                System.Windows.MessageBox.Show(
+                    $"Hiba történt a törlés során: {e.Message}",
+                    "Hiba",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
             }
         }
+        /// <summary>
+        /// Shows a confirmation dialog for deletion with cascade information
+        /// </summary>
+        /// <param name="message">Primary message to display</param>
+        /// <param name="affectedData">Description of data that will be affected</param>
+        /// <returns>True if user confirms deletion, false otherwise</returns>
+        private bool ConfirmCascadeDelete(string message, string affectedData)
+        {
+            var result = System.Windows.MessageBox.Show(
+                $"{message}\n\nA következő kapcsolódó adatok is törlésre kerülnek:\n{affectedData}",
+                "Megerősítés szükséges",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Warning);
 
+            return result == MessageBoxResult.Yes;
+        }
         public ICommand DeleteMaganSzemelyCommand { get; }
 
         public ICommand ExportAllDataToExcelCommand { get; }

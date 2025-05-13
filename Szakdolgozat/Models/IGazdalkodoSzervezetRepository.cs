@@ -13,5 +13,7 @@ namespace Szakdolgozat.Models
         bool ModifyGazdalkodoSzervezet(GazdalkodoSzervezet gazdalkodoSzervezet);
         bool DeleteGazdalkodoSzervezet(int id);
         bool AddGazdalkodoSzervezet(GazdalkodoSzervezet gazdalkodoSzervezet);
+        bool CheckForRelatedRecords(int id, out string relatedInfo);
+        bool DeleteGazdalkodoSzervezet(int id, bool confirmCascade = true);
     }
 }

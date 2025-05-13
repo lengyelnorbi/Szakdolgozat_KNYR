@@ -14,10 +14,11 @@ namespace Szakdolgozat.Models
         public BeKiKod BeKiKod { get; set; }
         public DateTime TeljesitesiDatum { get; set; }
         public int? KotelKovetID { get; set; }
-        public int? PartnerID { get; set; }
+        public int? GazdalkodasiSzervID { get; set; }
+        public int? MaganSzemelyID { get; set; }
         public bool IsSelected { get; set; }
 
-        public BevetelKiadas(int id, int osszeg, Penznem penznem, BeKiKod beKiKod, DateTime teljesitesiDatum, int kotelKovetID, int partnerID, bool isSelected = false)
+        public BevetelKiadas(int id, int osszeg, Penznem penznem, BeKiKod beKiKod, DateTime teljesitesiDatum, int kotelKovetID, int gazdalkodasiSzervID, int maganSzemelyID, bool isSelected = false)
         {
             ID = id;
             Osszeg = osszeg;
@@ -25,10 +26,11 @@ namespace Szakdolgozat.Models
             BeKiKod = beKiKod;
             TeljesitesiDatum = teljesitesiDatum;
             KotelKovetID = kotelKovetID;
-            PartnerID = partnerID;
+            GazdalkodasiSzervID = gazdalkodasiSzervID;
+            MaganSzemelyID = maganSzemelyID;
             IsSelected = isSelected;
         }
-        public BevetelKiadas(int id, int osszeg, Penznem penznem, BeKiKod beKiKod, DateTime teljesitesiDatum, int? kotelKovetID = null, int? partnerID = null, bool isSelected = false)
+        public BevetelKiadas(int id, int osszeg, Penznem penznem, BeKiKod beKiKod, DateTime teljesitesiDatum, int? kotelKovetID = null, int? gazdalkodasiSzervID = null, int? maganSzemelyID = null, bool isSelected = false)
         {
             ID = id;
             Osszeg = osszeg;
@@ -39,24 +41,29 @@ namespace Szakdolgozat.Models
                 KotelKovetID = null;
             else
                 KotelKovetID = kotelKovetID;
-            if (partnerID == 0)
-                PartnerID = null;
+            if (maganSzemelyID == 0)
+                MaganSzemelyID = null;
             else
-                PartnerID = partnerID;
+                MaganSzemelyID = maganSzemelyID;
+            if (gazdalkodasiSzervID == 0)
+                GazdalkodasiSzervID = null;
+            else
+                GazdalkodasiSzervID = gazdalkodasiSzervID;
             IsSelected = isSelected;
         }
 
-        public BevetelKiadas(int osszeg, Penznem penznem, BeKiKod beKiKod, DateTime teljesitesiDatum, int kotelKovetID, int partnerID, bool isSelected = false)
+        public BevetelKiadas(int osszeg, Penznem penznem, BeKiKod beKiKod, DateTime teljesitesiDatum, int kotelKovetID, int gazdalkodasiSzervID, int maganSzemelyID, bool isSelected = false)
         {
             Osszeg = osszeg;
             Penznem = penznem;
             BeKiKod = beKiKod;
             TeljesitesiDatum = teljesitesiDatum;
             KotelKovetID = kotelKovetID;
-            PartnerID = partnerID;
+            GazdalkodasiSzervID = gazdalkodasiSzervID;
+            MaganSzemelyID = maganSzemelyID;
             IsSelected = isSelected;
         }
-        public BevetelKiadas(int osszeg, Penznem penznem, BeKiKod beKiKod, DateTime teljesitesiDatum, int? kotelKovetID = null, int? partnerID = null, bool isSelected = false)
+        public BevetelKiadas(int osszeg, Penznem penznem, BeKiKod beKiKod, DateTime teljesitesiDatum, int? kotelKovetID = null, int? gazdalkodasiSzervID = null, int? maganSzemelyID = null, bool isSelected = false)
         {
             Osszeg = osszeg;
             Penznem = penznem;
@@ -66,10 +73,14 @@ namespace Szakdolgozat.Models
                 KotelKovetID = null;
             else
                 KotelKovetID = kotelKovetID;
-            if (partnerID == 0)
-                PartnerID = null;
+            if (maganSzemelyID == 0)
+                MaganSzemelyID = null;
             else
-                PartnerID = partnerID;
+                MaganSzemelyID = maganSzemelyID;
+            if (gazdalkodasiSzervID == 0)
+                GazdalkodasiSzervID = null;
+            else
+                GazdalkodasiSzervID = gazdalkodasiSzervID;
             IsSelected = isSelected;
         }
     }

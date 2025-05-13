@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Markup;
 using Szakdolgozat.Models;
+using Szakdolgozat.ViewModels;
 
 namespace Szakdolgozat.Repositories
 {
@@ -53,11 +54,96 @@ namespace Szakdolgozat.Repositories
                 }
             }
         }
-        
+        public bool DeleteDolgozo(int id, bool confirmCascade = true)
+        {
+            // Check if there are related records
+            List<string> relatedRecords = new List<string>();
+            int diagrammCount = 0;
+
+            using (MySqlConnection connection = GetConnection())
+            {
+                connection.Open();
+
+                int felhasznaloId = 0;
+                // Check for related felhasznalok records
+                string getFelhasznaloIdQuery = "SELECT id FROM felhasznalok WHERE dolgozo_id = @id";
+                using (MySqlCommand command = new MySqlCommand(getFelhasznaloIdQuery, connection))
+                {
+                    command.Parameters.AddWithValue("@id", id);
+                    felhasznaloId = Convert.ToInt32(command.ExecuteScalar());
+                }
+
+                // Check for related diagramm records
+                string checkDiagrammQuery = "SELECT COUNT(*) FROM diagrammok WHERE letrehozo_id = @id";
+                using (MySqlCommand command = new MySqlCommand(checkDiagrammQuery, connection))
+                {
+                    command.Parameters.AddWithValue("@id", felhasznaloId);
+                    diagrammCount = Convert.ToInt32(command.ExecuteScalar());
+
+                    if (diagrammCount > 0)
+                    {
+                        relatedRecords.Add($"Diagramm bejegyzések: {diagrammCount} db");
+                    }
+                }
+
+                // If there are related records and confirmation is needed, return false
+                if (felhasznaloId > 0 && confirmCascade == false)
+                {
+                    return false;
+                }
+                // Perform the delete with CASCADE option or manually delete related records
+                using (MySqlTransaction transaction = connection.BeginTransaction())
+                {
+                    try
+                    {
+                        // First delete related diagramm records
+                        if (diagrammCount > 0)
+                        {
+                            string deleteDiagrammQuery = "DELETE FROM diagrammok WHERE letrehozo_id = @id";
+                            using (MySqlCommand command = new MySqlCommand(deleteDiagrammQuery, connection, transaction))
+                            {
+                                command.Parameters.AddWithValue("@id", felhasznaloId);
+                                command.ExecuteNonQuery();
+                            }
+                        }
+
+                        // Then delete related felhasznalok records
+                        if (felhasznaloId > 0)
+                        {
+                            string deleteFelhasznalokQuery = "DELETE FROM felhasznalok WHERE dolgozo_id = @id";
+                            using (MySqlCommand command = new MySqlCommand(deleteFelhasznalokQuery, connection, transaction))
+                            {
+                                command.Parameters.AddWithValue("@id", id);
+                                command.ExecuteNonQuery();
+                            }
+                        }
+
+                        // Finally delete the main record
+                        string deleteQuery = "DELETE FROM dolgozok WHERE id = @id";
+                        using (MySqlCommand command = new MySqlCommand(deleteQuery, connection, transaction))
+                        {
+                            command.Parameters.AddWithValue("@id", id);
+                            int result = command.ExecuteNonQuery();
+                            transaction.Commit();
+                            return result > 0;
+                        }
+                    }
+                    catch (Exception)
+                    {
+                        transaction.Rollback();
+                        throw;
+                    }
+                }
+            }
+        }
         public ObservableCollection<Dolgozo> GetDolgozok()
         {
             ObservableCollection<Dolgozo> data = new ObservableCollection<Dolgozo>();
-            string query = "SELECT * FROM dolgozok;";
+            string query = @"SELECT d.* FROM dolgozok d 
+                 WHERE d.id NOT IN (
+                     SELECT dolgozo_id FROM felhasznalok 
+                     WHERE id = @userID
+                 )";
 
             using (MySqlConnection connection = GetConnection())
             {
@@ -65,6 +151,7 @@ namespace Szakdolgozat.Repositories
 
                 using (MySqlCommand command = new MySqlCommand(query, connection))
                 {
+                    command.Parameters.AddWithValue("@userID", Mediator.NotifyGetUserID());
                     using (MySqlDataReader reader = command.ExecuteReader())
                     {
                         while (reader.Read())
@@ -105,6 +192,35 @@ namespace Szakdolgozat.Repositories
                     return count > 0;
                 }
             }
+        }
+
+        public bool CheckForRelatedRecords(int id, out string relatedInfo)
+        {
+            List<string> relatedRecords = new List<string>();
+
+            using (MySqlConnection connection = GetConnection())
+            {
+                connection.Open();
+
+                // Check for related records in bevetelek_kiadasok (via partner_id)
+                string checkBevetelekQuery = "SELECT COUNT(*) FROM felhasznalok WHERE dolgozo_id = @id";
+                using (MySqlCommand command = new MySqlCommand(checkBevetelekQuery, connection))
+                {
+                    command.Parameters.AddWithValue("@id", id);
+                    int count = Convert.ToInt32(command.ExecuteScalar());
+
+                    if (count > 0)
+                    {
+                        relatedRecords.Add($"• Felhasznalói fiókok: {count} db");
+                    }
+                }
+
+                // Check for related records in other tables as needed
+                // For example, if other tables reference magan_szemelyek
+            }
+
+            relatedInfo = string.Join("\n", relatedRecords);
+            return relatedRecords.Count > 0;
         }
     }
 }

@@ -155,7 +155,7 @@
                     Separator="{x:Static lvc:DefaultAxes.CleanSeparator}" />
                     </lvc:CartesianChart.AxisX>
                     <lvc:CartesianChart.AxisY>
-                            <lvc:Axis Title="Usage" LabelFormatter="{Binding TestBasicColumnSeriesFormatterForShow}"></lvc:Axis>
+                            <lvc:Axis Title="Usage" LabelFormatter="{Binding TestBasicColumnFormatterForShow}"></lvc:Axis>
                     </lvc:CartesianChart.AxisY>
                 </lvc:CartesianChart>
                     <Button Grid.Row="2" CommandParameter="BasicColumnSeries" Command="{Binding CreateChartCommand}" Content="Új létrehozása"></Button>

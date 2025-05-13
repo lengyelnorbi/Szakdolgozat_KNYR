@@ -76,12 +76,17 @@
                 </ComboBoxItem>
                 <ComboBoxItem>
                     <CheckBox x:Name="kotelKovetIDCB" IsChecked="True">
-                        <TextBlock Text="Telefonszám"></TextBlock>
+                        <TextBlock Text="Kötelezettség/Követelés ID"></TextBlock>
                     </CheckBox>
                 </ComboBoxItem>
                 <ComboBoxItem>
-                    <CheckBox x:Name="partnerIDCB" IsChecked="True">
-                        <TextBlock Text="Partner ID"></TextBlock>
+                    <CheckBox x:Name="gazdalkodoSzervIDCB" IsChecked="True">
+                        <TextBlock Text="Gazdálkodó Szervezet ID"></TextBlock>
+                    </CheckBox>
+                </ComboBoxItem>
+                <ComboBoxItem>
+                    <CheckBox x:Name="maganSzemelyIDCB" IsChecked="True">
+                        <TextBlock Text="Magán Személy ID"></TextBlock>
                     </CheckBox>
                 </ComboBoxItem>
             </ComboBox>
