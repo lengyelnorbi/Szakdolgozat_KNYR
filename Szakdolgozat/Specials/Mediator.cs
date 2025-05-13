@@ -8,6 +8,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using Szakdolgozat.Models;
+using static Szakdolgozat.ViewModels.Mediator;
 
 namespace Szakdolgozat.ViewModels
 {
@@ -173,6 +174,15 @@ namespace Szakdolgozat.ViewModels
         public static int NotifyGetUserID()
         {
             return GetUserID.Invoke();
+        }
+
+        //Visszaadja a módosított diagrammot-t annak a view-nak, ami feliratkozott az eseményre
+        //It gives back the modified diagram to the view that subscribed to the event
+        public delegate void DiagramModifiedEventHandler(Diagramm diagramm);
+        public static event DiagramModifiedEventHandler DiagramModified;
+        public static void NotifyModifiedDiagram(Diagramm diagramm)
+        {
+            DiagramModified?.Invoke(diagramm);
         }
     }
 }

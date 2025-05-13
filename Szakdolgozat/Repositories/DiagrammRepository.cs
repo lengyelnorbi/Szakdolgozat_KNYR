@@ -8,6 +8,8 @@ using System.Text;
 using System.Threading.Tasks;
 using MySql.Data.MySqlClient;
 using Szakdolgozat.Models;
+using DocumentFormat.OpenXml.Office2010.PowerPoint;
+using Szakdolgozat.ViewModels;
 
 namespace Szakdolgozat.Repositories
 {
@@ -80,6 +82,10 @@ namespace Szakdolgozat.Repositories
                     }
 
                     int result = command.ExecuteNonQuery();
+                    if(diagramm.ID != 0)
+                    {
+                        Mediator.NotifyModifiedDiagram(diagramm);
+                    }
                     return result > 0;
                 }
             }

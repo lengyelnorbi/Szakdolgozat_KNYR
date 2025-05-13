@@ -6573,8 +6573,20 @@ namespace Szakdolgozat.ViewModels
             }
             else
             {
+                System.Windows.Controls.TabControl tabControl = Mediator.NotifyGetTabControl();
+                if (tabControl != null)
+                {
+                    foreach (TabItem item in tabControl.Items)
+                    {
+                        if (item.Name.Contains("KotelKovet"))
+                        {
+                            tabControl.SelectedItem = item;
+                            break;
+                        }
+                    }
+                }
                 IsBevetelekKiadasokTabIsSelected = false;
-                // Your equivalent method for KotelezettsegKoveteles if you have one
+                SetSelectedKotelezettsegKoveteles(diagramm.SelectedItemsIDs);
             }
 
             // Deserialize filter and groupby settings
@@ -6678,6 +6690,28 @@ namespace Szakdolgozat.ViewModels
             // Notify that these properties have changed
             OnPropertyChanged(nameof(SelectedBevetelekKiadasok));
             OnPropertyChanged(nameof(BevetelekKiadasok));
+            IsEnabledChangerOnTabItems();
+        }
+
+        private void SetSelectedKotelezettsegKoveteles(string selectedDataIDS)
+        {
+            List<int> ids = selectedDataIDS.Split(',').Select(int.Parse).ToList();
+            ObservableCollection<KotelezettsegKoveteles> selectedItems = new ObservableCollection<KotelezettsegKoveteles>();
+            foreach (var id in ids)
+            {
+                var item = KotelKovetelesek.FirstOrDefault(x => x.ID == id);
+                if (item != null)
+                {
+                    item.IsSelected = true;
+                    SelectedKotelezettsegekKovetelesek.Add(item);
+                    selectedItems.Add(item);
+                }
+            }
+            // Set selected collection
+            SelectedKotelezettsegekKovetelesek = selectedItems;
+            // Notify that these properties have changed
+            OnPropertyChanged(nameof(SelectedKotelezettsegekKovetelesek));
+            OnPropertyChanged(nameof(KotelKovetelesek));
             IsEnabledChangerOnTabItems();
         }
     }

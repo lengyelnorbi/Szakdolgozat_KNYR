@@ -66,8 +66,95 @@ namespace Szakdolgozat.ViewModels
             OpenDiagramCommand = new ViewModelCommand(ExecuteOpenDiagramCommand);
             DeleteDiagramCommand = new ViewModelCommand(ExecuteDeleteDiagramCommand);
 
+            RefreshDiagram(null);
+        }
+
+        public void FilterDiagrams()
+        {
+            FilteredDiagrams.Clear();
+            foreach (var diagram in Diagrams)
+            {
+                if(diagram.CreatedByUserID == Mediator.NotifyGetUserID())
+                {
+                    FilteredDiagrams.Add(diagram);
+                }
+            }
+        }
+        private List<SeriesItem> GetSeriesValues(string values)
+        {
+            var result = new List<SeriesItem>();
+
+            if (string.IsNullOrWhiteSpace(values))
+                return result;
+
+            try
+            {
+                // Deserialize the JSON into a list of SeriesItem objects
+                var seriesItems = Newtonsoft.Json.JsonConvert.DeserializeObject<List<SeriesItem>>(values);
+
+                if (seriesItems != null)
+                {
+                    foreach (var item in seriesItems)
+                    {
+                        // Convert each SeriesItem into a SeriesData object
+                        result.Add(new SeriesItem
+                        {
+                            Name = item.Name,
+                            Values = new ChartValues<double>(item.Values)
+                        });
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log or handle the exception as needed
+                System.Diagnostics.Debug.WriteLine($"Error deserializing DataChartValues: {ex.Message}");
+            }
+
+            return result;
+        }
+
+        private void ExecuteOpenDiagramCommand(object parameter)
+        {
+            if (parameter is Diagramm diagram)
+            {
+                // Open the CreateChartsView with pre-filled data
+                var createChartsView = new CreateChartsView(diagram.ChartType);
+                if (createChartsView.DataContext is CreateChartsViewModel viewModel)
+                {
+                    viewModel.LoadDiagram(diagram);
+                    createChartsView.Show();
+                    viewModel.UpdateSearch(viewModel.SearchQuery);
+                    Mediator.DiagramModified += RefreshDiagram;
+                }
+            }
+        }
+
+        private void ExecuteDeleteDiagramCommand(object parameter)
+        {
+            if (parameter is Diagramm diagram)
+            {
+                // Ask for confirmation in Hungarian
+                var result = System.Windows.MessageBox.Show(
+                    $"Biztosan törölni szeretné a(z) \"{diagram.Name}\" diagramot?",
+                    "Törlés megerősítése",
+                    System.Windows.MessageBoxButton.YesNo,
+                    System.Windows.MessageBoxImage.Question);
+
+                if (result == System.Windows.MessageBoxResult.Yes)
+                {
+                    _diagrammRepository.DeleteDiagramm(diagram.ID);
+                    RefreshDiagram(null);
+                }
+            }
+        }
+
+        private void RefreshDiagram(Diagramm diagram)
+        {
             Diagrams = new ObservableCollection<Diagramm>(_diagrammRepository.GetAllDiagramms());
-            foreach(var diagramm in Diagrams)
+            //bad example for not making deep copy, also good example for making collection references:
+            //FilteredMaganSzemelyek = MaganSzemelyek, in this case when clearing the FilteredMaganSzemelyek in later times, it will affect the MaganSzemelyek collection too
+            foreach (var diagramm in Diagrams)
             {
                 var values = GetSeriesValues(diagramm.DataChartValues);
                 diagramm.PreviewChart = new SeriesCollection();
@@ -134,89 +221,9 @@ namespace Szakdolgozat.ViewModels
                 }
             }
             FilteredDiagrams = new ObservableCollection<Diagramm>(
-                Diagrams.Select(d => new Diagramm(d.ID, d.Name, d.Description, d.ChartType, d.DataSource, d.DataChartValues, d.FilterSettings, d.GroupBySettings, d.SeriesGroupBySelection, d.SelectedItemsIDs, d.DataStatistic, d.CreatedDate,
-                d.CreatedByUserID, d.CreatorName, d.PreviewChart, d.PreviewPieChart, d.InnerRadius)).ToList()
-            );
-        }
-
-        public void FilterDiagrams()
-        {
-            FilteredDiagrams.Clear();
-            foreach (var diagram in Diagrams)
-            {
-                if(diagram.CreatedByUserID == Mediator.NotifyGetUserID())
-                {
-                    FilteredDiagrams.Add(diagram);
-                }
-            }
-        }
-        private List<SeriesItem> GetSeriesValues(string values)
-        {
-            var result = new List<SeriesItem>();
-
-            if (string.IsNullOrWhiteSpace(values))
-                return result;
-
-            try
-            {
-                // Deserialize the JSON into a list of SeriesItem objects
-                var seriesItems = Newtonsoft.Json.JsonConvert.DeserializeObject<List<SeriesItem>>(values);
-
-                if (seriesItems != null)
-                {
-                    foreach (var item in seriesItems)
-                    {
-                        // Convert each SeriesItem into a SeriesData object
-                        result.Add(new SeriesItem
-                        {
-                            Name = item.Name,
-                            Values = new ChartValues<double>(item.Values)
-                        });
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                // Log or handle the exception as needed
-                System.Diagnostics.Debug.WriteLine($"Error deserializing DataChartValues: {ex.Message}");
-            }
-
-            return result;
-        }
-
-        private void ExecuteOpenDiagramCommand(object parameter)
-        {
-            if (parameter is Diagramm diagram)
-            {
-                // Open the CreateChartsView with pre-filled data
-                var createChartsView = new CreateChartsView(diagram.ChartType);
-                if (createChartsView.DataContext is CreateChartsViewModel viewModel)
-                {
-                    viewModel.LoadDiagram(diagram);
-                    createChartsView.Show();
-                    viewModel.UpdateSearch(viewModel.SearchQuery);
-                }
-            }
-        }
-
-        private void ExecuteDeleteDiagramCommand(object parameter)
-        {
-            if (parameter is Diagramm diagram)
-            {
-                // Ask for confirmation in Hungarian
-                var result = System.Windows.MessageBox.Show(
-                    $"Biztosan törölni szeretné a(z) \"{diagram.Name}\" diagramot?",
-                    "Törlés megerősítése",
-                    System.Windows.MessageBoxButton.YesNo,
-                    System.Windows.MessageBoxImage.Question);
-
-                if (result == System.Windows.MessageBoxResult.Yes)
-                {
-                    _diagrammRepository.DeleteDiagramm(diagram.ID);
-                    // Refresh the diagrams list
-                    Diagrams = new ObservableCollection<Diagramm>(_diagrammRepository.GetAllDiagramms());
-                }
-            }
+              Diagrams.Select(d => new Diagramm(d.ID, d.Name, d.Description, d.ChartType, d.DataSource, d.DataChartValues, d.FilterSettings, d.GroupBySettings, d.SeriesGroupBySelection, d.SelectedItemsIDs, d.DataStatistic, d.CreatedDate,
+              d.CreatedByUserID, d.CreatorName, d.PreviewChart, d.PreviewPieChart, d.InnerRadius)).ToList()
+          );
         }
     }
 }
