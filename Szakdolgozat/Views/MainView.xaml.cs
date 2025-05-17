@@ -12,13 +12,22 @@ namespace Szakdolgozat.Views
     /// </summary>
     public partial class MainView : Window
     {
-        public MainView(int userID)
+        public MainView(int userID, string role)
         {
             InitializeComponent();
             this.MaxHeight = SystemParameters.MaximizedPrimaryScreenHeight;
             if (this.DataContext is MainViewModel viewModel)
             {
                 viewModel.UserID = userID;
+                viewModel.UserRole = role;
+                if(role == "ADMIN")
+                {
+                    dolgozoRadioButton.Visibility = Visibility.Visible;
+                }
+                else if (role == "USER")
+                {
+                    dolgozoRadioButton.Visibility = Visibility.Collapsed;
+                }
             }
             Mediator.GetUserID += () => GetUserID();
         }

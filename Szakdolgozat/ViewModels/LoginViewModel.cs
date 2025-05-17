@@ -19,9 +19,9 @@ namespace Szakdolgozat.ViewModels
         private string _username;
         private SecureString _password;
         private string _errorMessage;
-        private bool _isViewVisible = true;
         private UserRepository _userRepository;
         public int UserID { get; set; }
+        public string UserRole { get; set; }
         //Properties
         public string Username
         {
@@ -59,6 +59,7 @@ namespace Szakdolgozat.ViewModels
                 OnPropertyChanged(nameof(ErrorMessage));
             }
         }
+        private bool _isViewVisible = true;
         public bool IsViewVisible
         {
             get
@@ -94,11 +95,10 @@ namespace Szakdolgozat.ViewModels
         {
             Thread.CurrentPrincipal = new GenericPrincipal(
                 new GenericIdentity(Username), null);
-            //DESING TESZTELÉSIG false-ra állítva
             IsViewVisible = true;
             bool isValidUser = false;
             int userId = 0;
-            (isValidUser, UserID) = _userRepository.AuthenticateUser(new NetworkCredential(Username, Password));
+            (isValidUser, UserID, UserRole) = _userRepository.AuthenticateUser(new NetworkCredential(Username, Password));
             if (isValidUser)
             {
                 Thread.CurrentPrincipal = new GenericPrincipal(
@@ -107,7 +107,7 @@ namespace Szakdolgozat.ViewModels
             }
             else
             {
-                ErrorMessage = "* Invalid username or password";
+                ErrorMessage = "* Érvénytelen felhasználónév vagy jelszó";
             }
         }
         private void ExecuteRecoverPassCommand(string username, string email)

@@ -22,6 +22,7 @@ namespace Szakdolgozat.ViewModels
     public class MainViewModel : ViewModelBase
     {
         public int UserID { get; set; }
+        public string UserRole { get; set; }
 
         private ViewModelBase _currentChildView;
         public ViewModelBase CurrentChildView

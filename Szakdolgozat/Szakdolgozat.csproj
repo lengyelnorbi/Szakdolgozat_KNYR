@@ -224,6 +224,7 @@
     <Compile Include="Specials\DataStatistics.cs" />
     <Compile Include="Specials\DateTimeParser.cs" />
     <Compile Include="Specials\EnumBindingSourceExtension.cs" />
+    <Compile Include="Specials\PasswordHasher.cs" />
     <Compile Include="Specials\WindowHelper.cs" />
     <Compile Include="ViewModels\CreateChartsViewModel.cs" />
     <Compile Include="ViewModels\DolgozokModifyOrAddViewModel.cs" />
@@ -319,13 +320,8 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
-    <Resource Include="Assets\Images\alapXYDiagram.jpg" />
-    <Resource Include="Assets\Images\doltOszlopDiagram.jpg" />
-    <Resource Include="Assets\Images\fankDiagram.jpg" />
-    <Resource Include="Assets\Images\korDiagram.jpg" />
-    <Resource Include="Assets\Images\oszlopDiagram.jpg" />
+    <Folder Include="Assets\" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="CustomControls\BindablePasswordBox.xaml">

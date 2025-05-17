@@ -126,7 +126,7 @@
                                             <TextBlock Text="Magán Személyek" Style="{StaticResource menuButtonText}" Margin="40,0,0,0"/>
                                         </StackPanel>
                                     </RadioButton>
-                                    <RadioButton GroupName="Content" Style="{StaticResource menuButton}"
+                                    <RadioButton x:Name="dolgozoRadioButton" GroupName="Content" Style="{StaticResource menuButton}"
                                  Tag="#E285DE"
                                  IsChecked="True"
                                              Command="{Binding ShowDolgozoViewCommand}">

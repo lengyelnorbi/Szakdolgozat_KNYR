@@ -210,9 +210,28 @@ namespace Szakdolgozat.ViewModels
                 }
 
                 Dolgozo dolgozo = new Dolgozo(Lastname, Firstname, Email, Phonenumber);
-                _dolgozoRepository.AddDolgozo(dolgozo);
-                Mediator.NotifyNewDolgozoAdded(dolgozo);
-                CloseWindow();
+                bool isSuccess = false;
+                int newDolgozoID = 0;
+                (isSuccess, newDolgozoID) = _dolgozoRepository.AddDolgozo(dolgozo);
+                if (isSuccess)
+                {
+                    dolgozo.ID = newDolgozoID;
+                    UserRepository userRepository = new UserRepository();
+                    string username = "";
+                    string password = "";
+                    bool creationSuccess = false;
+                    (creationSuccess, username, password) = userRepository.CreateAndAddUser(dolgozo);
+                    if (creationSuccess)
+                    {
+                        MessageBox.Show($"Dolgozó hozzáadva. Az új felhasználóhoz generált adatok: \n Felhasználónév: {username}, Jelszó: {password}", "Siker", MessageBoxButton.OK, MessageBoxImage.Information);
+                    }
+                    else
+                    {
+                        MessageBox.Show("Dolgozó hozzáadva, de a felhasználó létrehozása nem sikerült.", "Figyelmeztetés", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    }
+                    Mediator.NotifyNewDolgozoAdded(dolgozo);
+                    CloseWindow();
+                }
             }
             catch (Exception e)
             {

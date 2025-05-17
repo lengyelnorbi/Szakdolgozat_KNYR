@@ -16,27 +16,48 @@ namespace Szakdolgozat.Repositories
 {
     public class DolgozoRepository : RepositoryBase, IDolgozoRepository
     {
-        public bool AddDolgozo(Dolgozo dolgozo)
+        public (bool, int) AddDolgozo(Dolgozo dolgozo)
         {
-            using (MySqlConnection connection = GetConnection())
+            int newId = 0;
+            try
             {
-                connection.Open();
-
-                string query = "INSERT INTO `dolgozok` (`id`, `vezeteknev`, `keresztnev`, `email`, `telefonszam`) VALUES (NULL, @vezeteknev, @keresztnev, @email, @telefonszam);";
-                using (MySqlCommand command = new MySqlCommand(query, connection))
+                using (MySqlConnection connection = GetConnection())
                 {
-                    command.Parameters.AddWithValue("@vezeteknev", dolgozo.Vezeteknev);
-                    command.Parameters.AddWithValue("@keresztnev", dolgozo.Keresztnev);
-                    command.Parameters.AddWithValue("@email", dolgozo.Email);
-                    command.Parameters.AddWithValue("@telefonszam", dolgozo.Telefonszam);
+                    connection.Open();
 
-                    int count = Convert.ToInt32(command.ExecuteScalar());
+                    string insertQuery = "INSERT INTO `dolgozok` (`vezeteknev`, `keresztnev`, `email`, `telefonszam`) VALUES (@vezeteknev, @keresztnev, @email, @telefonszam);";
+                    using (MySqlCommand command = new MySqlCommand(insertQuery, connection))
+                    {
+                        command.Parameters.AddWithValue("@vezeteknev", dolgozo.Vezeteknev);
+                        command.Parameters.AddWithValue("@keresztnev", dolgozo.Keresztnev);
+                        command.Parameters.AddWithValue("@email", dolgozo.Email);
+                        command.Parameters.AddWithValue("@telefonszam", dolgozo.Telefonszam);
 
-                    return count > 0;
+                        int affectedRows = command.ExecuteNonQuery();
+                        if (affectedRows > 0)
+                        {
+                            // Get the new ID
+                            command.CommandText = "SELECT LAST_INSERT_ID();";
+                            command.Parameters.Clear();
+                            newId = Convert.ToInt32(command.ExecuteScalar());
+                            return (true, newId);
+                        }
+                        return (false, newId);
+                    }
                 }
             }
+            catch (MySqlException ex)
+            {
+                Debug.WriteLine($"MySQL Error: {ex.Message}");
+                return (false, newId);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"General Error: {ex.Message}");
+                return (false, newId);
+            }
         }
-        
+
         public bool DeleteDolgozo(int id)
         {
             using (MySqlConnection connection = GetConnection())

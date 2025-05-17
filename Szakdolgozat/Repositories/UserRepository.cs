@@ -7,32 +7,37 @@ using System.Threading.Tasks;
 using Szakdolgozat.Models;
 using MySql.Data.MySqlClient;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
+using Microsoft.Xaml.Behaviors.Media;
+using Szakdolgozat.Specials;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
 namespace Szakdolgozat.Repositories
 {
     public class UserRepository : RepositoryBase, IUserRepository
     {
-        public (bool,int) AuthenticateUser(NetworkCredential credential)
+        public (bool, int, string) AuthenticateUser(NetworkCredential credential)
         {
             using (MySqlConnection connection = GetConnection())
             {
                 connection.Open();
 
-                string query = "SELECT id FROM felhasznalok WHERE felhasznalo_nev = @username AND jelszo = @password";
+                string query = "SELECT id, szerep FROM felhasznalok WHERE felhasznalo_nev = @username AND jelszo = @password";
                 using (MySqlCommand command = new MySqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@username", credential.UserName);
-                    command.Parameters.AddWithValue("@password", credential.Password);
+                    command.Parameters.AddWithValue("@password", PasswordHasher.HashPassword(credential.Password));
 
-                    object result = command.ExecuteScalar();
-
-                    if (result != null && result != DBNull.Value)
+                    using (MySqlDataReader reader = command.ExecuteReader())
                     {
-                        int userId = Convert.ToInt32(result);
-                        return (true, userId);
+                        if (reader.Read())
+                        {
+                            int userId = Convert.ToInt32(reader["id"]);
+                            string role = Convert.ToString(reader["szerep"]);
+                            return (true, userId, role);
+                        }
                     }
-
-                    return (false, 0);
+                    return (false, 0, null);
                 }
             }
         }
@@ -122,6 +127,110 @@ namespace Szakdolgozat.Repositories
             }
 
             return null;
+        }
+
+        public (bool, string, string) CreateAndAddUser(Dolgozo dolgozo)
+        {
+            try
+            {
+                using (MySqlConnection connection = GetConnection())
+                {
+                    connection.Open();
+
+                    string query = "INSERT INTO `felhasznalok` (`id`, `felhasznalo_nev`, `jelszo`, `dolgozo_id`, `szerep`) VALUES (NULL, @username, @password, @workerID, 'USER');";
+                    using (MySqlCommand command = new MySqlCommand(query, connection))
+                    {
+                        string username = CreateUserName(dolgozo.Vezeteknev, dolgozo.Keresztnev);
+                        string password = CreatePassword();
+                        command.Parameters.AddWithValue("@username", username);
+                        command.Parameters.AddWithValue("@password", PasswordHasher.HashPassword(password));
+                        command.Parameters.AddWithValue("@workerID", dolgozo.ID);
+
+                        int count = command.ExecuteNonQuery();
+
+                        return (count > 0, username, password);
+                    }
+                }
+            }
+            catch (MySqlException ex)
+            {
+                // Handle MySQL-specific exceptions
+                Debug.WriteLine($"MySQL Error: {ex.Message}");
+                return (false, "", "");
+            }
+            catch (Exception ex)
+            {
+                // Handle other exceptions
+                Debug.WriteLine($"General Error: {ex.Message}");
+                return (false, "", "");
+            }
+        }
+
+        private string CreateUserName(string lastname, string firstname)
+        {
+            using (MySqlConnection connection = GetConnection())
+            {
+                connection.Open();
+                // Take first 3 characters of lastname and firstname, or less if shorter
+                string lastPart = lastname.Length >= 3 ? lastname.Substring(0, 3) : lastname;
+                string firstPart = firstname.Length >= 3 ? firstname.Substring(0, 3) : firstname;
+                string baseUsername = (lastPart + firstPart).ToLower();
+                string username = baseUsername;
+                int suffix = 1;
+
+                string query = "SELECT COUNT(*) FROM felhasznalok WHERE felhasznalo_nev = @username";
+                using (MySqlCommand command = new MySqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@username", username);
+                    int count = Convert.ToInt32(command.ExecuteScalar());
+
+                    while (count > 0)
+                    {
+                        username = baseUsername + suffix.ToString();
+                        command.Parameters["@username"].Value = username;
+                        count = Convert.ToInt32(command.ExecuteScalar());
+                        suffix++;
+                    }
+                }
+                return username;
+            }
+        }
+
+        private string CreatePassword()
+        {
+            // Generate a random password
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+            Random random = new Random();
+            string password;
+
+            // Keep generating passwords until one meets our criteria
+            do
+            {
+                char[] passwordChars = new char[10];
+                for (int i = 0; i < passwordChars.Length; i++)
+                {
+                    passwordChars[i] = chars[random.Next(chars.Length)];
+                }
+                password = new string(passwordChars);
+            }
+            while (!HasLowerChar(password) || !HasUpperChar(password) || !HasNumber(password));
+
+            return password;
+        }
+
+        private bool HasLowerChar(string str)
+        {
+            return str.Any(c => char.IsLower(c));
+        }
+
+        private bool HasUpperChar(string str)
+        {
+            return str.Any(c => char.IsUpper(c));
+        }
+
+        private bool HasNumber(string str)
+        {
+            return str.Any(c => char.IsDigit(c));
         }
     }
 }

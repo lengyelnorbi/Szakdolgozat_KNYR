@@ -26,11 +26,13 @@ namespace Szakdolgozat
                     try
                     {
                         int userID = 0;
+                        string role = "";
                         if (loginView.DataContext is LoginViewModel viewModel)
                         {
                             userID = viewModel.UserID;
+                            role = viewModel.UserRole;
                         }
-                        var mainView = new MainView(userID);
+                        var mainView = new MainView(userID, role);
                         mainView.Show();
                         loginView.Close();
                     }
