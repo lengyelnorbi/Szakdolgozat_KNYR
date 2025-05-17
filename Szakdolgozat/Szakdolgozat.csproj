@@ -195,7 +195,7 @@
     </Compile>
     <Compile Include="Models\BeKiKod.cs" />
     <Compile Include="Models\CurrencyData.cs" />
-    <Compile Include="Models\Diagramm.cs" />
+    <Compile Include="Models\Diagram.cs" />
     <Compile Include="Models\Dolgozo.cs" />
     <Compile Include="Models\EditMode.cs" />
     <Compile Include="Models\GazdalkodoSzervezet.cs" />
@@ -213,7 +213,7 @@
     <Compile Include="Models\Role.cs" />
     <Compile Include="Models\Felhasznalo.cs" />
     <Compile Include="Models\SeriesItem.cs" />
-    <Compile Include="Repositories\DiagrammRepository.cs" />
+    <Compile Include="Repositories\DiagramRepository.cs" />
     <Compile Include="Repositories\DolgozoRepository.cs" />
     <Compile Include="Repositories\GazdalkodoSzervezetRepository.cs" />
     <Compile Include="Repositories\KoltsegvetesRepository.cs" />

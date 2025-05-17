@@ -22,7 +22,7 @@ namespace Szakdolgozat.Repositories
             {
                 connection.Open();
 
-                string query = "SELECT id, szerep FROM felhasznalok WHERE felhasznalo_nev = @username AND jelszo = @password";
+                string query = "SELECT id, szerep FROM felhasznalok WHERE felhasznalonev = @username AND jelszo = @password";
                 using (MySqlCommand command = new MySqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@username", credential.UserName);
@@ -85,7 +85,7 @@ namespace Szakdolgozat.Repositories
                         if (reader.Read())
                         {
                             int userid = Convert.ToInt32(reader["id"]);
-                            string felhasznalonev = Convert.ToString(reader["felhasznalo_nev"]);
+                            string felhasznalonev = Convert.ToString(reader["felhasznalonev"]);
                             string jelszo = Convert.ToString(reader["jelszo"]);
                             int dolgozoID = Convert.ToInt32(reader["dolgozo_id"]);
                             Felhasznalo user = new Felhasznalo(userid, felhasznalonev, jelszo, dolgozoID);
@@ -105,7 +105,7 @@ namespace Szakdolgozat.Repositories
             {
                 connection.Open();
 
-                string query = "SELECT * FROM felhasznalok WHERE felhasznalo_nev = @username";
+                string query = "SELECT * FROM felhasznalok WHERE felhasznalonev = @username";
                 using (MySqlCommand command = new MySqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@username", username);
@@ -115,7 +115,7 @@ namespace Szakdolgozat.Repositories
                         if (reader.Read())
                         {
                             int userid = Convert.ToInt32(reader["id"]);
-                            string felhasznalonev = Convert.ToString(reader["felhasznalo_nev"]);
+                            string felhasznalonev = Convert.ToString(reader["felhasznalonev"]);
                             string jelszo = Convert.ToString(reader["jelszo"]);
                             int dolgozoID = Convert.ToInt32(reader["dolgozo_id"]);
                             Felhasznalo user = new Felhasznalo(userid, felhasznalonev, jelszo, dolgozoID);
@@ -137,7 +137,7 @@ namespace Szakdolgozat.Repositories
                 {
                     connection.Open();
 
-                    string query = "INSERT INTO `felhasznalok` (`id`, `felhasznalo_nev`, `jelszo`, `dolgozo_id`, `szerep`) VALUES (NULL, @username, @password, @workerID, 'USER');";
+                    string query = "INSERT INTO `felhasznalok` (`id`, `felhasznalonev`, `jelszo`, `dolgozo_id`, `szerep`) VALUES (NULL, @username, @password, @workerID, 'USER');";
                     using (MySqlCommand command = new MySqlCommand(query, connection))
                     {
                         string username = CreateUserName(dolgozo.Vezeteknev, dolgozo.Keresztnev);
@@ -178,7 +178,7 @@ namespace Szakdolgozat.Repositories
                 string username = baseUsername;
                 int suffix = 1;
 
-                string query = "SELECT COUNT(*) FROM felhasznalok WHERE felhasznalo_nev = @username";
+                string query = "SELECT COUNT(*) FROM felhasznalok WHERE felhasznalonev = @username";
                 using (MySqlCommand command = new MySqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@username", username);

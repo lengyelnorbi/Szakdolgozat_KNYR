@@ -6470,7 +6470,7 @@ namespace Szakdolgozat.ViewModels
         private void SaveChartToDatabase(string chartName, string chartDescription)
         {
             // Create a new DiagrammRepository instance
-            var diagrammRepository = new DiagrammRepository();
+            var diagrammRepository = new DiagramRepository();
 
             // Get selected item IDs
             List<int> selectedItemIDs = new List<int>();
@@ -6614,7 +6614,7 @@ namespace Szakdolgozat.ViewModels
          );
 
             // Create the model
-            var diagrammModel = new Diagramm
+            var diagrammModel = new Diagram
             {
                 ID = DiagrammID, // Assuming 0 for new chart
                 Name = chartName,
@@ -6636,7 +6636,7 @@ namespace Szakdolgozat.ViewModels
             LoadDiagram(diagrammModel);
         }
 
-        public void LoadDiagram(Diagramm diagramm)
+        public void LoadDiagram(Diagram diagramm)
         {
             DiagrammID = diagramm.ID;
             DiagrammName = diagramm.Name;

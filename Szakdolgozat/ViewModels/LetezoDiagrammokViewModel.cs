@@ -18,8 +18,8 @@ namespace Szakdolgozat.ViewModels
 {
     public class LetezoDiagrammokViewModel : ViewModelBase
     {
-        private ObservableCollection<Diagramm> _diagramms;
-        public ObservableCollection<Diagramm> Diagrams
+        private ObservableCollection<Diagram> _diagramms;
+        public ObservableCollection<Diagram> Diagrams
         {
             get { return _diagramms; }
             set
@@ -29,8 +29,8 @@ namespace Szakdolgozat.ViewModels
             }
         }
 
-        private ObservableCollection<Diagramm> _filteredDiagramms;
-        public ObservableCollection<Diagramm> FilteredDiagrams
+        private ObservableCollection<Diagram> _filteredDiagramms;
+        public ObservableCollection<Diagram> FilteredDiagrams
         {
             get { return _filteredDiagramms; }
             set
@@ -54,14 +54,14 @@ namespace Szakdolgozat.ViewModels
                 }
                 else
                 {
-                    FilteredDiagrams = new ObservableCollection<Diagramm>(Diagrams.ToList());
+                    FilteredDiagrams = new ObservableCollection<Diagram>(Diagrams.ToList());
                 }
             }
         }
 
         public ICommand OpenDiagramCommand { get; }
         public ICommand DeleteDiagramCommand { get; }
-        private DiagrammRepository _diagrammRepository { get; set; } = new DiagrammRepository();
+        private DiagramRepository _diagrammRepository { get; set; } = new DiagramRepository();
 
         public LetezoDiagrammokViewModel()
         {
@@ -125,7 +125,7 @@ namespace Szakdolgozat.ViewModels
 
         private void ExecuteOpenDiagramCommand(object parameter)
         {
-            if (parameter is Diagramm diagram)
+            if (parameter is Diagram diagram)
             {
                 // Open the CreateChartsView with pre-filled data
                 var createChartsView = new CreateChartsView(diagram.ChartType);
@@ -141,7 +141,7 @@ namespace Szakdolgozat.ViewModels
 
         private void ExecuteDeleteDiagramCommand(object parameter)
         {
-            if (parameter is Diagramm diagram)
+            if (parameter is Diagram diagram)
             {
                 // Ask for confirmation in Hungarian
                 var result = System.Windows.MessageBox.Show(
@@ -158,9 +158,9 @@ namespace Szakdolgozat.ViewModels
             }
         }
 
-        private void RefreshDiagram(Diagramm diagram)
+        private void RefreshDiagram(Diagram diagram)
         {
-            Diagrams = new ObservableCollection<Diagramm>(_diagrammRepository.GetAllDiagramms());
+            Diagrams = new ObservableCollection<Diagram>(_diagrammRepository.GetAllDiagramms());
             //bad example for not making deep copy, also good example for making collection references:
             //FilteredMaganSzemelyek = MaganSzemelyek, in this case when clearing the FilteredMaganSzemelyek in later times, it will affect the MaganSzemelyek collection too
             foreach (var diagramm in Diagrams)
@@ -231,8 +231,8 @@ namespace Szakdolgozat.ViewModels
                     }
                 }
             }
-            FilteredDiagrams = new ObservableCollection<Diagramm>(
-              Diagrams.Select(d => new Diagramm(d.ID, d.Name, d.Description, d.ChartType, d.DataSource, d.DataChartValues, d.FilterSettings, d.GroupBySettings, d.SeriesGroupBySelection, d.SelectedItemsIDs, d.DataStatistic, d.CreatedDate,
+            FilteredDiagrams = new ObservableCollection<Diagram>(
+              Diagrams.Select(d => new Diagram(d.ID, d.Name, d.Description, d.ChartType, d.DataSource, d.DataChartValues, d.FilterSettings, d.GroupBySettings, d.SeriesGroupBySelection, d.SelectedItemsIDs, d.DataStatistic, d.CreatedDate,
               d.CreatedByUserID, d.CreatorName, d.PreviewChart, d.PreviewPieChart, d.InnerRadius)).ToList()
           );
         }

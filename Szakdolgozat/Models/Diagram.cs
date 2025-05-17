@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace Szakdolgozat.Models
 {
-    public class Diagramm
+    public class Diagram
     {
-        public Diagramm(int iD, string name, string description, string chartType, string dataSource, string dataChartValues, string filterSettings, string groupBySettings, string seriesGroupBySelection, string selectedItemsIDs, string dataStatistic, DateTime createdDate, int? createdByUserID, string creatorName, SeriesCollection previewChart, SeriesCollection previewPieChart, double innerRadius)
+        public Diagram(int iD, string name, string description, string chartType, string dataSource, string dataChartValues, string filterSettings, string groupBySettings, string seriesGroupBySelection, string selectedItemsIDs, string dataStatistic, DateTime createdDate, int? createdByUserID, string creatorName, SeriesCollection previewChart, SeriesCollection previewPieChart, double innerRadius)
         {
             ID = iD;
             Name = name;
@@ -29,7 +29,7 @@ namespace Szakdolgozat.Models
             PreviewPieChart = previewPieChart;
             InnerRadius = innerRadius;
         }
-        public Diagramm(int iD, string name, string description, string chartType, string dataSource, string dataChartValues, string filterSettings, string groupBySettings, string seriesGroupBySelection, string selectedItemsIDs, string dataStatistic, DateTime createdDate, int? createdByUserID, string creatorName)
+        public Diagram(int iD, string name, string description, string chartType, string dataSource, string dataChartValues, string filterSettings, string groupBySettings, string seriesGroupBySelection, string selectedItemsIDs, string dataStatistic, DateTime createdDate, int? createdByUserID, string creatorName)
         {
             ID = iD;
             Name = name;
@@ -46,7 +46,7 @@ namespace Szakdolgozat.Models
             CreatedByUserID = createdByUserID;
             CreatorName = creatorName;
         }
-        public Diagramm(int iD, string name, string description, string chartType, string dataSource, string dataChartValues, string filterSettings, string groupBySettings, string seriesGroupBySelection, string selectedItemsIDs, string dataStatistic, DateTime createdDate, int? createdByUserID)
+        public Diagram(int iD, string name, string description, string chartType, string dataSource, string dataChartValues, string filterSettings, string groupBySettings, string seriesGroupBySelection, string selectedItemsIDs, string dataStatistic, DateTime createdDate, int? createdByUserID)
         {
             ID = iD;
             Name = name;
@@ -62,7 +62,7 @@ namespace Szakdolgozat.Models
             CreatedDate = createdDate;
             CreatedByUserID = createdByUserID;
         }
-        public Diagramm()
+        public Diagram()
         {
         }
         public int ID { get; set; }

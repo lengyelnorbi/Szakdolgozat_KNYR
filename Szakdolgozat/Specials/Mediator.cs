@@ -178,9 +178,9 @@ namespace Szakdolgozat.ViewModels
 
         //Visszaadja a módosított diagrammot-t annak a view-nak, ami feliratkozott az eseményre
         //It gives back the modified diagram to the view that subscribed to the event
-        public delegate void DiagramModifiedEventHandler(Diagramm diagramm);
+        public delegate void DiagramModifiedEventHandler(Diagram diagramm);
         public static event DiagramModifiedEventHandler DiagramModified;
-        public static void NotifyModifiedDiagram(Diagramm diagramm)
+        public static void NotifyModifiedDiagram(Diagram diagramm)
         {
             DiagramModified?.Invoke(diagramm);
         }

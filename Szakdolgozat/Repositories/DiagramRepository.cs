@@ -13,9 +13,9 @@ using Szakdolgozat.ViewModels;
 
 namespace Szakdolgozat.Repositories
 {
-    public class DiagrammRepository : RepositoryBase
+    public class DiagramRepository : RepositoryBase
     {
-        public bool SaveDiagramm(Diagramm diagramm)
+        public bool SaveDiagramm(Diagram diagramm)
         {
             using (var connection = GetConnection())
             {
@@ -31,7 +31,7 @@ namespace Szakdolgozat.Repositories
                     {
                         command.CommandText = @"
                         INSERT INTO diagrammok (
-                            nev, leiras, diagramm_tipus, adathalmaz, diagram_ertekek_adat,
+                            nev, leiras, diagram_tipus, adathalmaz, diagram_ertekek_adat,
                             szuresi_beallitasok, csoportositasi_beallitasok, kijelolt_diagram_csoportositasok, kijelolt_elemek_ids, 
                             adat_statisztika, letrehozasi_datum, letrehozo_id
                         ) VALUES (
@@ -47,7 +47,7 @@ namespace Szakdolgozat.Repositories
                         UPDATE diagrammok SET 
                             nev = @name, 
                             leiras = @description, 
-                            diagramm_tipus = @chartType, 
+                            diagram_tipus = @chartType, 
                             adathalmaz = @dataSource, 
                             diagram_ertekek_adat = @dataChartValues,
                             szuresi_beallitasok = @filterSettings, 
@@ -91,7 +91,7 @@ namespace Szakdolgozat.Repositories
             }
         }
 
-        public Diagramm GetDiagrammByID(int id)
+        public Diagram GetDiagrammByID(int id)
         {
             using (var connection = GetConnection())
             {
@@ -108,12 +108,12 @@ namespace Szakdolgozat.Repositories
                     {
                         if (reader.Read())
                         {
-                            return new Diagramm
+                            return new Diagram
                             {
                                 ID = Convert.ToInt32(reader["id"]),
                                 Name = reader["nev"].ToString(),
                                 Description = reader["leiras"] != DBNull.Value ? reader["leiras"].ToString() : null,
-                                ChartType = reader["diagramm_tipus"].ToString(),
+                                ChartType = reader["diagram_tipus"].ToString(),
                                 DataSource = reader["adathalmaz"].ToString(),
                                 DataChartValues = reader["diagram_ertekek_adat"].ToString(),
                                 FilterSettings = reader["szuresi_beallitasok"].ToString(),
@@ -133,9 +133,9 @@ namespace Szakdolgozat.Repositories
             return null; // Not found
         }
 
-        public List<Diagramm> GetAllDiagramms()
+        public List<Diagram> GetAllDiagramms()
         {
-            var diagramms = new List<Diagramm>();
+            var diagramms = new List<Diagram>();
 
             using (var connection = GetConnection())
             {
@@ -151,12 +151,12 @@ namespace Szakdolgozat.Repositories
                     {
                         while (reader.Read())
                         {
-                            diagramms.Add(new Diagramm
+                            diagramms.Add(new Diagram
                             {
                                 ID = Convert.ToInt32(reader["id"]),
                                 Name = reader["nev"].ToString(),
                                 Description = reader["leiras"] != DBNull.Value ? reader["leiras"].ToString() : null,
-                                ChartType = reader["diagramm_tipus"].ToString(),
+                                ChartType = reader["diagram_tipus"].ToString(),
                                 DataSource = reader["adathalmaz"].ToString(),
                                 DataChartValues = reader["diagram_ertekek_adat"].ToString(),
                                 FilterSettings = reader["szuresi_beallitasok"].ToString(),
