@@ -14,25 +14,40 @@ namespace Szakdolgozat.Repositories
     {
         public bool AddKoltsegvetes(BevetelKiadas bevetelKiadas)
         {
-            using (MySqlConnection connection = GetConnection())
+            try
             {
-                connection.Open();
-
-                string query = "INSERT INTO `bevetelek_kiadasok` (`id`, `osszeg`, `penznem`, `be_ki_kod`, `teljesitesi_datum`, `kotel_kovet_id`, `gazdalkodo_szerv_id`, `magan_szemely_id`) VALUES (NULL, @osszeg, @penznem, @be_ki_kod, @teljesitesi_datum, @kotel_kovet_id, @gazdalkodo_szerv_id, @magan_szemely_id);";
-                using (MySqlCommand command = new MySqlCommand(query, connection))
+                using (MySqlConnection connection = GetConnection())
                 {
-                    command.Parameters.AddWithValue("@osszeg", bevetelKiadas.Osszeg);
-                    command.Parameters.AddWithValue("@penznem", bevetelKiadas.Penznem);
-                    command.Parameters.AddWithValue("@be_ki_kod", bevetelKiadas.BeKiKod);
-                    command.Parameters.AddWithValue("@teljesitesi_datum", bevetelKiadas.TeljesitesiDatum);
-                    command.Parameters.AddWithValue("@kotel_kovet_id", bevetelKiadas.KotelKovetID);
-                    command.Parameters.AddWithValue("@gazdalkodo_szerv_id", bevetelKiadas.GazdalkodasiSzervID);
-                    command.Parameters.AddWithValue("@magan_szemely_id", bevetelKiadas.MaganSzemelyID);
+                    connection.Open();
 
-                    int count = Convert.ToInt32(command.ExecuteScalar());
+                    string query = "INSERT INTO `bevetelek_kiadasok` (`id`, `osszeg`, `penznem`, `be_ki_kod`, `teljesitesi_datum`, `kotel_kovet_id`, `gazdalkodo_szerv_id`, `magan_szemely_id`) VALUES (NULL, @osszeg, @penznem, @be_ki_kod, @teljesitesi_datum, @kotel_kovet_id, @gazdalkodo_szerv_id, @magan_szemely_id);";
+                    using (MySqlCommand command = new MySqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@osszeg", bevetelKiadas.Osszeg);
+                        command.Parameters.AddWithValue("@penznem", bevetelKiadas.Penznem);
+                        command.Parameters.AddWithValue("@be_ki_kod", bevetelKiadas.BeKiKod);
+                        command.Parameters.AddWithValue("@teljesitesi_datum", bevetelKiadas.TeljesitesiDatum);
+                        command.Parameters.AddWithValue("@kotel_kovet_id", bevetelKiadas.KotelKovetID);
+                        command.Parameters.AddWithValue("@gazdalkodo_szerv_id", bevetelKiadas.GazdalkodasiSzervID);
+                        command.Parameters.AddWithValue("@magan_szemely_id", bevetelKiadas.MaganSzemelyID);
 
-                    return count > 0;
+                        int count = Convert.ToInt32(command.ExecuteNonQuery());
+
+                        return count > 0;
+                    }
                 }
+            }
+            catch (MySqlException ex)
+            {
+                // Handle MySQL-specific exceptions
+                Console.WriteLine($"MySQL Error: {ex.Message}");
+                return false;
+            }
+            catch (Exception ex)
+            {
+                // Handle other exceptions
+                Console.WriteLine($"General Error: {ex.Message}");
+                return false;
             }
         }
 
@@ -129,25 +144,40 @@ namespace Szakdolgozat.Repositories
 
         public bool ModifyKoltsegvetes(BevetelKiadas bevetelKiadas)
         {
-            using (MySqlConnection connection = GetConnection())
+            try
             {
-                connection.Open();
-                string query = "UPDATE `bevetelek_kiadasok` SET `osszeg`=@osszeg,`penznem`=@penznem,`be_ki_kod`=@bekikod,`teljesitesi_datum`=@teljesitesiDatum,`kotel_kovet_id`=@kotelKovetID,`gazdalkodo_szerv_id`=@gazdalkodo_szerv_id, `magan_szemely_id`=@magan_szemely_id WHERE `bevetelek_kiadasok`.`id` = @id";
-                using (MySqlCommand command = new MySqlCommand(query, connection))
+                using (MySqlConnection connection = GetConnection())
                 {
-                    command.Parameters.AddWithValue("@osszeg", bevetelKiadas.Osszeg);
-                    command.Parameters.AddWithValue("@penznem", bevetelKiadas.Penznem);
-                    command.Parameters.AddWithValue("@bekikod", bevetelKiadas.BeKiKod);
-                    command.Parameters.AddWithValue("@teljesitesiDatum", bevetelKiadas.TeljesitesiDatum);
-                    command.Parameters.AddWithValue("@kotelKovetID", bevetelKiadas.KotelKovetID);
-                    command.Parameters.AddWithValue("@gazdalkodo_szerv_id", bevetelKiadas.GazdalkodasiSzervID);
-                    command.Parameters.AddWithValue("@magan_szemely_id", bevetelKiadas.MaganSzemelyID);
-                    command.Parameters.AddWithValue("@id", bevetelKiadas.ID);
+                    connection.Open();
+                    string query = "UPDATE `bevetelek_kiadasok` SET `osszeg`=@osszeg,`penznem`=@penznem,`be_ki_kod`=@bekikod,`teljesitesi_datum`=@teljesitesiDatum,`kotel_kovet_id`=@kotelKovetID,`gazdalkodo_szerv_id`=@gazdalkodo_szerv_id, `magan_szemely_id`=@magan_szemely_id WHERE `bevetelek_kiadasok`.`id` = @id";
+                    using (MySqlCommand command = new MySqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@osszeg", bevetelKiadas.Osszeg);
+                        command.Parameters.AddWithValue("@penznem", bevetelKiadas.Penznem);
+                        command.Parameters.AddWithValue("@bekikod", bevetelKiadas.BeKiKod);
+                        command.Parameters.AddWithValue("@teljesitesiDatum", bevetelKiadas.TeljesitesiDatum);
+                        command.Parameters.AddWithValue("@kotelKovetID", bevetelKiadas.KotelKovetID);
+                        command.Parameters.AddWithValue("@gazdalkodo_szerv_id", bevetelKiadas.GazdalkodasiSzervID);
+                        command.Parameters.AddWithValue("@magan_szemely_id", bevetelKiadas.MaganSzemelyID);
+                        command.Parameters.AddWithValue("@id", bevetelKiadas.ID);
 
-                    int count = Convert.ToInt32(command.ExecuteScalar());
+                        int count = Convert.ToInt32(command.ExecuteNonQuery());
 
-                    return count > 0;
+                        return count > 0;
+                    }
                 }
+            }
+            catch (MySqlException ex)
+            {
+                // Handle MySQL-specific exceptions
+                Console.WriteLine($"MySQL Error: {ex.Message}");
+                return false;
+            }
+            catch (Exception ex)
+            {
+                // Handle other exceptions
+                Console.WriteLine($"General Error: {ex.Message}");
+                return false;
             }
         }
     }

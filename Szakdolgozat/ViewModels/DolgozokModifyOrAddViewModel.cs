@@ -161,7 +161,20 @@ namespace Szakdolgozat.ViewModels
 
         private bool IsValidPhoneNumber(string phoneNumber)
         {
-            return phoneNumber.All(char.IsDigit) && phoneNumber.Length >= 8 && phoneNumber.Length <= 15;
+            if (string.IsNullOrEmpty(phoneNumber))
+                return false;
+
+            if (phoneNumber.StartsWith("+"))
+            {
+                return phoneNumber.Length > 1 &&
+                       phoneNumber.Substring(1).All(char.IsDigit) &&
+                       phoneNumber.Length >= 9 &&
+                       phoneNumber.Length <= 12;
+            }
+
+            return phoneNumber.All(char.IsDigit) &&
+                   phoneNumber.Length >= 9 &&
+                   phoneNumber.Length <= 12;
         }
         public ICommand SaveCommand { get; }
         public ICommand ResetEditCommand { get; }
@@ -232,6 +245,10 @@ namespace Szakdolgozat.ViewModels
                     Mediator.NotifyNewDolgozoAdded(dolgozo);
                     CloseWindow();
                 }
+                else
+                {
+                    MessageBox.Show("Dolgozó hozzáadása nem sikerült.", "Hiba", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
             catch (Exception e)
             {
@@ -250,9 +267,17 @@ namespace Szakdolgozat.ViewModels
                 }
 
                 Dolgozo dolgozo = new Dolgozo(ModifiableDolgozo.ID, Lastname, Firstname, Email, Phonenumber);
-                _dolgozoRepository.ModifyDolgozo(dolgozo);
-                Mediator.NotifyModifiedDolgozo(dolgozo);
-                CloseWindow();
+                bool isSuccess = _dolgozoRepository.ModifyDolgozo(dolgozo);
+                if (isSuccess)
+                {
+                    Mediator.NotifyModifiedDolgozo(dolgozo);
+                    MessageBox.Show("Dolgozó módosítása sikeres.", "Siker", MessageBoxButton.OK, MessageBoxImage.Information);
+                    CloseWindow();
+                }
+                else
+                {
+                    MessageBox.Show("Dolgozó módosítása nem sikerült.", "Hiba", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
             catch (Exception e)
             {

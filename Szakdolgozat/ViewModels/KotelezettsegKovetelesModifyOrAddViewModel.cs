@@ -203,9 +203,17 @@ namespace Szakdolgozat.ViewModels
                 if (Amount != null && PaymentDeadline != null && OblClaimType != null)
                 {
                     KotelezettsegKoveteles kotelezettsegKoveteles = new KotelezettsegKoveteles(OblClaimType, Amount, Currency, PaymentDeadline, Completed);
-                    _kotelezettsegKovetelesRepository.AddKotelezettsegKoveteles(kotelezettsegKoveteles);
-                    Mediator.NotifyNewKotelezettsegKovetelesAdded(kotelezettsegKoveteles);
-                    CloseWindow();
+                    bool isSuccess = _kotelezettsegKovetelesRepository.AddKotelezettsegKoveteles(kotelezettsegKoveteles);
+                    if (isSuccess)
+                    {
+                        Mediator.NotifyNewKotelezettsegKovetelesAdded(kotelezettsegKoveteles);
+                        System.Windows.MessageBox.Show("Kötelezettség/Követelés hozzáadása sikeres.", "Siker", MessageBoxButton.OK, MessageBoxImage.Information);
+                        CloseWindow();
+                    }
+                    else
+                    {
+                        System.Windows.MessageBox.Show("Hiba a Kötelezettség/Követelés hozzáadása során.", "Hiba", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
                 }
             }
             catch (Exception e)
@@ -226,9 +234,17 @@ namespace Szakdolgozat.ViewModels
                 if (Amount != null && OblClaimType != null && PaymentDeadline != null)
                 {
                     KotelezettsegKoveteles kotelezettsegKoveteles = new KotelezettsegKoveteles(ModifiableKotelezettsegKoveteles.ID, OblClaimType, Amount, Currency, PaymentDeadline, Completed);
-                    _kotelezettsegKovetelesRepository.ModifyKotelezettsegKoveteles(kotelezettsegKoveteles);
-                    Mediator.NotifyModifiedKotelezettsegKoveteles(kotelezettsegKoveteles);
-                    CloseWindow();
+                    bool isSuccess = _kotelezettsegKovetelesRepository.ModifyKotelezettsegKoveteles(kotelezettsegKoveteles);
+                    if (isSuccess)
+                    {
+                        Mediator.NotifyModifiedKotelezettsegKoveteles(kotelezettsegKoveteles);
+                        System.Windows.MessageBox.Show("Kötelezettség/Követelés módosítása sikeres.", "Siker", MessageBoxButton.OK, MessageBoxImage.Information);
+                        CloseWindow();
+                    }
+                    else
+                    {
+                        System.Windows.MessageBox.Show("Hiba a Kötelezettség/Követelés módosítása során.", "Hiba", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
                 }
             }
             catch (Exception e)

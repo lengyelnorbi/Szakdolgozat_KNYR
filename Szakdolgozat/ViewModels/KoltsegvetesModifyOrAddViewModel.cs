@@ -236,9 +236,17 @@ namespace Szakdolgozat.ViewModels
                 if (Amount != null && IncExpID != null && Currency != null && CompletionDate != null)
                 {
                     BevetelKiadas bevetelKiadas = new BevetelKiadas(Amount, Currency, IncExpID, CompletionDate, OblClaimID, CompanyID, PrivatePersonID);
-                    _koltsegvetesRepository.AddKoltsegvetes(bevetelKiadas);
-                    Mediator.NotifyNewBevetelKiadasAdded(bevetelKiadas);
-                    CloseWindow();
+                    bool isSuccess = _koltsegvetesRepository.AddKoltsegvetes(bevetelKiadas);
+                    if (isSuccess)
+                    {
+                        Mediator.NotifyNewBevetelKiadasAdded(bevetelKiadas);
+                        System.Windows.MessageBox.Show("Költségvetés hozzáadása sikeres.", "Siker", MessageBoxButton.OK, MessageBoxImage.Information);
+                        CloseWindow();
+                    }
+                    else
+                    {
+                        System.Windows.MessageBox.Show("Hiba a Költségvetés hozzáadása során.", "Hiba", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
                 }
             }
             catch (Exception e)
@@ -259,9 +267,17 @@ namespace Szakdolgozat.ViewModels
                 if (Amount != null && IncExpID != null && Currency != null && CompletionDate != null)
                 {
                     BevetelKiadas bevetelKiadas = new BevetelKiadas(ModifiableKoltsegvetes.ID, Amount, Currency, IncExpID, CompletionDate, OblClaimID, CompanyID, PrivatePersonID);
-                    _koltsegvetesRepository.ModifyKoltsegvetes(bevetelKiadas);
-                    Mediator.NotifyModifiedBevetelKiadas(bevetelKiadas);
-                    CloseWindow();
+                    bool isSuccess = _koltsegvetesRepository.ModifyKoltsegvetes(bevetelKiadas);
+                    if (isSuccess)
+                    {
+                        Mediator.NotifyModifiedBevetelKiadas(bevetelKiadas);
+                        System.Windows.MessageBox.Show("Költségvetés módosítása sikeres.", "Siker", MessageBoxButton.OK, MessageBoxImage.Information);
+                        CloseWindow();
+                    }
+                    else
+                    {
+                        System.Windows.MessageBox.Show("Hiba a Költségvetés módosítása során.", "Hiba", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
                 }
             }
             catch (Exception e)

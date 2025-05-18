@@ -20,16 +20,6 @@
     <Window.DataContext>
         <dContext:DolgozokModifyOrAddViewModel />
     </Window.DataContext>
-    <Window.Resources>
-        <Style TargetType="TextBox">
-            <Style.Triggers>
-                <Trigger Property="Validation.HasError" Value="True">
-                    <Setter Property="BorderBrush" Value="Red" />
-                    <Setter Property="BorderThickness" Value="2" />
-                </Trigger>
-            </Style.Triggers>
-        </Style>
-    </Window.Resources>
     <Border Background="#1F3B73">
         <Grid>
             <Grid.RowDefinitions>

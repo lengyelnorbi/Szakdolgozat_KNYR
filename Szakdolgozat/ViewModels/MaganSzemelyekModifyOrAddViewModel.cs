@@ -162,7 +162,20 @@ namespace Szakdolgozat.ViewModels
 
         private bool IsValidPhoneNumber(string phoneNumber)
         {
-            return phoneNumber.All(char.IsDigit) && phoneNumber.Length >= 8 && phoneNumber.Length <= 15;
+            if (string.IsNullOrEmpty(phoneNumber))
+                return false;
+
+            if (phoneNumber.StartsWith("+"))
+            {
+                return phoneNumber.Length > 1 &&
+                       phoneNumber.Substring(1).All(char.IsDigit) &&
+                       phoneNumber.Length >= 9 &&
+                       phoneNumber.Length <= 12;
+            }
+
+            return phoneNumber.All(char.IsDigit) &&
+                   phoneNumber.Length >= 9 &&
+                   phoneNumber.Length <= 12;
         }
         public ICommand SaveCommand { get; }
         public ICommand ResetEditCommand { get; }
@@ -211,10 +224,18 @@ namespace Szakdolgozat.ViewModels
                 }
                 if (Name != null && HomeAddress != null && Email != null && Phonenumber != null)
                 {
-                    MaganSzemely maganSzemely = new MaganSzemely(Name, HomeAddress, Email, Phonenumber);
-                    _maganSzemelyRepository.AddMaganSzemely(maganSzemely);
-                    Mediator.NotifyNewMaganSzemelyAdded(maganSzemely);
-                    CloseWindow();
+                    MaganSzemely maganSzemely = new MaganSzemely(Name, Phonenumber, Email, HomeAddress);
+                    bool isSuccess = _maganSzemelyRepository.AddMaganSzemely(maganSzemely);
+                    if (isSuccess)
+                    {
+                        Mediator.NotifyNewMaganSzemelyAdded(maganSzemely);
+                        MessageBox.Show("Magán személy hozzáadása sikeres.", "Siker", MessageBoxButton.OK, MessageBoxImage.Information);
+                        CloseWindow();
+                    }
+                    else
+                    {
+                        MessageBox.Show("Hiba történt a magán személy hozzáadása során.", "Hiba", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
                 }
             }
             catch (Exception e)
@@ -234,10 +255,18 @@ namespace Szakdolgozat.ViewModels
                 }
                 if (Name != null && HomeAddress != null && Email != null && Phonenumber != null)
                 {
-                    MaganSzemely maganSzemely = new MaganSzemely(ModifiableMaganSzemely.ID, Name, HomeAddress, Email, Phonenumber);
-                    _maganSzemelyRepository.ModifyMaganSzemely(maganSzemely);
-                    Mediator.NotifyModifiedMaganSzemely(maganSzemely);
-                    CloseWindow();
+                    MaganSzemely maganSzemely = new MaganSzemely(ModifiableMaganSzemely.ID, Name, Phonenumber, Email, HomeAddress);
+                    bool isSuccess = _maganSzemelyRepository.ModifyMaganSzemely(maganSzemely);
+                    if (isSuccess)
+                    {
+                        Mediator.NotifyModifiedMaganSzemely(maganSzemely);
+                        MessageBox.Show("Magán személy módosítása sikeres.", "Siker", MessageBoxButton.OK, MessageBoxImage.Information);
+                        CloseWindow();
+                    }
+                    else
+                    {
+                        MessageBox.Show("Hiba történt a magán személy módosítása során.", "Hiba", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
                 }
             }
             catch (Exception e)

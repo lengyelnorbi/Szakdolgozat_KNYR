@@ -13,22 +13,37 @@ namespace Szakdolgozat.Repositories
     {
         public bool AddMaganSzemely(MaganSzemely maganSzemely)
         {
-            using (MySqlConnection connection = GetConnection())
+            try
             {
-                connection.Open();
-
-                string query = "INSERT INTO `magan_szemelyek` (`id`, `nev`, `telefonszam`, `email`, `lakcim`) VALUES (NULL, @nev, @telefonszam, @email, @lakcim);";
-                using (MySqlCommand command = new MySqlCommand(query, connection))
+                using (MySqlConnection connection = GetConnection())
                 {
-                    command.Parameters.AddWithValue("@nev", maganSzemely.Nev);
-                    command.Parameters.AddWithValue("@telefonszam", maganSzemely.Telefonszam);
-                    command.Parameters.AddWithValue("@email", maganSzemely.Email);
-                    command.Parameters.AddWithValue("@lakcim", maganSzemely.Lakcim);
+                    connection.Open();
 
-                    int count = Convert.ToInt32(command.ExecuteScalar());
+                    string query = "INSERT INTO `magan_szemelyek` (`id`, `nev`, `telefonszam`, `email`, `lakcim`) VALUES (NULL, @nev, @telefonszam, @email, @lakcim);";
+                    using (MySqlCommand command = new MySqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@nev", maganSzemely.Nev);
+                        command.Parameters.AddWithValue("@telefonszam", maganSzemely.Telefonszam);
+                        command.Parameters.AddWithValue("@email", maganSzemely.Email);
+                        command.Parameters.AddWithValue("@lakcim", maganSzemely.Lakcim);
 
-                    return count > 0;
+                        int count = Convert.ToInt32(command.ExecuteNonQuery());
+
+                        return count > 0;
+                    }
                 }
+            }
+            catch(MySqlException ex)
+            {
+                // Handle MySQL-specific exceptions
+                Console.WriteLine($"MySQL Error: {ex.Message}");
+                return false;
+            }
+            catch (Exception ex)
+            {
+                // Handle other exceptions
+                Console.WriteLine($"General Error: {ex.Message}");
+                return false;
             }
         }
 
@@ -145,23 +160,38 @@ namespace Szakdolgozat.Repositories
 
         public bool ModifyMaganSzemely(MaganSzemely maganSzemely)
         {
-            using (MySqlConnection connection = GetConnection())
+            try
             {
-                connection.Open();
-
-                string query = "UPDATE `magan_szemelyek` SET `nev`=@nev,`telefonszam`=@telefonszam,`email`=@email,`lakcim`=@lakcim WHERE `magan_szemelyek`.`id` = @id";
-                using (MySqlCommand command = new MySqlCommand(query, connection))
+                using (MySqlConnection connection = GetConnection())
                 {
-                    command.Parameters.AddWithValue("@nev", maganSzemely.Nev);
-                    command.Parameters.AddWithValue("@telefonszam", maganSzemely.Telefonszam);
-                    command.Parameters.AddWithValue("@email", maganSzemely.Email);
-                    command.Parameters.AddWithValue("@lakcim", maganSzemely.Lakcim);
-                    command.Parameters.AddWithValue("@id", maganSzemely.ID);
+                    connection.Open();
 
-                    int count = Convert.ToInt32(command.ExecuteScalar());
+                    string query = "UPDATE `magan_szemelyek` SET `nev`=@nev,`telefonszam`=@telefonszam,`email`=@email,`lakcim`=@lakcim WHERE `magan_szemelyek`.`id` = @id";
+                    using (MySqlCommand command = new MySqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@nev", maganSzemely.Nev);
+                        command.Parameters.AddWithValue("@telefonszam", maganSzemely.Telefonszam);
+                        command.Parameters.AddWithValue("@email", maganSzemely.Email);
+                        command.Parameters.AddWithValue("@lakcim", maganSzemely.Lakcim);
+                        command.Parameters.AddWithValue("@id", maganSzemely.ID);
 
-                    return count > 0;
+                        int count = Convert.ToInt32(command.ExecuteNonQuery());
+
+                        return count > 0;
+                    }
                 }
+            }
+            catch (MySqlException ex)
+            {
+                // Handle MySQL-specific exceptions
+                Console.WriteLine($"MySQL Error: {ex.Message}");
+                return false;
+            }
+            catch (Exception ex)
+            {
+                // Handle other exceptions
+                Console.WriteLine($"General Error: {ex.Message}");
+                return false;
             }
         }
 

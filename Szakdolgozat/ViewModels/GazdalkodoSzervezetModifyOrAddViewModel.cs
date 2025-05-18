@@ -163,7 +163,20 @@ namespace Szakdolgozat.ViewModels
 
         private bool IsValidPhoneNumber(string phoneNumber)
         {
-            return phoneNumber.All(char.IsDigit) && phoneNumber.Length >= 8 && phoneNumber.Length <= 15;
+            if (string.IsNullOrEmpty(phoneNumber))
+                return false;
+
+            if (phoneNumber.StartsWith("+"))
+            {
+                return phoneNumber.Length > 1 &&
+                       phoneNumber.Substring(1).All(char.IsDigit) &&
+                       phoneNumber.Length >= 9 &&
+                       phoneNumber.Length <= 12;
+            }
+
+            return phoneNumber.All(char.IsDigit) &&
+                   phoneNumber.Length >= 9 &&
+                   phoneNumber.Length <= 12;
         }
         public ICommand SaveCommand { get; }
         public ICommand ResetEditCommand { get; }
@@ -213,9 +226,17 @@ namespace Szakdolgozat.ViewModels
                 if (Name != null && ContactPerson != null && Email != null && Phonenumber != null)
                 {
                     GazdalkodoSzervezet gazdalkodoSzervezet = new GazdalkodoSzervezet(Name, ContactPerson, Email, Phonenumber);
-                    _gazdalkodoSzervezetRepository.AddGazdalkodoSzervezet(gazdalkodoSzervezet);
-                    Mediator.NotifyNewGazdalkodoSzervezetAdded(gazdalkodoSzervezet);
-                    CloseWindow();
+                    bool isSuccess = _gazdalkodoSzervezetRepository.AddGazdalkodoSzervezet(gazdalkodoSzervezet);
+                    if (isSuccess)
+                    {
+                        Mediator.NotifyNewGazdalkodoSzervezetAdded(gazdalkodoSzervezet);
+                        System.Windows.MessageBox.Show("Gazdálkodó szervezet hozzáadása sikeres.", "Siker", MessageBoxButton.OK, MessageBoxImage.Information);
+                        CloseWindow();
+                    }
+                    else
+                    {
+                        System.Windows.MessageBox.Show("Hiba a Gazdálkodó szervezet hozzáadása során.", "Hiba", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
                 }
             }
             catch (Exception e)
@@ -236,9 +257,17 @@ namespace Szakdolgozat.ViewModels
                 if (Name != null && ContactPerson != null && Email != null && Phonenumber != null)
                 {
                     GazdalkodoSzervezet gazdalkodoSzervezet = new GazdalkodoSzervezet(ModifiableGazdalkodoSzervezet.ID, Name, ContactPerson, Email, Phonenumber);
-                    _gazdalkodoSzervezetRepository.AddGazdalkodoSzervezet(gazdalkodoSzervezet);
-                    Mediator.NotifyModifiedGazdalkodoSzervezet(gazdalkodoSzervezet);
-                    CloseWindow();
+                    bool isSuccess = _gazdalkodoSzervezetRepository.ModifyGazdalkodoSzervezet(gazdalkodoSzervezet);
+                    if (isSuccess)
+                    {
+                        Mediator.NotifyModifiedGazdalkodoSzervezet(gazdalkodoSzervezet);
+                        System.Windows.MessageBox.Show("Gazdálkodó szervezet módosítása sikeres.", "Siker", MessageBoxButton.OK, MessageBoxImage.Information);
+                        CloseWindow();
+                    }
+                    else
+                    {
+                        System.Windows.MessageBox.Show("Hiba a Gazdálkodó szervezet módosítása során.", "Hiba", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
                 }
             }
             catch (Exception e)

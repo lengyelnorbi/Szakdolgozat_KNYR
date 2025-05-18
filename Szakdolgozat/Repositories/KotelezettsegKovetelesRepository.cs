@@ -14,23 +14,38 @@ namespace Szakdolgozat.Repositories
     {
         public bool AddKotelezettsegKoveteles(KotelezettsegKoveteles kotelezettsegKoveteles)
         {
-            using (MySqlConnection connection = GetConnection())
+            try
             {
-                connection.Open();
-
-                string query = "INSERT INTO `kotelezettsegek_kovetelesek` (`id`, `tipus`, `osszeg`, `penznem`, `kifizetes_hatarideje`, `kifizetett`) VALUES (NULL, @tipus, @osszeg, @penznem, @kifizetesHatarideje, @kifizetett);";
-                using (MySqlCommand command = new MySqlCommand(query, connection))
+                using (MySqlConnection connection = GetConnection())
                 {
-                    command.Parameters.AddWithValue("@tipus", kotelezettsegKoveteles.Tipus);
-                    command.Parameters.AddWithValue("@osszeg", kotelezettsegKoveteles.Osszeg);
-                    command.Parameters.AddWithValue("@penznem", kotelezettsegKoveteles.Penznem);
-                    command.Parameters.AddWithValue("@kifizetesHatarideje", kotelezettsegKoveteles.KifizetesHatarideje);
-                    command.Parameters.AddWithValue("@kifizetett", kotelezettsegKoveteles.Kifizetett);
+                    connection.Open();
 
-                    int count = Convert.ToInt32(command.ExecuteScalar());
+                    string query = "INSERT INTO `kotelezettsegek_kovetelesek` (`id`, `tipus`, `osszeg`, `penznem`, `kifizetes_hatarideje`, `kifizetett`) VALUES (NULL, @tipus, @osszeg, @penznem, @kifizetesHatarideje, @kifizetett);";
+                    using (MySqlCommand command = new MySqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@tipus", kotelezettsegKoveteles.Tipus);
+                        command.Parameters.AddWithValue("@osszeg", kotelezettsegKoveteles.Osszeg);
+                        command.Parameters.AddWithValue("@penznem", kotelezettsegKoveteles.Penznem);
+                        command.Parameters.AddWithValue("@kifizetesHatarideje", kotelezettsegKoveteles.KifizetesHatarideje);
+                        command.Parameters.AddWithValue("@kifizetett", kotelezettsegKoveteles.Kifizetett);
 
-                    return count > 0;
+                        int count = Convert.ToInt32(command.ExecuteNonQuery());
+
+                        return count > 0;
+                    }
                 }
+            }
+            catch (MySqlException ex)
+            {
+                // Handle MySQL-specific exceptions
+                Console.WriteLine($"MySQL Error: {ex.Message}");
+                return false;
+            }
+            catch (Exception ex)
+            {
+                // Handle other exceptions
+                Console.WriteLine($"General Error: {ex.Message}");
+                return false;
             }
         }
 
@@ -157,25 +172,40 @@ namespace Szakdolgozat.Repositories
 
         public bool ModifyKotelezettsegKoveteles(KotelezettsegKoveteles kotelezettsegKoveteles)
         {
-            using (MySqlConnection connection = GetConnection())
+            try
             {
-                connection.Open();
-
-                string query = "UPDATE `kotelezettsegek_kovetelesek` SET `tipus`=@tipus,`osszeg`=@osszeg,`penznem`=@penznem,`kifizetes_hatarideje`=@kifizetesHatarideje,`kifizetett`=@kifizetett WHERE `kotelezettsegek_kovetelesek`.`id` = @id";
-                using (MySqlCommand command = new MySqlCommand(query, connection))
+                using (MySqlConnection connection = GetConnection())
                 {
-                    MessageBox.Show(kotelezettsegKoveteles.Kifizetett.ToString());
-                    command.Parameters.AddWithValue("@osszeg", kotelezettsegKoveteles.Osszeg);
-                    command.Parameters.AddWithValue("@tipus", kotelezettsegKoveteles.Tipus);
-                    command.Parameters.AddWithValue("@penznem", kotelezettsegKoveteles.Penznem);
-                    command.Parameters.AddWithValue("@kifizetesHatarideje", kotelezettsegKoveteles.KifizetesHatarideje);
-                    command.Parameters.AddWithValue("@kifizetett", kotelezettsegKoveteles.Kifizetett);
-                    command.Parameters.AddWithValue("@id", kotelezettsegKoveteles.ID);
-                    MessageBox.Show(command.ToString());
-                    int count = Convert.ToInt32(command.ExecuteScalar());
+                    connection.Open();
 
-                    return count > 0;
+                    string query = "UPDATE `kotelezettsegek_kovetelesek` SET `tipus`=@tipus,`osszeg`=@osszeg,`penznem`=@penznem,`kifizetes_hatarideje`=@kifizetesHatarideje,`kifizetett`=@kifizetett WHERE `kotelezettsegek_kovetelesek`.`id` = @id";
+                    using (MySqlCommand command = new MySqlCommand(query, connection))
+                    {
+                        //MessageBox.Show(kotelezettsegKoveteles.Kifizetett.ToString());
+                        command.Parameters.AddWithValue("@osszeg", kotelezettsegKoveteles.Osszeg);
+                        command.Parameters.AddWithValue("@tipus", kotelezettsegKoveteles.Tipus);
+                        command.Parameters.AddWithValue("@penznem", kotelezettsegKoveteles.Penznem);
+                        command.Parameters.AddWithValue("@kifizetesHatarideje", kotelezettsegKoveteles.KifizetesHatarideje);
+                        command.Parameters.AddWithValue("@kifizetett", kotelezettsegKoveteles.Kifizetett);
+                        command.Parameters.AddWithValue("@id", kotelezettsegKoveteles.ID);
+                        //MessageBox.Show(command.ToString());
+                        int count = Convert.ToInt32(command.ExecuteNonQuery());
+
+                        return count > 0;
+                    }
                 }
+            }
+            catch (MySqlException ex)
+            {
+                // Handle MySQL-specific exceptions
+                Console.WriteLine($"MySQL Error: {ex.Message}");
+                return false;
+            }
+            catch (Exception ex)
+            {
+                // Handle other exceptions
+                Console.WriteLine($"General Error: {ex.Message}");
+                return false;
             }
         }
 

@@ -93,22 +93,37 @@ namespace Szakdolgozat.Repositories
         }
         public bool AddGazdalkodoSzervezet(GazdalkodoSzervezet gazdalkodoSzervezet)
         {
-            using (MySqlConnection connection = GetConnection())
+            try
             {
-                connection.Open();
-
-                string query = "INSERT INTO `gazdalkodo_szervezetek` (`id`, `nev`, `kapcsolattarto`, `email`, `telefonszam`) VALUES (NULL, @nev, @kapcsolattarto, @email, @telefonszam);";
-                using (MySqlCommand command = new MySqlCommand(query, connection))
+                using (MySqlConnection connection = GetConnection())
                 {
-                    command.Parameters.AddWithValue("@nev", gazdalkodoSzervezet.Nev);
-                    command.Parameters.AddWithValue("@kapcsolattarto", gazdalkodoSzervezet.Kapcsolattarto);
-                    command.Parameters.AddWithValue("@email", gazdalkodoSzervezet.Email);
-                    command.Parameters.AddWithValue("@telefonszam", gazdalkodoSzervezet.Telefonszam);
+                    connection.Open();
 
-                    int count = Convert.ToInt32(command.ExecuteScalar());
+                    string query = "INSERT INTO `gazdalkodo_szervezetek` (`id`, `nev`, `kapcsolattarto`, `email`, `telefonszam`) VALUES (NULL, @nev, @kapcsolattarto, @email, @telefonszam);";
+                    using (MySqlCommand command = new MySqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@nev", gazdalkodoSzervezet.Nev);
+                        command.Parameters.AddWithValue("@kapcsolattarto", gazdalkodoSzervezet.Kapcsolattarto);
+                        command.Parameters.AddWithValue("@email", gazdalkodoSzervezet.Email);
+                        command.Parameters.AddWithValue("@telefonszam", gazdalkodoSzervezet.Telefonszam);
 
-                    return count > 0;
+                        int count = Convert.ToInt32(command.ExecuteNonQuery());
+
+                        return count > 0;
+                    }
                 }
+            }
+            catch (MySqlException ex)
+            {
+                // Handle MySQL-specific exceptions
+                Console.WriteLine($"MySQL Error: {ex.Message}");
+                return false;
+            }
+            catch (Exception ex)
+            {
+                // Handle other exceptions
+                Console.WriteLine($"General Error: {ex.Message}");
+                return false;
             }
         }
 
@@ -145,23 +160,38 @@ namespace Szakdolgozat.Repositories
 
         public bool ModifyGazdalkodoSzervezet(GazdalkodoSzervezet gazdalkodoSzervezet)
         {
-            using (MySqlConnection connection = GetConnection())
+            try
             {
-                connection.Open();
-
-                string query = "UPDATE `gazdalkodo_szervezetek` SET `nev`=@nev,`kapcsolattarto`=@kapcsolattarto,`email`=@email,`telefonszam`=@telefonszam WHERE `gazdalkodo_szervezetek`.`id` = @id";
-                using (MySqlCommand command = new MySqlCommand(query, connection))
+                using (MySqlConnection connection = GetConnection())
                 {
-                    command.Parameters.AddWithValue("@nev", gazdalkodoSzervezet.Nev);
-                    command.Parameters.AddWithValue("@kapcsolattarto", gazdalkodoSzervezet.Kapcsolattarto);
-                    command.Parameters.AddWithValue("@email", gazdalkodoSzervezet.Email);
-                    command.Parameters.AddWithValue("@telefonszam", gazdalkodoSzervezet.Telefonszam);
-                    command.Parameters.AddWithValue("@id", gazdalkodoSzervezet.ID);
+                    connection.Open();
 
-                    int count = Convert.ToInt32(command.ExecuteScalar());
+                    string query = "UPDATE `gazdalkodo_szervezetek` SET `nev`=@nev,`kapcsolattarto`=@kapcsolattarto,`email`=@email,`telefonszam`=@telefonszam WHERE `gazdalkodo_szervezetek`.`id` = @id";
+                    using (MySqlCommand command = new MySqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@nev", gazdalkodoSzervezet.Nev);
+                        command.Parameters.AddWithValue("@kapcsolattarto", gazdalkodoSzervezet.Kapcsolattarto);
+                        command.Parameters.AddWithValue("@email", gazdalkodoSzervezet.Email);
+                        command.Parameters.AddWithValue("@telefonszam", gazdalkodoSzervezet.Telefonszam);
+                        command.Parameters.AddWithValue("@id", gazdalkodoSzervezet.ID);
 
-                    return count > 0;
+                        int count = Convert.ToInt32(command.ExecuteNonQuery());
+
+                        return count > 0;
+                    }
                 }
+            }
+            catch (MySqlException ex)
+            {
+                // Handle MySQL-specific exceptions
+                Console.WriteLine($"MySQL Error: {ex.Message}");
+                return false;
+            }
+            catch (Exception ex)
+            {
+                // Handle other exceptions
+                Console.WriteLine($"General Error: {ex.Message}");
+                return false;
             }
         }
 

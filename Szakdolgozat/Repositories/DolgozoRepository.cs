@@ -195,23 +195,36 @@ namespace Szakdolgozat.Repositories
 
         public bool ModifyDolgozo(Dolgozo dolgozo)
         {
-            using (MySqlConnection connection = GetConnection())
+            try
             {
-                connection.Open();
-
-                string query = "UPDATE `dolgozok` SET `vezeteknev`=@vezeteknev,`keresztnev`=@keresztnev,`email`=@email,`telefonszam`=@telefonszam WHERE `dolgozok`.`id` = @id";
-                using (MySqlCommand command = new MySqlCommand(query, connection))
+                using (MySqlConnection connection = GetConnection())
                 {
-                    command.Parameters.AddWithValue("@vezeteknev", dolgozo.Vezeteknev);
-                    command.Parameters.AddWithValue("@keresztnev", dolgozo.Keresztnev);
-                    command.Parameters.AddWithValue("@email", dolgozo.Email);
-                    command.Parameters.AddWithValue("@telefonszam", dolgozo.Telefonszam);
-                    command.Parameters.AddWithValue("@id", dolgozo.ID);
+                    connection.Open();
 
-                    int count = Convert.ToInt32(command.ExecuteScalar());
+                    string query = "UPDATE `dolgozok` SET `vezeteknev`=@vezeteknev,`keresztnev`=@keresztnev,`email`=@email,`telefonszam`=@telefonszam WHERE `dolgozok`.`id` = @id";
+                    using (MySqlCommand command = new MySqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@vezeteknev", dolgozo.Vezeteknev);
+                        command.Parameters.AddWithValue("@keresztnev", dolgozo.Keresztnev);
+                        command.Parameters.AddWithValue("@email", dolgozo.Email);
+                        command.Parameters.AddWithValue("@telefonszam", dolgozo.Telefonszam);
+                        command.Parameters.AddWithValue("@id", dolgozo.ID);
 
-                    return count > 0;
+                        int count = Convert.ToInt32(command.ExecuteNonQuery());
+
+                        return count > 0;
+                    }
                 }
+            }
+            catch(MySqlException ex)
+            {
+                Debug.WriteLine($"MySQL Error: {ex.Message}");
+                return false;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"General Error: {ex.Message}");
+                return false;
             }
         }
 

@@ -174,13 +174,13 @@ namespace Szakdolgozat.ViewModels
         private void ExecuteExportAllDataToExcelCommand(object obj)
         {
             // Export all data from the database
-            ExportToExcel(Dolgozok.ToList(), "All_Database_Dolgozok");
+            ExportToExcel(Dolgozok.ToList(), "Osszes_Dolgozok");
         }
 
         private void ExecuteExportFilteredDataToExcelCommand(object obj)
         {
             // Export all filtered data
-            ExportToExcel(FilteredDolgozok.ToList(), "Filtered_Dolgozok");
+            ExportToExcel(FilteredDolgozok.ToList(), "Szurt_Dolgozok");
         }
 
         private void ExecuteToggleMultiSelectionModeCommand(object obj)
@@ -205,13 +205,13 @@ namespace Szakdolgozat.ViewModels
         {
             if (SelectedItems.Count > 0)
             {
-                ExportToExcel(SelectedItems.ToList(), "MultiSelected_Dolgozok");
+                ExportToExcel(SelectedItems.ToList(), "Kijelolt_Dolgozok");
             }
             else
             {
                 System.Windows.MessageBox.Show(
-                    "No items selected for export",
-                    "Export Error",
+                    "Nem volt kijelölt adat az exportáláshoz",
+                    "Exportálási Hiba",
                     System.Windows.MessageBoxButton.OK,
                     System.Windows.MessageBoxImage.Warning);
             }
@@ -242,9 +242,9 @@ namespace Szakdolgozat.ViewModels
                 // Allow user to choose where to save the file
                 SaveFileDialog saveFileDialog = new SaveFileDialog
                 {
-                    Filter = "Excel Files (*.xlsx)|*.xlsx",
+                    Filter = "Excel Fájlok (*.xlsx)|*.xlsx",
                     FileName = $"{defaultFileName}_{DateTime.Now:yyyyMMdd}.xlsx",
-                    Title = "Save Excel File"
+                    Title = "Excel Fájl Mentése"
                 };
 
                 if (saveFileDialog.ShowDialog() == DialogResult.OK)
@@ -289,8 +289,8 @@ namespace Szakdolgozat.ViewModels
                         workbook.SaveAs(saveFileDialog.FileName);
 
                         System.Windows.MessageBox.Show(
-                            $"Data successfully exported to {saveFileDialog.FileName}",
-                            "Export Success",
+                            $"Adatok sikeresen mentve a {saveFileDialog.FileName}",
+                            "Exportálás sikeres",
                             System.Windows.MessageBoxButton.OK,
                             System.Windows.MessageBoxImage.Information);
                     }
@@ -299,29 +299,10 @@ namespace Szakdolgozat.ViewModels
             catch (Exception ex)
             {
                 System.Windows.MessageBox.Show(
-                    $"Error exporting data: {ex.Message}",
-                    "Export Error",
+                    $"Hiba exportálás közben: {ex.Message}",
+                    "Exportálási Hiba",
                     System.Windows.MessageBoxButton.OK,
                     System.Windows.MessageBoxImage.Error);
-            }
-        }
-        /// <summary>
-        /// Exports multiple selected data to Excel file
-        /// </summary>
-        /// <param name="selectedItems">Collection of selected items</param>
-        public void ExportMultipleSelectedToExcel(IEnumerable<Dolgozo> selectedItems)
-        {
-            if (selectedItems != null && selectedItems.Any())
-            {
-                ExportToExcel(selectedItems.ToList(), "Selected_Dolgozok");
-            }
-            else
-            {
-                System.Windows.MessageBox.Show(
-                    "No items selected for export",
-                    "Export Error",
-                    System.Windows.MessageBoxButton.OK,
-                    System.Windows.MessageBoxImage.Warning);
             }
         }
 
@@ -446,6 +427,7 @@ namespace Szakdolgozat.ViewModels
                     MessageBoxImage.Error);
             }
         }
+
         /// <summary>
         /// Shows a confirmation dialog for deletion with cascade information
         /// </summary>
