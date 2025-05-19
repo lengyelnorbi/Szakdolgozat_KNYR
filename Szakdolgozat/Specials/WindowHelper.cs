@@ -25,6 +25,24 @@ public static class WindowHelper
         return false;
     }
 
+    public static bool IsKotelezettsegKovetelesAddWindowOpen<T>(out T window) where T : Window
+    {
+        window = Application.Current.Windows.OfType<T>().FirstOrDefault();
+
+        foreach (var a in Application.Current.Windows.OfType<T>())
+        {
+            if (a.DataContext is KotelezettsegKovetelesModifyOrAddViewModel viewModel)
+            {
+                if (viewModel.EditMode == EditMode.Add)
+                {
+                    window = a;
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     public static bool IsMaganSzemelyAddWindowOpen<T>(out T window) where T : Window
     {
         window = Application.Current.Windows.OfType<T>().FirstOrDefault();
@@ -73,6 +91,21 @@ public static class WindowHelper
                     window = a;
                     return true;
                 }
+            }
+        }
+        return false;
+    }
+
+    public static bool IsCreateChartsViewWindowOpen<T>(out T window) where T : Window
+    {
+        window = Application.Current.Windows.OfType<T>().FirstOrDefault();
+
+        foreach (var a in Application.Current.Windows.OfType<T>())
+        {
+            if (a.DataContext is CreateChartsViewModel viewModel)
+            {
+                window = a;
+                return true;
             }
         }
         return false;

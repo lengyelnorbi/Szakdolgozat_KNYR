@@ -681,13 +681,13 @@ namespace Szakdolgozat.ViewModels
             BevetelekKiadasok = koltsegvetesRepository.GetKoltsegvetesek();
             //Deep Copy - to ensure that the FilteredDolgozok does not affect the Dolgozok collection, and vica versa
             FilteredBevetelekKiadasok = new ObservableCollection<BevetelKiadas>(
-                BevetelekKiadasok.Select(d => new BevetelKiadas(d.ID, d.Osszeg, d.Penznem, d.BeKiKod, d.TeljesitesiDatum, d.KotelKovetID, d.GazdalkodasiSzervID, d.MaganSzemelyID)).ToList()
+                BevetelekKiadasok.Select(d => new BevetelKiadas(d.ID, d.Osszeg, d.Penznem, d.BeKiKod, d.TeljesitesiDatum, d.KotelKovetID, d.GazdalkodasiSzervID, d.MaganSzemelyID, d.IsSelected)).ToList()
             );
 
             KotelKovetelesek = kotelezettsegKovetelesRepository.GetKotelezettsegekKovetelesek();
             //Deep Copy - to ensure that the FilteredDolgozok does not affect the Dolgozok collection, and vica versa
             FilteredKotelKovetelesek = new ObservableCollection<KotelezettsegKoveteles>(
-                KotelKovetelesek.Select(d => new KotelezettsegKoveteles(d.ID, d.Tipus, d.Osszeg, d.Penznem, d.KifizetesHatarideje, d.Kifizetett)).ToList()
+                KotelKovetelesek.Select(d => new KotelezettsegKoveteles(d.ID, d.Tipus, d.Osszeg, d.Penznem, d.KifizetesHatarideje, d.Kifizetett, d.IsSelected)).ToList()
             );
 
             Tabs.Add(CreateTabItem("Koltsegvetes", true, "bevetelek_kiadasok"));
@@ -4022,7 +4022,7 @@ namespace Szakdolgozat.ViewModels
                 {
                     if (SelectedCimkek.Contains("Év") && SelectedAdatsorok.Contains("Hónap"))
                     {
-                        List<string> honapok = new List<string> { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
+                        List<string> honapok = new List<string> { "Jan", "Feb", "Mar", "Apr", "Maj", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dec" };
                         var groupedByYearAndMonth = _selectedBevetelekKiadasok
                            .GroupBy(p => new { p.TeljesitesiDatum.Year, p.TeljesitesiDatum.Month })
                            .ToDictionary(
@@ -4088,7 +4088,7 @@ namespace Szakdolgozat.ViewModels
                     }
                     else if (SelectedAdatsorok.Contains("Év") && SelectedCimkek.Contains("Hónap"))
                     {
-                        List<string> labels = new List<string> { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
+                        List<string> labels = new List<string> { "Jan", "Feb", "Mar", "Apr", "Maj", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dec" };
                         // Create a Dictionary<int, Dictionary<int, double>> where the first key is month (1-12),
                         // and the second dictionary maps years to values for that month
                         var monthDict = Enumerable.Range(1, 12)
@@ -5751,9 +5751,11 @@ namespace Szakdolgozat.ViewModels
             IsEnabledChangerOnTabItems();
         }
 
+        private bool FirstCheckAllBevetelekKiadasok = true;
+        private bool FirstCheckAllKotelKovet = true;
         public void CheckAllSelections()
         {
-            if(IsBevetelekKiadasokTabIsSelected)
+            if (IsBevetelekKiadasokTabIsSelected)
             {
                 for (int i = 0; i < FilteredBevetelekKiadasok.Count; i++)
                 {
@@ -5768,6 +5770,13 @@ namespace Szakdolgozat.ViewModels
                                 .Distinct()
                                 .OrderBy(year => year)
                             );
+                }
+                if (FirstCheckAllBevetelekKiadasok)
+                {
+                    FirstCheckAllBevetelekKiadasok = false;
+                    UpdateSearch(SearchQuery);
+                    IsEnabledChangerOnTabItems();
+                    CheckAllSelections();
                 }
             }
             else
@@ -5785,6 +5794,13 @@ namespace Szakdolgozat.ViewModels
                                 .Distinct()
                                 .OrderBy(year => year)
                             );
+                }
+                if (FirstCheckAllKotelKovet)
+                {
+                    FirstCheckAllKotelKovet = false;
+                    UpdateSearch(SearchQuery);
+                    IsEnabledChangerOnTabItems();
+                    CheckAllSelections();
                 }
             }
             UpdateSearch(SearchQuery);
@@ -5977,9 +5993,6 @@ namespace Szakdolgozat.ViewModels
 
         private void AddRowSeries(ChartValues<double> values, string title, string name, Brush color, List<string> labels)
         {
-            //StackedRowSeries-el megoldható a csoportokra bontás - viszont a RowSeries-el nem
-            //További feltételek szükségesek a RowSeries-hez, hogy a felhasználó tudjon több adatot is megjeleníteni
-
             RowSeries.Add(new RowSeries
             {
                 Title = title,
@@ -6243,10 +6256,6 @@ namespace Szakdolgozat.ViewModels
 
 
         private bool SavingClosed = false;
-
-
-
-
         private void ExecuteSaveChartCommand(object obj)
         {
             try

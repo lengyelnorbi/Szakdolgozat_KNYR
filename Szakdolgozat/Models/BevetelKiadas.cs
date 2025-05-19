@@ -38,15 +38,15 @@ namespace Szakdolgozat.Models
             BeKiKod = beKiKod;
             TeljesitesiDatum = teljesitesiDatum;
             if (kotelKovetID == 0)
-                KotelKovetID = null;
+                KotelKovetID = 0;
             else
                 KotelKovetID = kotelKovetID;
             if (maganSzemelyID == 0)
-                MaganSzemelyID = null;
+                MaganSzemelyID = 0;
             else
                 MaganSzemelyID = maganSzemelyID;
             if (gazdalkodasiSzervID == 0)
-                GazdalkodasiSzervID = null;
+                GazdalkodasiSzervID = 0;
             else
                 GazdalkodasiSzervID = gazdalkodasiSzervID;
             IsSelected = isSelected;

@@ -5,6 +5,8 @@ using System.Windows.Input;
 using Szakdolgozat.Views;
 using LiveCharts.Defaults;
 using System.Windows.Media;
+using Szakdolgozat.Models;
+using System.Windows;
 
 namespace Szakdolgozat.ViewModels
 {
@@ -29,6 +31,22 @@ namespace Szakdolgozat.ViewModels
         }
         private void ExecuteCreateChartCommand(object obj)
         {
+            //CreateChartsView existingWindow;
+            //if (!WindowHelper.IsCreateChartsViewWindowOpen(out existingWindow))
+            //{
+            //    // The window is not open, create and show a new instance
+            //    CreateChartsView createCharts = new CreateChartsView(obj.ToString());
+            //    createCharts.Show();
+            //}
+            //else
+            //{
+            //    // The window is already open, bring it to the foreground
+            //    if (existingWindow.WindowState == WindowState.Minimized)
+            //    {
+            //        existingWindow.WindowState = WindowState.Normal;
+            //    }
+            //    existingWindow.Activate();        // Activate the window
+            //}
             CreateChartsView createCharts = new CreateChartsView(obj.ToString());
             createCharts.Show();
         }

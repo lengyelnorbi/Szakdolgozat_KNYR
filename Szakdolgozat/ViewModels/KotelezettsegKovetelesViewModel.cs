@@ -485,7 +485,7 @@ namespace Szakdolgozat.ViewModels
                 {
                     case "Add":
                         KotelezettsegKovetelesModifyOrAddView existingWindow;
-                        if (!WindowHelper.IsKoltsegvetesAddWindowOpen(out existingWindow))
+                        if (!WindowHelper.IsKotelezettsegKovetelesAddWindowOpen(out existingWindow))
                         {
                             // The window is not open, create and show a new instance
                             KotelezettsegKovetelesModifyOrAddView kotelezettsegKovetelesModifyOrAddView = new KotelezettsegKovetelesModifyOrAddView(EditMode.Add);
