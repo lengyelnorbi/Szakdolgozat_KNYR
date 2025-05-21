@@ -19,7 +19,7 @@ namespace Szakdolgozat.Repositories
                 {
                     connection.Open();
 
-                    string query = "INSERT INTO `magan_szemelyek` (`id`, `nev`, `telefonszam`, `email`, `lakcim`) VALUES (NULL, @nev, @telefonszam, @email, @lakcim);";
+                    string query = "INSERT INTO `maganszemelyek` (`id`, `nev`, `telefonszam`, `email`, `lakcim`) VALUES (NULL, @nev, @telefonszam, @email, @lakcim);";
                     using (MySqlCommand command = new MySqlCommand(query, connection))
                     {
                         command.Parameters.AddWithValue("@nev", maganSzemely.Nev);
@@ -53,7 +53,7 @@ namespace Szakdolgozat.Repositories
             {
                 connection.Open();
 
-                string query = "DELETE FROM `magan_szemelyek` WHERE `magan_szemelyek`.`id` = @id;";
+                string query = "DELETE FROM `maganszemelyek` WHERE `maganszemelyek`.`id` = @id;";
                 using (MySqlCommand command = new MySqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@id", id);
@@ -110,7 +110,7 @@ namespace Szakdolgozat.Repositories
                         }
 
                         // Then delete the main record
-                        string deleteQuery = "DELETE FROM magan_szemelyek WHERE id = @id";
+                        string deleteQuery = "DELETE FROM maganszemelyek WHERE id = @id";
                         using (MySqlCommand command = new MySqlCommand(deleteQuery, connection, transaction))
                         {
                             command.Parameters.AddWithValue("@id", id);
@@ -130,7 +130,7 @@ namespace Szakdolgozat.Repositories
         public ObservableCollection<MaganSzemely> GetMaganSzemelyek()
         {
             ObservableCollection<MaganSzemely> data = new ObservableCollection<MaganSzemely>();
-            string query = "SELECT * FROM magan_szemelyek;";
+            string query = "SELECT * FROM maganszemelyek;";
 
             using (MySqlConnection connection = GetConnection())
             {
@@ -166,7 +166,7 @@ namespace Szakdolgozat.Repositories
                 {
                     connection.Open();
 
-                    string query = "UPDATE `magan_szemelyek` SET `nev`=@nev,`telefonszam`=@telefonszam,`email`=@email,`lakcim`=@lakcim WHERE `magan_szemelyek`.`id` = @id";
+                    string query = "UPDATE `maganszemelyek` SET `nev`=@nev,`telefonszam`=@telefonszam,`email`=@email,`lakcim`=@lakcim WHERE `maganszemelyek`.`id` = @id";
                     using (MySqlCommand command = new MySqlCommand(query, connection))
                     {
                         command.Parameters.AddWithValue("@nev", maganSzemely.Nev);
@@ -217,7 +217,7 @@ namespace Szakdolgozat.Repositories
                 }
 
                 // Check for related records in other tables as needed
-                // For example, if other tables reference magan_szemelyek
+                // For example, if other tables reference maganszemelyek
             }
 
             relatedInfo = string.Join("\n", relatedRecords);

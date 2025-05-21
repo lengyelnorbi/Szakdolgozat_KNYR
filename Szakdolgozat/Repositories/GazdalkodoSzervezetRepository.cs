@@ -217,7 +217,7 @@ namespace Szakdolgozat.Repositories
                 }
 
                 // Check for related records in other tables as needed
-                // For example, if other tables reference magan_szemelyek
+                // For example, if other tables reference maganszemelyek
             }
 
             relatedInfo = string.Join("\n", relatedRecords);

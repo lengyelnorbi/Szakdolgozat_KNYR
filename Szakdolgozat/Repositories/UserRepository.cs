@@ -26,7 +26,7 @@ namespace Szakdolgozat.Repositories
                 using (MySqlCommand command = new MySqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@username", credential.UserName);
-                    command.Parameters.AddWithValue("@password", PasswordHasher.HashPassword(credential.Password));
+                    command.Parameters.AddWithValue("@password", credential.Password);
 
                     using (MySqlDataReader reader = command.ExecuteReader())
                     {

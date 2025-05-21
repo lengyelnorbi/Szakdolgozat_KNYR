@@ -607,7 +607,7 @@ namespace Szakdolgozat.ViewModels
         
         //A jelenleg szükséges tábla neveket tartalmazó kollekció
         //A collection that holds the table names of the datatables
-        //private readonly ObservableCollection<string> _dbTableNames = new ObservableCollection<string> {"bevetelek_kiadasok", "felhasznalok", "dolgozok", "gazdalkodo_szervezetek", "kotelezettsegek_kovetelesek", "magan_szemelyek"};
+        //private readonly ObservableCollection<string> _dbTableNames = new ObservableCollection<string> {"bevetelek_kiadasok", "felhasznalok", "dolgozok", "gazdalkodo_szervezetek", "kotelezettsegek_kovetelesek", "maganszemelyek"};
         
         //Egy szótár, amiben a tábla nevekhez vannak rendelve a táblában található oszlop nevekből készített lista
         //A dictionary that holds the table name and the column names that belongs to it as key-value pairs 

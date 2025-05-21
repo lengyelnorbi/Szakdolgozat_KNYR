@@ -123,7 +123,7 @@
                                  IsChecked="True"
                                              Command="{Binding ShowMaganSzemelyekViewCommand}">
                                         <StackPanel Orientation="Horizontal">
-                                            <TextBlock Text="Magán Személyek" Style="{StaticResource menuButtonText}" Margin="40,0,0,0"/>
+                                            <TextBlock Text="Magánszemélyek" Style="{StaticResource menuButtonText}" Margin="40,0,0,0"/>
                                         </StackPanel>
                                     </RadioButton>
                                     <RadioButton x:Name="dolgozoRadioButton" GroupName="Content" Style="{StaticResource menuButton}"
