@@ -174,7 +174,7 @@ namespace Szakdolgozat.ViewModels
         private void ExecuteExportAllDataToExcelCommand(object obj)
         {
             // Export all data from the database
-            ExportToExcel(Dolgozok.ToList(), "Osszes_Dolgozok");
+            ExportToExcel(Dolgozok.ToList(), "Teljes_Dolgozok_Tabla");
         }
 
         private void ExecuteExportFilteredDataToExcelCommand(object obj)
@@ -205,15 +205,15 @@ namespace Szakdolgozat.ViewModels
         {
             if (SelectedItems.Count > 0)
             {
-                ExportToExcel(SelectedItems.ToList(), "Kijelolt_Dolgozok");
+                ExportToExcel(SelectedItems.ToList(), "Kivalasztott_Dolgozok");
             }
             else
             {
                 System.Windows.MessageBox.Show(
-                    "Nem volt kijelölt adat az exportáláshoz",
-                    "Exportálási Hiba",
-                    System.Windows.MessageBoxButton.OK,
-                    System.Windows.MessageBoxImage.Warning);
+                                "Nem volt kiválasztott elem",
+                                "Mentési Hiba",
+                                System.Windows.MessageBoxButton.OK,
+                                System.Windows.MessageBoxImage.Warning);
             }
         }
 
@@ -289,18 +289,18 @@ namespace Szakdolgozat.ViewModels
                         workbook.SaveAs(saveFileDialog.FileName);
 
                         System.Windows.MessageBox.Show(
-                            $"Adatok sikeresen mentve a {saveFileDialog.FileName}",
-                            "Exportálás sikeres",
-                            System.Windows.MessageBoxButton.OK,
-                            System.Windows.MessageBoxImage.Information);
+                           $"Adatok sikeresen mentve {saveFileDialog.FileName}",
+                           "Mentés Sikeres",
+                           System.Windows.MessageBoxButton.OK,
+                           System.Windows.MessageBoxImage.Information);
                     }
                 }
             }
             catch (Exception ex)
             {
                 System.Windows.MessageBox.Show(
-                    $"Hiba exportálás közben: {ex.Message}",
-                    "Exportálási Hiba",
+                    $"Hiba az adatok mentése során: {ex.Message}",
+                    "Mentési Hiba",
                     System.Windows.MessageBoxButton.OK,
                     System.Windows.MessageBoxImage.Error);
             }

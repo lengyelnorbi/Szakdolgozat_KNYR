@@ -21,17 +21,17 @@ namespace Szakdolgozat.ViewModels
         private string _phonenumber;
         private string _title;
         private EditMode _editMode;
-        private MaganSzemely _modifiableMaganSzemely;
-        private MaganSzemelyRepository _maganSzemelyRepository = new MaganSzemelyRepository();
+        private MaganSzemely _modifiableMaganszemely;
+        private MaganSzemelyRepository _maganszemelyRepository = new MaganSzemelyRepository();
         public MaganSzemely ModifiableMaganSzemely
         {
             get
             {
-                return _modifiableMaganSzemely;
+                return _modifiableMaganszemely;
             }
             set
             {
-                _modifiableMaganSzemely = value;
+                _modifiableMaganszemely = value;
                 Name = value.Nev;
                 HomeAddress = value.Lakcim;
                 Email = value.Email;
@@ -60,9 +60,9 @@ namespace Szakdolgozat.ViewModels
             {
                 _editMode = value;
                 if (_editMode == EditMode.Add)
-                    Title = "Új Magán Személy Létrehozása";
+                    Title = "Új Magánszemély Létrehozása";
                 else if (_editMode == EditMode.Modify)
-                    Title = "Magán Személy Módosítása";
+                    Title = "Magánszemély Módosítása";
             }
         }
         public string Name
@@ -225,7 +225,7 @@ namespace Szakdolgozat.ViewModels
                 if (Name != null && HomeAddress != null && Email != null && Phonenumber != null)
                 {
                     MaganSzemely maganSzemely = new MaganSzemely(Name, Phonenumber, Email, HomeAddress);
-                    bool isSuccess = _maganSzemelyRepository.AddMaganSzemely(maganSzemely);
+                    bool isSuccess = _maganszemelyRepository.AddMaganSzemely(maganSzemely);
                     if (isSuccess)
                     {
                         Mediator.NotifyNewMaganSzemelyAdded(maganSzemely);
@@ -256,7 +256,7 @@ namespace Szakdolgozat.ViewModels
                 if (Name != null && HomeAddress != null && Email != null && Phonenumber != null)
                 {
                     MaganSzemely maganSzemely = new MaganSzemely(ModifiableMaganSzemely.ID, Name, Phonenumber, Email, HomeAddress);
-                    bool isSuccess = _maganSzemelyRepository.ModifyMaganSzemely(maganSzemely);
+                    bool isSuccess = _maganszemelyRepository.ModifyMaganSzemely(maganSzemely);
                     if (isSuccess)
                     {
                         Mediator.NotifyModifiedMaganSzemely(maganSzemely);

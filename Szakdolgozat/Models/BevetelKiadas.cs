@@ -15,7 +15,7 @@ namespace Szakdolgozat.Models
         public DateTime TeljesitesiDatum { get; set; }
         public int? KotelKovetID { get; set; }
         public int? GazdalkodasiSzervID { get; set; }
-        public int? MaganSzemelyID { get; set; }
+        public int? MaganszemelyID { get; set; }
         public bool IsSelected { get; set; }
 
         public BevetelKiadas(int id, int osszeg, Penznem penznem, BeKiKod beKiKod, DateTime teljesitesiDatum, int kotelKovetID, int gazdalkodasiSzervID, int maganSzemelyID, bool isSelected = false)
@@ -27,7 +27,7 @@ namespace Szakdolgozat.Models
             TeljesitesiDatum = teljesitesiDatum;
             KotelKovetID = kotelKovetID;
             GazdalkodasiSzervID = gazdalkodasiSzervID;
-            MaganSzemelyID = maganSzemelyID;
+            MaganszemelyID = maganSzemelyID;
             IsSelected = isSelected;
         }
         public BevetelKiadas(int id, int osszeg, Penznem penznem, BeKiKod beKiKod, DateTime teljesitesiDatum, int? kotelKovetID = null, int? gazdalkodasiSzervID = null, int? maganSzemelyID = null, bool isSelected = false)
@@ -42,9 +42,9 @@ namespace Szakdolgozat.Models
             else
                 KotelKovetID = kotelKovetID;
             if (maganSzemelyID == 0)
-                MaganSzemelyID = 0;
+                MaganszemelyID = 0;
             else
-                MaganSzemelyID = maganSzemelyID;
+                MaganszemelyID = maganSzemelyID;
             if (gazdalkodasiSzervID == 0)
                 GazdalkodasiSzervID = 0;
             else
@@ -60,7 +60,7 @@ namespace Szakdolgozat.Models
             TeljesitesiDatum = teljesitesiDatum;
             KotelKovetID = kotelKovetID;
             GazdalkodasiSzervID = gazdalkodasiSzervID;
-            MaganSzemelyID = maganSzemelyID;
+            MaganszemelyID = maganSzemelyID;
             IsSelected = isSelected;
         }
         public BevetelKiadas(int osszeg, Penznem penznem, BeKiKod beKiKod, DateTime teljesitesiDatum, int? kotelKovetID = null, int? gazdalkodasiSzervID = null, int? maganSzemelyID = null, bool isSelected = false)
@@ -74,9 +74,9 @@ namespace Szakdolgozat.Models
             else
                 KotelKovetID = kotelKovetID;
             if (maganSzemelyID == 0)
-                MaganSzemelyID = null;
+                MaganszemelyID = null;
             else
-                MaganSzemelyID = maganSzemelyID;
+                MaganszemelyID = maganSzemelyID;
             if (gazdalkodasiSzervID == 0)
                 GazdalkodasiSzervID = null;
             else

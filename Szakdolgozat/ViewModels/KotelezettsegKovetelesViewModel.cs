@@ -147,13 +147,13 @@ namespace Szakdolgozat.ViewModels
         private void ExecuteExportAllDataToExcelCommand(object obj)
         {
             // Export all data from the database
-            ExportToExcel(KotelezettsegekKovetelesek.ToList(), "All_Database_Dolgozok");
+            ExportToExcel(KotelezettsegekKovetelesek.ToList(), "Teljes_Kotelezettsegek_Kovetelesek_Tabla");
         }
 
         private void ExecuteExportFilteredDataToExcelCommand(object obj)
         {
             // Export all filtered data
-            ExportToExcel(FilteredKotelezettsegekKovetelesek.ToList(), "Filtered_Dolgozok");
+            ExportToExcel(FilteredKotelezettsegekKovetelesek.ToList(), "Szurt_Kotelezettsegek_Kovetelesek");
         }
 
         private void ExecuteToggleMultiSelectionModeCommand(object obj)
@@ -178,15 +178,15 @@ namespace Szakdolgozat.ViewModels
         {
             if (SelectedItems.Count > 0)
             {
-                ExportToExcel(SelectedItems.ToList(), "MultiSelected_Dolgozok");
+                ExportToExcel(SelectedItems.ToList(), "Kivalasztott_Kotelezettsegek_Kovetelesek");
             }
             else
             {
                 System.Windows.MessageBox.Show(
-                    "No items selected for export",
-                    "Export Error",
-                    System.Windows.MessageBoxButton.OK,
-                    System.Windows.MessageBoxImage.Warning);
+                        "Nem volt kiválasztott elem",
+                        "Mentési Hiba",
+                        System.Windows.MessageBoxButton.OK,
+                        System.Windows.MessageBoxImage.Warning);
             }
         }
 
@@ -215,9 +215,9 @@ namespace Szakdolgozat.ViewModels
                 // Allow user to choose where to save the file
                 SaveFileDialog saveFileDialog = new SaveFileDialog
                 {
-                    Filter = "Excel Files (*.xlsx)|*.xlsx",
+                    Filter = "Excel Fájlok (*.xlsx)|*.xlsx",
                     FileName = $"{defaultFileName}_{DateTime.Now:yyyyMMdd}.xlsx",
-                    Title = "Save Excel File"
+                    Title = "Excel Fájl Mentése"
                 };
 
                 if (saveFileDialog.ShowDialog() == DialogResult.OK)
@@ -264,41 +264,23 @@ namespace Szakdolgozat.ViewModels
                         workbook.SaveAs(saveFileDialog.FileName);
 
                         System.Windows.MessageBox.Show(
-                            $"Data successfully exported to {saveFileDialog.FileName}",
-                            "Export Success",
-                            System.Windows.MessageBoxButton.OK,
-                            System.Windows.MessageBoxImage.Information);
+                           $"Adatok sikeresen mentve {saveFileDialog.FileName}",
+                           "Mentés Sikeres",
+                           System.Windows.MessageBoxButton.OK,
+                           System.Windows.MessageBoxImage.Information);
                     }
                 }
             }
             catch (Exception ex)
             {
                 System.Windows.MessageBox.Show(
-                    $"Error exporting data: {ex.Message}",
-                    "Export Error",
+                    $"Hiba az adatok mentése során: {ex.Message}",
+                    "Mentési Hiba",
                     System.Windows.MessageBoxButton.OK,
                     System.Windows.MessageBoxImage.Error);
             }
         }
-        /// <summary>
-        /// Exports multiple selected data to Excel file
-        /// </summary>
-        /// <param name="selectedItems">Collection of selected items</param>
-        public void ExportMultipleSelectedToExcel(IEnumerable<KotelezettsegKoveteles> selectedItems)
-        {
-            if (selectedItems != null && selectedItems.Any())
-            {
-                ExportToExcel(selectedItems.ToList(), "Selected_Dolgozok");
-            }
-            else
-            {
-                System.Windows.MessageBox.Show(
-                    "No items selected for export",
-                    "Export Error",
-                    System.Windows.MessageBoxButton.OK,
-                    System.Windows.MessageBoxImage.Warning);
-            }
-        }
+       
         private void FilterData(string searchQuery)
         {
             Debug.WriteLine(searchQuery);

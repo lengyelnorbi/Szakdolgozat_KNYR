@@ -45,7 +45,7 @@ namespace Szakdolgozat.ViewModels
                 CompletionDate = value.TeljesitesiDatum;
                 OblClaimID = value.KotelKovetID;
                 CompanyID = value.GazdalkodasiSzervID;
-                PrivatePersonID = value.MaganSzemelyID;
+                PrivatePersonID = value.MaganszemelyID;
             }
         }
         public string Title
@@ -220,7 +220,7 @@ namespace Szakdolgozat.ViewModels
                 IncExpID = ModifiableKoltsegvetes.BeKiKod;
                 CompletionDate = ModifiableKoltsegvetes.TeljesitesiDatum;
                 OblClaimID = ModifiableKoltsegvetes.KotelKovetID;
-                PrivatePersonID = ModifiableKoltsegvetes.MaganSzemelyID;
+                PrivatePersonID = ModifiableKoltsegvetes.MaganszemelyID;
                 CompanyID = ModifiableKoltsegvetes.GazdalkodasiSzervID;
             }
         }

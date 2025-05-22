@@ -29,7 +29,7 @@ namespace Szakdolgozat.Repositories
                         command.Parameters.AddWithValue("@teljesitesi_datum", bevetelKiadas.TeljesitesiDatum);
                         command.Parameters.AddWithValue("@kotel_kovet_id", bevetelKiadas.KotelKovetID);
                         command.Parameters.AddWithValue("@gazdalkodo_szerv_id", bevetelKiadas.GazdalkodasiSzervID);
-                        command.Parameters.AddWithValue("@magan_szemely_id", bevetelKiadas.MaganSzemelyID);
+                        command.Parameters.AddWithValue("@magan_szemely_id", bevetelKiadas.MaganszemelyID);
 
                         int count = Convert.ToInt32(command.ExecuteNonQuery());
 
@@ -158,7 +158,7 @@ namespace Szakdolgozat.Repositories
                         command.Parameters.AddWithValue("@teljesitesiDatum", bevetelKiadas.TeljesitesiDatum);
                         command.Parameters.AddWithValue("@kotelKovetID", bevetelKiadas.KotelKovetID);
                         command.Parameters.AddWithValue("@gazdalkodo_szerv_id", bevetelKiadas.GazdalkodasiSzervID);
-                        command.Parameters.AddWithValue("@magan_szemely_id", bevetelKiadas.MaganSzemelyID);
+                        command.Parameters.AddWithValue("@magan_szemely_id", bevetelKiadas.MaganszemelyID);
                         command.Parameters.AddWithValue("@id", bevetelKiadas.ID);
 
                         int count = Convert.ToInt32(command.ExecuteNonQuery());

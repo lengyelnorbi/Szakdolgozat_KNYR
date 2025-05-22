@@ -681,7 +681,7 @@ namespace Szakdolgozat.ViewModels
             BevetelekKiadasok = koltsegvetesRepository.GetKoltsegvetesek();
             //Deep Copy - to ensure that the FilteredDolgozok does not affect the Dolgozok collection, and vica versa
             FilteredBevetelekKiadasok = new ObservableCollection<BevetelKiadas>(
-                BevetelekKiadasok.Select(d => new BevetelKiadas(d.ID, d.Osszeg, d.Penznem, d.BeKiKod, d.TeljesitesiDatum, d.KotelKovetID, d.GazdalkodasiSzervID, d.MaganSzemelyID, d.IsSelected)).ToList()
+                BevetelekKiadasok.Select(d => new BevetelKiadas(d.ID, d.Osszeg, d.Penznem, d.BeKiKod, d.TeljesitesiDatum, d.KotelKovetID, d.GazdalkodasiSzervID, d.MaganszemelyID, d.IsSelected)).ToList()
             );
 
             KotelKovetelesek = kotelezettsegKovetelesRepository.GetKotelezettsegekKovetelesek();
@@ -772,7 +772,7 @@ namespace Szakdolgozat.ViewModels
                             }
                             if (checkboxStatuses["koltsegvetes_maganSzemelyIDCB"] == true)
                             {
-                                if (d.MaganSzemelyID.ToString().ToLower().Contains(searchQuery.ToLower()))
+                                if (d.MaganszemelyID.ToString().ToLower().Contains(searchQuery.ToLower()))
                                 {
                                     FilteredBevetelekKiadasok.Add(d);
                                     continue;
