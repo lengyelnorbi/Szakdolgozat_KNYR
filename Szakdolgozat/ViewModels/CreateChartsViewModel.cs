@@ -1,7 +1,6 @@
 ﻿using LiveCharts;
 using LiveCharts.Wpf;
 using LiveCharts.Defaults;
-using LiveCharts.Definitions.Series;
 
 using System;
 using System.Collections.Generic;
@@ -14,21 +13,11 @@ using System.Windows.Media;
 
 using Szakdolgozat.Models;
 using Szakdolgozat.Repositories;
-using LiveCharts.Helpers;
-using Google.Protobuf.WellKnownTypes;
-using System.Windows.Forms;
 using System.Diagnostics;
 using System.Windows.Data;
-using Szakdolgozat.Views;
-using System.Xml.Linq;
 using Szakdolgozat.Specials;
-using System.Runtime.InteropServices.ComTypes;
-using Org.BouncyCastle.Bcpg;
-using LiveCharts.Configurations;
-using Xceed.Wpf.Toolkit.Panels;
 using System.IO;
 using System.Windows.Media.Imaging;
-using DocumentFormat.OpenXml.Wordprocessing;
 
 namespace Szakdolgozat.ViewModels
 {

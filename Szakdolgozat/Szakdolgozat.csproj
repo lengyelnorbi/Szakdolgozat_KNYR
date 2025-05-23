@@ -253,9 +253,6 @@
     <Compile Include="Views\DolgozokView.xaml.cs">
       <DependentUpon>DolgozokView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\ElozmenyekView.xaml.cs">
-      <DependentUpon>ElozmenyekView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Views\GazdalkodoSzervezetModifyOrAddView.xaml.cs">
       <DependentUpon>GazdalkodoSzervezetModifyOrAddView.xaml</DependentUpon>
     </Compile>
@@ -353,10 +350,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\DolgozokView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\ElozmenyekView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

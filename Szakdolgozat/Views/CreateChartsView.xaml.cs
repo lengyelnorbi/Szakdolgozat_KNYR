@@ -1,31 +1,14 @@
-﻿using LiveCharts.Wpf;
-using Microsoft.Xaml.Behaviors.Core;
-using Org.BouncyCastle.Bcpg;
-using Org.BouncyCastle.Tls;
-using Org.BouncyCastle.Utilities;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Dynamic;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Documents.DocumentStructures;
-using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Interop;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using Szakdolgozat.Models;
-using Szakdolgozat.Repositories;
 using Szakdolgozat.ViewModels;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.Tab;
 
 namespace Szakdolgozat.Views
 {

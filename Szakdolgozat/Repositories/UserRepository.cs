@@ -1,16 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using Szakdolgozat.Models;
 using MySql.Data.MySqlClient;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using Microsoft.Xaml.Behaviors.Media;
 using Szakdolgozat.Specials;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
 namespace Szakdolgozat.Repositories
 {

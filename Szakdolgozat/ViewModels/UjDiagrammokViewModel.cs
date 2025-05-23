@@ -5,8 +5,6 @@ using System.Windows.Input;
 using Szakdolgozat.Views;
 using LiveCharts.Defaults;
 using System.Windows.Media;
-using Szakdolgozat.Models;
-using System.Windows;
 
 namespace Szakdolgozat.ViewModels
 {

@@ -15,10 +15,9 @@
         <converters:BoolToInverseVisibilityConverter x:Key="BoolToInverseVisibilityConverter" />
     </UserControl.Resources>
     <UserControl.DataContext>
-        <dContext:DolgozoViewModel />
+        <dContext:DolgozoViewModel/>
     </UserControl.DataContext>
     <Grid>
-        <!--xmlns:converters="clr-namespace:Szakdolgozat.Converters"-->
         <Grid.RowDefinitions>
             <RowDefinition Height="100"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>

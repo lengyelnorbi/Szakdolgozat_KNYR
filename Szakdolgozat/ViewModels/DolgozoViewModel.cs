@@ -1,28 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Collections.ObjectModel;
 using Szakdolgozat.Models;
-using MySql.Data.MySqlClient;
 using System.Diagnostics;
-using System.Windows.Controls;
 using System.Windows;
-using System.Windows.Data;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using Szakdolgozat.Repositories;
 using System.Windows.Input;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
-using System.Security.Principal;
-using System.Threading;
 using Szakdolgozat.Views;
 using System.Windows.Forms;
-using static Org.BouncyCastle.Crypto.Digests.SkeinEngine;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
-using System.IO;
-using System.Windows.Media;
 using ClosedXML.Excel;
 using System.Collections;
 

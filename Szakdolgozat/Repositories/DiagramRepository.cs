@@ -1,14 +1,7 @@
-﻿using LiveCharts.Defaults;
-using LiveCharts.Wpf;
-using LiveCharts;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using MySql.Data.MySqlClient;
 using Szakdolgozat.Models;
-using DocumentFormat.OpenXml.Office2010.PowerPoint;
 using Szakdolgozat.ViewModels;
 
 namespace Szakdolgozat.Repositories
